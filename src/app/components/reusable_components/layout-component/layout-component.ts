@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { HeaderComponent } from '../header-component/header-component';
 import { FooterComponent } from '../footer-component/footer-component';
