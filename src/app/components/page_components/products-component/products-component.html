@@ -1,71 +1,77 @@
-<!-- FILTER TOOLBAR -->
+<!-- [Start: Tool Bar] -->
 <mat-toolbar color="primary" class="products-toolbar">
 
   <div class="left-section">
 
-    <!-- Brands -->
-    <button mat-button [matMenuTriggerFor]="brandsMenu">
-      Brands <mat-icon>arrow_drop_down</mat-icon>
+    <!-- [Start: Brand menu] -->
+    <button mat-button [matMenuTriggerFor]="brandsMenu" class="filter-button"
+      [class.active-filter]="selectedBrandId() !== undefined">
+      {{ selectedBrandName() ?? 'Brands' }}
+      <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
     <mat-menu #brandsMenu="matMenu">
-      <button mat-menu-item (click)="onBrandSelect(undefined)">
+      <button mat-menu-item (click)="onBrandSelect(undefined)"
+        [class.selected-menu-item]="selectedBrandId() === undefined">
         All Brands
       </button>
 
-      <button mat-menu-item *ngFor="let brand of brands()" (click)="onBrandSelect(brand.brandID)">
+      <button mat-menu-item *ngFor="let brand of brands()" (click)="onBrandSelect(brand.brandID)"
+        [class.selected-menu-item]="selectedBrandId() === brand.brandID">
         {{ brand.brandName }}
       </button>
     </mat-menu>
+    <!-- [End: Brand menu] -->
 
-    <!-- Categories -->
-    <button mat-button [matMenuTriggerFor]="categoryMenu">
-      Category <mat-icon>arrow_drop_down</mat-icon>
+
+    <!-- [Start: Categories menu] -->
+    <button mat-button [matMenuTriggerFor]="categoryMenu" class="filter-button"
+      [class.active-filter]="selectedCategoryId() !== undefined">
+      {{ selectedCategoryName() ?? 'Category' }}
+      <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
     <mat-menu #categoryMenu="matMenu">
-      <button mat-menu-item (click)="onCategorySelect(undefined)">
+      <button mat-menu-item (click)="onCategorySelect(undefined)"
+        [class.selected-menu-item]="selectedCategoryId() === undefined">
         All Categories
       </button>
 
-      <button mat-menu-item *ngFor="let category of categories()" (click)="onCategorySelect(category.categoryID)">
+      <button mat-menu-item *ngFor="let category of categories()" (click)="onCategorySelect(category.categoryID)"
+        [class.selected-menu-item]="selectedCategoryId() === category.categoryID">
         {{ category.categoryName }}
       </button>
     </mat-menu>
+    <!-- [End: Categories menu] -->
 
   </div>
 
-  <!-- Search -->
+  <!-- [Start: Search Bar] -->
   <div class="center-section">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search</mat-label>
-
       <input matInput [ngModel]="searchText()" (ngModelChange)="onSearch($event)" placeholder="Search products" />
-
-      <button mat-icon-button matSuffix (click)="onSearch(searchText())">
+      <button mat-icon-button matSuffix>
         <mat-icon>search</mat-icon>
       </button>
     </mat-form-field>
   </div>
+  <!-- [End: Search Bar] -->
 
 </mat-toolbar>
+<!-- [End: Tool Bar] -->
 
-<!-- PRODUCTS GRID -->
+
+<!-- [Start: Product Grid] -->
 <div class="products-grid">
 
   <mat-card class="product-card" *ngFor="let item of electronicItems()" [class.out-of-stock]="item.qoh === 0"
     (click)="item.qoh > 0 && openProduct(item.electronicItemID!)">
-
-    <img mat-card-image [src]="getImageUrl(item)" alt="{{ item.electronicItemName }}" />
+    <img mat-card-image [src]="getImageUrl(item)" />
 
     <mat-card-content>
-      <h3 class="product-name">
-        {{ item.electronicItemName }}
-      </h3>
-
-      <p class="product-price">
-        Rs. {{ item.price | number }}
-      </p>
+      <h3 class="product-name">{{ item.electronicItemName }}</h3>
+      <p class="product-price">Rs. {{ item.price | number }}</p>
 
       <span class="stock-status" [class.in-stock]="item.qoh > 0" [class.out-stock]="item.qoh === 0">
         {{ item.qoh > 0 ? 'Available' : 'Out of stock' }}
@@ -75,11 +81,14 @@
   </mat-card>
 
 </div>
+<!-- [End: Product Grid] -->
+
 
 <!-- EMPTY STATE -->
 <div *ngIf="electronicItems().length === 0" class="empty-state">
   No products found
 </div>
+
 
 <!-- PAGINATION -->
 <div class="pagination-container" *ngIf="totalCount() > pageSize()">

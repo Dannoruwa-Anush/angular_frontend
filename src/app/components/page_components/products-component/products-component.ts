@@ -25,31 +25,34 @@ import { environment } from '../../../config/environment';
 })
 export class ProductsComponent {
 
-  protected baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
-  // -------------------------
-  // SOURCE SIGNALS
-  // -------------------------
+  // ---------- CONFIG ----------
+  private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
+
+  // ---------- STATE ----------
+  brands = signal<BrandModel[]>([]);
+  categories = signal<CategoryModel[]>([]);
+  electronicItems = signal<ElectronicItemModel[]>([]);
+
   pageNumber = signal(1);
   pageSize = signal(10);
+  totalCount = signal(0);
 
   selectedBrandId = signal<number | undefined>(undefined);
   selectedCategoryId = signal<number | undefined>(undefined);
   searchText = signal('');
 
-  // -------------------------
-  // DATA SIGNALS
-  // -------------------------
-  brands = signal<BrandModel[]>([]);
-  categories = signal<CategoryModel[]>([]);
-  electronicItems = signal<ElectronicItemModel[]>([]);
-  totalCount = signal(0);
-
-  // -------------------------
-  // COMPUTED SIGNALS
-  // -------------------------
+  // ---------- DERIVED ----------
   totalPages = computed(() =>
     Math.ceil(this.totalCount() / this.pageSize())
+  );
+
+  selectedBrandName = computed(() =>
+    this.brands().find(b => b.brandID === this.selectedBrandId())?.brandName
+  );
+
+  selectedCategoryName = computed(() =>
+    this.categories().find(c => c.categoryID === this.selectedCategoryId())?.categoryName
   );
 
   requestParams = computed(() => ({
@@ -67,21 +70,29 @@ export class ProductsComponent {
     private router: Router
   ) {
 
-    // -------------------------
-    // EFFECT:
-    // -------------------------
+    // Load static data
+    this.loadBrands();
+    this.loadCategories();
+
+    // Reactive product loading
     effect(() => {
       this.loadElectronicItems();
     });
-
-    // initial static loads
-    this.loadBrands();
-    this.loadCategories();
   }
 
-  // -------------------------
-  // LOADERS
-  // -------------------------
+  // ---------- LOADERS ----------
+  private loadBrands(): void {
+    this.brandService.getAll().subscribe(res => {
+      this.brands.set(res);
+    });
+  }
+
+  private loadCategories(): void {
+    this.categoryService.getAll().subscribe(res => {
+      this.categories.set(res);
+    });
+  }
+
   private loadElectronicItems(): void {
     const params = this.requestParams();
 
@@ -99,39 +110,22 @@ export class ProductsComponent {
       });
   }
 
-  private loadBrands(): void {
-    this.brandService.getAll().subscribe(res => {
-      this.brands.set(res);
-    });
-  }
-
-  private loadCategories(): void {
-    this.categoryService.getAll().subscribe(res => {
-      this.categories.set(res);
-    });
-  }
-
-  // -------------------------
-  // FILTER HANDLERS
-  // -------------------------
-  onBrandSelect(brandId?: number) {
-    this.selectedBrandId.set(brandId);
+  // ---------- UI ACTIONS ----------
+  onBrandSelect(id?: number) {
     this.pageNumber.set(1);
+    this.selectedBrandId.set(id);
   }
 
-  onCategorySelect(categoryId?: number) {
-    this.selectedCategoryId.set(categoryId);
+  onCategorySelect(id?: number) {
     this.pageNumber.set(1);
+    this.selectedCategoryId.set(id);
   }
 
   onSearch(text: string) {
-    this.searchText.set(text);
     this.pageNumber.set(1);
+    this.searchText.set(text);
   }
 
-  // -------------------------
-  // PAGINATION
-  // -------------------------
   nextPage() {
     if (this.pageNumber() < this.totalPages()) {
       this.pageNumber.update(p => p + 1);
@@ -144,9 +138,6 @@ export class ProductsComponent {
     }
   }
 
-  // -------------------------
-  // UI HELPERS
-  // -------------------------
   openProduct(id: number) {
     this.router.navigate(['/product', id]);
   }
