@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 
 import { BrandModel } from '../../../models/api_models/brandModel';
 import { BrandService } from '../../../services/api_services/brandService';
@@ -27,14 +27,17 @@ export class ProductsComponent implements OnInit {
 
   protected baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
-  brands: BrandModel[] = [];
-  categories: CategoryModel[] = [];
-  electronicItems: ElectronicItemModel[] = [];
+  // --------------------
+  // SIGNAL STATE
+  // --------------------
+  brands = signal<BrandModel[]>([]);
+  categories = signal<CategoryModel[]>([]);
+  electronicItems = signal<ElectronicItemModel[]>([]);
+  totalCount = signal(0);
 
   // pagination
   pageNumber = 1;
   pageSize = 10;
-  totalCount = 0;
 
   // filters
   selectedBrandId?: number;
@@ -42,12 +45,11 @@ export class ProductsComponent implements OnInit {
   searchText = '';
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private brandService: BrandService,
     private categoryService: CategoryService,
     private electronicItemService: ElectronicItemService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadBrands();
@@ -55,15 +57,18 @@ export class ProductsComponent implements OnInit {
     this.loadProducts();
   }
 
+  // --------------------
+  // LOADERS
+  // --------------------
   loadBrands() {
     this.brandService.getAll().subscribe(res => {
-      this.brands = res;
+      this.brands.set(res);
     });
   }
 
   loadCategories() {
     this.categoryService.getAll().subscribe(res => {
-      this.categories = res;
+      this.categories.set(res);
     });
   }
 
@@ -77,16 +82,14 @@ export class ProductsComponent implements OnInit {
         this.searchText || undefined
       )
       .subscribe(res => {
-        console.log(res);
-        this.electronicItems = res.items;
-        this.totalCount = res.totalCount;
-
-        this.cdr.markForCheck();
+        this.electronicItems.set(res.items);
+        this.totalCount.set(res.totalCount);
       });
   }
 
-  // ---------- FILTER HANDLERS ----------
-
+  // --------------------
+  // FILTER HANDLERS
+  // --------------------
   onBrandSelect(brandId?: number) {
     this.selectedBrandId = brandId;
     this.pageNumber = 1;
@@ -104,10 +107,11 @@ export class ProductsComponent implements OnInit {
     this.loadProducts();
   }
 
-  // ---------- PAGINATION ----------
-
+  // --------------------
+  // PAGINATION
+  // --------------------
   get totalPages(): number {
-    return Math.ceil(this.totalCount / this.pageSize);
+    return Math.ceil(this.totalCount() / this.pageSize);
   }
 
   nextPage() {
@@ -124,8 +128,9 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  // ---------- UI HELPERS ----------
-
+  // --------------------
+  // UI HELPERS
+  // --------------------
   openProduct(id: number) {
     this.router.navigate(['/product', id]);
   }

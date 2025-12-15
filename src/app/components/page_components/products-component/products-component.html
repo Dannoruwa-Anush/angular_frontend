@@ -12,7 +12,12 @@
       <button mat-menu-item (click)="onBrandSelect(undefined)">
         All Brands
       </button>
-      <button mat-menu-item *ngFor="let brand of brands" (click)="onBrandSelect(brand.brandID)">
+
+      <button
+        mat-menu-item
+        *ngFor="let brand of brands()"
+        (click)="onBrandSelect(brand.brandID)"
+      >
         {{ brand.brandName }}
       </button>
     </mat-menu>
@@ -26,7 +31,12 @@
       <button mat-menu-item (click)="onCategorySelect(undefined)">
         All Categories
       </button>
-      <button mat-menu-item *ngFor="let category of categories" (click)="onCategorySelect(category.categoryID)">
+
+      <button
+        mat-menu-item
+        *ngFor="let category of categories()"
+        (click)="onCategorySelect(category.categoryID)"
+      >
         {{ category.categoryName }}
       </button>
     </mat-menu>
@@ -37,7 +47,14 @@
   <div class="center-section">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Search</mat-label>
-      <input matInput [(ngModel)]="searchText" (keyup.enter)="onSearch()" placeholder="Search products" />
+
+      <input
+        matInput
+        [(ngModel)]="searchText"
+        (keyup.enter)="onSearch()"
+        placeholder="Search products"
+      />
+
       <button mat-icon-button matSuffix (click)="onSearch()">
         <mat-icon>search</mat-icon>
       </button>
@@ -49,19 +66,33 @@
 <!-- PRODUCTS GRID -->
 <div class="products-grid">
 
-  <mat-card class="product-card" *ngFor="let item of electronicItems" [class.out-of-stock]="item.qoh === 0"
-    (click)="item.qoh > 0 && item.electronicItemID && openProduct(item.electronicItemID)">
+  <mat-card
+    class="product-card"
+    *ngFor="let item of electronicItems()"
+    [class.out-of-stock]="item.qoh === 0"
+    (click)="item.qoh > 0 && item.electronicItemID && openProduct(item.electronicItemID)"
+  >
 
-    <img mat-card-image [src]="getImageUrl(item)" alt="{{ item.electronicItemName }}" />
+    <img
+      mat-card-image
+      [src]="getImageUrl(item)"
+      alt="{{ item.electronicItemName }}"
+    />
 
     <mat-card-content>
-      <h3 class="product-name">{{ item.electronicItemName }}</h3>
+      <h3 class="product-name">
+        {{ item.electronicItemName }}
+      </h3>
 
       <p class="product-price">
         Rs. {{ item.price | number }}
       </p>
 
-      <span class="stock-status" [class.in-stock]="item.qoh > 0" [class.out-stock]="item.qoh === 0">
+      <span
+        class="stock-status"
+        [class.in-stock]="item.qoh > 0"
+        [class.out-stock]="item.qoh === 0"
+      >
         {{ item.qoh > 0 ? 'Available' : 'Out of stock' }}
       </span>
     </mat-card-content>
@@ -71,14 +102,18 @@
 </div>
 
 <!-- EMPTY STATE -->
-<div *ngIf="electronicItems.length === 0" class="empty-state">
+<div *ngIf="electronicItems().length === 0" class="empty-state">
   No products found
 </div>
 
 <!-- PAGINATION -->
-<div class="pagination-container" *ngIf="totalCount > pageSize">
+<div class="pagination-container" *ngIf="totalCount() > pageSize">
 
-  <button mat-stroked-button (click)="previousPage()" [disabled]="pageNumber === 1">
+  <button
+    mat-stroked-button
+    (click)="previousPage()"
+    [disabled]="pageNumber === 1"
+  >
     Previous
   </button>
 
@@ -86,7 +121,11 @@
     Page {{ pageNumber }} of {{ totalPages }}
   </span>
 
-  <button mat-stroked-button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+  <button
+    mat-stroked-button
+    (click)="nextPage()"
+    [disabled]="pageNumber === totalPages"
+  >
     Next
   </button>
 
