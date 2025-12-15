@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.content.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mobile padding reduce */
+@media (max-width: 768px) {
+  .content {
+    padding: 12px;
+  }
+}

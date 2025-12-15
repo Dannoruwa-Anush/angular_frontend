@@ -1,1 +1,65 @@
-<p>header-component works!</p>
+<mat-toolbar class="app-header">
+
+  <!-- Company logo -->
+  <img [src]="image_company_logo" alt="logo" class="logo" />
+
+  <!-- [Start- Desktop View Navigation] -->
+  <div class="desktop-links">
+    <button mat-button routerLink="/">Home</button>
+    <button mat-button routerLink="/products">Products</button>
+  </div>
+  <!-- [End- Desktop View Navigation] -->
+
+  <!-- [Start- Mobile View Menu] -->
+  <button mat-icon-button class="mobile-menu-btn" [matMenuTriggerFor]="mobileMenu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <mat-menu #mobileMenu="matMenu" class="mobile-menu">
+    <button mat-button routerLink="/">Home</button>
+    <button mat-button routerLink="/products">Products</button>
+  </mat-menu>
+  <!-- [End- Mobile View Menu] -->
+
+  <!-- [Start- Right Icons] -->
+  <div class="toolbar-right">
+
+    <!-- Cart -->
+    <button mat-icon-button matBadge=10 matBadgeColor="warn">
+      <mat-icon>shopping_cart</mat-icon>
+    </button>
+
+    <!-- ACCOUNT -->
+    <div class="account-wrapper">
+      <!-- Not logged in -->
+      <button mat-icon-button>
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <!-- Logged in -->
+      <button mat-icon-button [matMenuTriggerFor]="accountMenu" class="account-btn">
+        <mat-icon>account_circle</mat-icon>
+        <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #accountMenu="matMenu" class="account-menu">
+        <div class="user-email">
+          test@gmail.com
+        </div>
+
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          Profile
+        </button>
+
+        <button mat-menu-item>
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </mat-menu>
+    </div>
+
+  </div>
+  <!-- [End- Right Icons] -->
+
+</mat-toolbar>

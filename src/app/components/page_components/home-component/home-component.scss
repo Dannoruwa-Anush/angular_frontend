@@ -1,0 +1,76 @@
+.slideshow-container {
+  position: relative;
+  max-width: 100%;
+  height: 500px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.slide {
+  display: none;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.slide.active {
+  display: block;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fade effect */
+.fade {
+  animation: fadeEffect 1s;
+}
+
+@keyframes fadeEffect {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+
+/* Next & Previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  padding: 16px;
+  margin-top: -22px;
+  font-size: 24px;
+  color: white;
+  font-weight: bold;
+  user-select: none;
+  transition: 0.3s;
+}
+
+.next { right: 0; }
+.prev { left: 0; }
+
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.4);
+}
+
+.banner-content {
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  text-align: center;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .slideshow-container {
+    height: 220px;
+  }
+
+  .prev, .next {
+    font-size: 18px;
+    padding: 10px;
+  }
+}
+

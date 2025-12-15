@@ -1,1 +1,13 @@
-<p>home-component works!</p>
+<div class="slideshow-container">
+  <div class="slide fade" *ngFor="let img of images; let i = index" [class.active]="i === currentSlide">
+    <img [src]="img" alt="banner" />
+
+    <div class="banner-content">
+      <button mat-raised-button color="primary" (click)="goToProducts()">Shop Now</button>
+    </div>
+  </div>
+
+  <!-- Next-Prev Arrows -->
+  <a class="prev" (click)="prevSlide()">&#10094;</a>
+  <a class="next" (click)="nextSlide()">&#10095;</a>
+</div>

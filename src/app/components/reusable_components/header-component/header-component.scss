@@ -1,0 +1,109 @@
+.app-header {
+  background-color: #ffffff;
+  color: #000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+/* Desktop links */
+.desktop-links {
+  display: flex;
+  gap: 10px;
+}
+
+/* Mobile menu button hidden on desktop */
+.mobile-menu-btn {
+  display: none;
+}
+
+/* Push right icons */
+.toolbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  /* Style user email inside mat-menu */
+  .user-email {
+    display: block;
+    padding: 0 16px;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+/* Logo */
+.logo {
+  height: 40px;
+  margin-right: 16px;
+}
+
+/* Account section */
+.account-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.account-btn {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
+
+.dropdown-icon {
+  font-size: 20px;
+  margin-left: -4px;
+  opacity: 0.8;
+}
+
+/* --- Material Menu Styling --- */
+::ng-deep .mat-menu-panel {
+  min-width: 200px;
+
+  .mat-menu-item {
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+/* Dropdown menu enhancements */
+::ng-deep .account-menu {
+  min-width: 220px;
+}
+
+::ng-deep .account-menu .user-email {
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #3f51b5;
+  cursor: default;
+}
+
+/* --- RESPONSIVE BREAKPOINTS --- */
+@media (max-width: 768px) {
+
+  /* Hide desktop links */
+  .desktop-links {
+    display: none;
+  }
+
+  /* Show mobile menu */
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  /* Shrink logo */
+  .logo {
+    height: 32px;
+  }
+
+  /* Toolbar right icons spacing */
+  .toolbar-right {
+    gap: 4px;
+  }
+}
