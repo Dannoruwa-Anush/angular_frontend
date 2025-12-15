@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import { BrandModel } from '../../../models/api_models/brandModel';
 import { BrandService } from '../../../services/api_services/brandService';
@@ -42,6 +42,7 @@ export class ProductsComponent implements OnInit {
   searchText = '';
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private brandService: BrandService,
     private categoryService: CategoryService,
     private electronicItemService: ElectronicItemService,
@@ -79,6 +80,8 @@ export class ProductsComponent implements OnInit {
         console.log(res);
         this.electronicItems = res.items;
         this.totalCount = res.totalCount;
+
+        this.cdr.markForCheck();
       });
   }
 
