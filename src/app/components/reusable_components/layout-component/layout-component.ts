@@ -6,7 +6,6 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-layout-component',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     HeaderComponent,
     FooterComponent,
