@@ -1,15 +1,15 @@
 import { Injectable } from "@angular/core";
 
 import { CrudService } from "./core_services/crud-service";
-import { BrandModel } from "../../models/api_models/brandModel";
+import { CategoryModel } from "../../models/api_models/categoryModel";
 import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root',
 })
-export class BrandService extends CrudService<BrandModel> {
+export class CategoryService extends CrudService<CategoryModel> {
 
-  protected endpoint = 'brand';
+  protected endpoint = 'category';
 
   constructor(http: HttpClient) {
     super(http);
