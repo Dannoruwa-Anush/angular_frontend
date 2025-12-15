@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, OnInit, signal } from '@angular/core';
 
 import { BrandModel } from '../../../models/api_models/brandModel';
 import { BrandService } from '../../../services/api_services/brandService';
@@ -23,63 +23,75 @@ import { environment } from '../../../config/environment';
   templateUrl: './products-component.html',
   styleUrl: './products-component.scss',
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent {
 
   protected baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
-  // --------------------
-  // SIGNAL STATE
-  // --------------------
+  // -------------------------
+  // SOURCE SIGNALS
+  // -------------------------
+  pageNumber = signal(1);
+  pageSize = signal(10);
+
+  selectedBrandId = signal<number | undefined>(undefined);
+  selectedCategoryId = signal<number | undefined>(undefined);
+  searchText = signal('');
+
+  // -------------------------
+  // DATA SIGNALS
+  // -------------------------
   brands = signal<BrandModel[]>([]);
   categories = signal<CategoryModel[]>([]);
   electronicItems = signal<ElectronicItemModel[]>([]);
   totalCount = signal(0);
 
-  // pagination
-  pageNumber = 1;
-  pageSize = 10;
+  // -------------------------
+  // COMPUTED SIGNALS
+  // -------------------------
+  totalPages = computed(() =>
+    Math.ceil(this.totalCount() / this.pageSize())
+  );
 
-  // filters
-  selectedBrandId?: number;
-  selectedCategoryId?: number;
-  searchText = '';
+  requestParams = computed(() => ({
+    pageNumber: this.pageNumber(),
+    pageSize: this.pageSize(),
+    brandId: this.selectedBrandId(),
+    categoryId: this.selectedCategoryId(),
+    searchKey: this.searchText() || undefined,
+  }));
 
   constructor(
     private brandService: BrandService,
     private categoryService: CategoryService,
     private electronicItemService: ElectronicItemService,
     private router: Router
-  ) { }
+  ) {
 
-  ngOnInit(): void {
+    // -------------------------
+    // EFFECT:
+    // -------------------------
+    effect(() => {
+      this.loadElectronicItems();
+    });
+
+    // initial static loads
     this.loadBrands();
     this.loadCategories();
-    this.loadProducts();
   }
 
-  // --------------------
+  // -------------------------
   // LOADERS
-  // --------------------
-  loadBrands() {
-    this.brandService.getAll().subscribe(res => {
-      this.brands.set(res);
-    });
-  }
+  // -------------------------
+  private loadElectronicItems(): void {
+    const params = this.requestParams();
 
-  loadCategories() {
-    this.categoryService.getAll().subscribe(res => {
-      this.categories.set(res);
-    });
-  }
-
-  loadProducts() {
     this.electronicItemService
       .getElectronicItemPaged(
-        this.pageNumber,
-        this.pageSize,
-        this.selectedCategoryId,
-        this.selectedBrandId,
-        this.searchText || undefined
+        params.pageNumber,
+        params.pageSize,
+        params.categoryId,
+        params.brandId,
+        params.searchKey
       )
       .subscribe(res => {
         this.electronicItems.set(res.items);
@@ -87,50 +99,54 @@ export class ProductsComponent implements OnInit {
       });
   }
 
-  // --------------------
+  private loadBrands(): void {
+    this.brandService.getAll().subscribe(res => {
+      this.brands.set(res);
+    });
+  }
+
+  private loadCategories(): void {
+    this.categoryService.getAll().subscribe(res => {
+      this.categories.set(res);
+    });
+  }
+
+  // -------------------------
   // FILTER HANDLERS
-  // --------------------
+  // -------------------------
   onBrandSelect(brandId?: number) {
-    this.selectedBrandId = brandId;
-    this.pageNumber = 1;
-    this.loadProducts();
+    this.selectedBrandId.set(brandId);
+    this.pageNumber.set(1);
   }
 
   onCategorySelect(categoryId?: number) {
-    this.selectedCategoryId = categoryId;
-    this.pageNumber = 1;
-    this.loadProducts();
+    this.selectedCategoryId.set(categoryId);
+    this.pageNumber.set(1);
   }
 
-  onSearch() {
-    this.pageNumber = 1;
-    this.loadProducts();
+  onSearch(text: string) {
+    this.searchText.set(text);
+    this.pageNumber.set(1);
   }
 
-  // --------------------
+  // -------------------------
   // PAGINATION
-  // --------------------
-  get totalPages(): number {
-    return Math.ceil(this.totalCount() / this.pageSize);
-  }
-
+  // -------------------------
   nextPage() {
-    if (this.pageNumber < this.totalPages) {
-      this.pageNumber++;
-      this.loadProducts();
+    if (this.pageNumber() < this.totalPages()) {
+      this.pageNumber.update(p => p + 1);
     }
   }
 
   previousPage() {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
-      this.loadProducts();
+    if (this.pageNumber() > 1) {
+      this.pageNumber.update(p => p - 1);
     }
   }
 
-  // --------------------
+  // -------------------------
   // UI HELPERS
-  // --------------------
+  // -------------------------
   openProduct(id: number) {
     this.router.navigate(['/product', id]);
   }
@@ -139,11 +155,9 @@ export class ProductsComponent implements OnInit {
     if (item.electronicItemImageUrl) {
       return item.electronicItemImageUrl;
     }
-
     if (item.electronicItemImage) {
       return `${this.baseUrl}/${item.electronicItemImage}`;
     }
-
     return 'assets/images/no-image.png';
   }
 }
