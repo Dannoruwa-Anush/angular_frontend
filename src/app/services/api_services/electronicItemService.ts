@@ -19,9 +19,13 @@ export class ElectronicItemService extends CrudService<ElectronicItemModel> {
   getElectronicItemPaged(
     pageNumber: number,
     pageSize: number,
+    categoryId?: number,
+    brandId?: number,
     searchKey?: string
   ) {
     return this.getPaged(pageNumber, pageSize, {
+      categoryId,
+      brandId,
       searchKey
     });
   }
