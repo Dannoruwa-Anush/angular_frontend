@@ -21,7 +21,7 @@ export class ShoppingCartComponent {
   total!: Signal<number>;
 
   // Mat table columns
-  displayedColumns = ['product', 'price', 'quantity', 'subtotal', 'action']; 
+  displayedColumns = ['index', 'product', 'price', 'quantity', 'subtotal', 'action']; 
 
   constructor(
     private cartService: ShoppingCartService
