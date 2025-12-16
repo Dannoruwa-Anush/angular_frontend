@@ -9,6 +9,7 @@ import { ApiResponseModel } from "../../models/api_models/core_api_models/apiRes
 import { RegisterRequestModel } from "../../models/api_models/core_api_models/auth_models/request_models/registerRequestModel";
 import { Router } from "@angular/router";
 import { UserRoleEnum } from "../../config/enums/userRoleEnum";
+import { ShoppingCartService } from "../ui_service/shoppingCartService";
 
 const AUTH_KEY = 'auth_session';
 
@@ -33,7 +34,8 @@ export class AuthSessionService {
 
     constructor(
         private http: HttpClient,
-        private router: Router
+        private router: Router,
+        private cartService: ShoppingCartService
     ) {
 
         // Persist session
@@ -116,6 +118,7 @@ export class AuthSessionService {
     }
 
     logout(): void {
+        this.cartService.clearCart();
         this.session.set(null);
         this.router.navigate(['/login']);
     }
