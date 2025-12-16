@@ -6,6 +6,10 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+//------ [Start : import custom global styles] -------
+@use 'app/common_styles/component_styles';
+//------ [End : import custom global styles] ---------
+
 html {
   @include mat.theme((
     color: (
