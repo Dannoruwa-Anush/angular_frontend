@@ -77,7 +77,7 @@ export class AuthSessionService {
 
     // ---------- API ----------
     // LOGIN
-    login(payload: LoginRequestModel) {
+    login(payload: LoginRequestModel): Observable<AuthSessionModel> {
         this.loading.set(true);
         this.messageService.clear();
 
@@ -113,7 +113,7 @@ export class AuthSessionService {
     }
 
     // REGISTER
-    register(payload: RegisterRequestModel) {
+    register(payload: RegisterRequestModel): Observable<void> {
         this.loading.set(true);
         this.messageService.clear();
 
