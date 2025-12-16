@@ -4,6 +4,8 @@ import { HomeComponent } from './components/page_components/home-component/home-
 import { ProductsComponent } from './components/page_components/products-component/products-component';
 import { ProductComponent } from './components/page_components/product-component/product-component';
 import { ShoppingCartComponent } from './components/page_components/shopping-cart-component/shopping-cart-component';
+import { LoginComponent } from './components/page_components/auth_components/login-component/login-component';
+import { RegisterComponent } from './components/page_components/auth_components/register-component/register-component';
 
 export const routes: Routes = [
     {
@@ -16,6 +18,8 @@ export const routes: Routes = [
             { path: 'products', component: ProductsComponent },
             { path: 'product/:id', component: ProductComponent },
             { path: 'shoppingCart', component: ShoppingCartComponent},
+            { path: 'login', component: LoginComponent },
+            { path: 'register', component: RegisterComponent },
         ]
     }
 ];
