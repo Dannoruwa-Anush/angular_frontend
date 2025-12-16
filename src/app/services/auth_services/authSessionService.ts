@@ -4,7 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../config/environment";
 import { AuthSessionModel } from "../../models/api_models/core_api_models/auth_models/authSessionModel";
 import { LoginRequestModel } from "../../models/api_models/core_api_models/auth_models/request_models/loginRequestModel";
-import { map, Observable } from "rxjs";
+import { catchError, EMPTY, map, Observable } from "rxjs";
 import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
 import { RegisterRequestModel } from "../../models/api_models/core_api_models/auth_models/request_models/registerRequestModel";
 import { Router } from "@angular/router";
@@ -22,6 +22,8 @@ export class AuthSessionService {
 
     // ---------- STATE ----------
     private session = signal<AuthSessionModel | null>(this.loadSession());
+    loading = signal(false);
+    error = signal<string | null>(null);
 
     // ---------- DERIVED ----------
     isLoggedIn = computed(() => !!this.session());
@@ -33,7 +35,8 @@ export class AuthSessionService {
         private http: HttpClient,
         private router: Router
     ) {
-        // Persist session automatically
+
+        // Persist session
         effect(() => {
             const value = this.session();
             value
@@ -41,28 +44,10 @@ export class AuthSessionService {
                 : localStorage.removeItem(AUTH_KEY);
         });
 
-        // Centralized role-based navigation
+        // Navigate AFTER login/logout only
         effect(() => {
-            const session = this.session();
-
-            if (!session) {
-                this.router.navigate(['/login']);
-                return;
-            }
-
-            switch (session.role) {
-                case UserRoleEnum.Admin:
-                case UserRoleEnum.Employee:
-                    this.router.navigate(['/dashboard']);
-                    break;
-
-                case UserRoleEnum.Customer:
-                    this.router.navigate(['/']);
-                    break;
-
-                default:
-                    this.router.navigate(['/login']);
-            }
+            if (!this.session()) return;
+            this.navigateByRole(this.session()!.role);
         });
     }
 
@@ -72,8 +57,25 @@ export class AuthSessionService {
         return data ? JSON.parse(data) : null;
     }
 
+    private navigateByRole(role: UserRoleEnum): void {
+        switch (role) {
+            case UserRoleEnum.Admin:
+            case UserRoleEnum.Employee:
+                this.router.navigate(['/dashboard']);
+                break;
+            case UserRoleEnum.Customer:
+                this.router.navigate(['/']);
+                break;
+            default:
+                this.router.navigate(['/login']);
+        }
+    }
+
     // ---------- API ----------
     login(payload: LoginRequestModel): Observable<AuthSessionModel> {
+        this.loading.set(true);
+        this.error.set(null);
+
         return this.http
             .post<ApiResponseModel<any>>(`${this.baseUrl}/login`, payload)
             .pipe(
@@ -83,28 +85,43 @@ export class AuthSessionService {
                         email: res.data.email,
                         role: res.data.role as UserRoleEnum
                     };
-
                     this.session.set(session);
+                    this.loading.set(false);
                     return session;
+                }),
+                catchError(() => {
+                    this.loading.set(false);
+                    this.error.set('Invalid email or password');
+                    return EMPTY;
                 })
             );
     }
 
     register(payload: RegisterRequestModel): Observable<void> {
+        this.loading.set(true);
+        this.error.set(null);
+
         return this.http
-            .post<ApiResponseModel<void>>(
-                `${this.baseUrl}/register`,
-                payload
-            )
-            .pipe(map(() => void 0));
+            .post<ApiResponseModel<void>>(`${this.baseUrl}/register`, payload)
+            .pipe(
+                map(() => {
+                    this.loading.set(false);
+                }),
+                catchError(() => {
+                    this.loading.set(false);
+                    this.error.set('Registration failed');
+                    return EMPTY;
+                })
+            );
     }
 
     logout(): void {
         this.session.set(null);
+        this.router.navigate(['/login']);
     }
 
     hasRole(allowed: UserRoleEnum[]): boolean {
         const role = this.role();
-        return role ? allowed.includes(role) : false;
+        return role !== null && allowed.includes(role);
     }
 }
