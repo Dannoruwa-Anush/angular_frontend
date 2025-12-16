@@ -1,5 +1,4 @@
 import { computed, effect, Injectable, signal } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
 import { ShoppingCartItemModel } from "../../models/ui_models/shoppingCartItemModel";
 
 const CART_KEY = 'cart_items';
@@ -12,7 +11,9 @@ export class ShoppingCartService {
     private cart = signal<ShoppingCartItemModel[]>(this.loadCart());
 
     // ---------- DERIVED STATE ----------
-    cartCount = computed(() =>
+    cartItemCount = computed(() => this.cart().length);
+
+    cartQuantityCount = computed(() =>
         this.cart().reduce((sum, item) => sum + item.quantity, 0)
     );
 
