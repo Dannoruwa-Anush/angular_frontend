@@ -19,6 +19,10 @@ export class ShoppingCartService {
 
     cartItems = computed(() => this.cart());
 
+    cartTotal = computed(() =>
+        this.cart().reduce((sum, item) => sum + item.subtotal, 0)
+    );
+
     constructor() {
         // persist cart automatically
         effect(() => {
