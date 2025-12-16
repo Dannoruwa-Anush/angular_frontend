@@ -6,6 +6,7 @@ import { AuthSessionService } from '../../../../services/auth_services/authSessi
 import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 import { RegisterRequestModel } from '../../../../models/api_models/core_api_models/auth_models/request_models/registerRequestModel';
 import { CommonModule } from '@angular/common';
+import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
 
 @Component({
   selector: 'app-register-component',
@@ -47,7 +48,8 @@ export class RegisterComponent {
   });
 
   constructor(
-    private authSessionService: AuthSessionService
+    private authSessionService: AuthSessionService,
+    public messageService: SystemMessageService
   ) { 
     this.loading = this.authSessionService.loading;
     this.error = this.authSessionService.error;

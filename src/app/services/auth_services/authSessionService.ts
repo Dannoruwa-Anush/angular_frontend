@@ -1,6 +1,6 @@
 import { computed, effect, Injectable, signal } from "@angular/core";
 
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { environment } from "../../config/environment";
 import { AuthSessionModel } from "../../models/api_models/core_api_models/auth_models/authSessionModel";
 import { LoginRequestModel } from "../../models/api_models/core_api_models/auth_models/request_models/loginRequestModel";
@@ -10,6 +10,7 @@ import { RegisterRequestModel } from "../../models/api_models/core_api_models/au
 import { Router } from "@angular/router";
 import { UserRoleEnum } from "../../config/enums/userRoleEnum";
 import { ShoppingCartService } from "../ui_service/shoppingCartService";
+import { SystemMessageService } from "../ui_service/systemMessageService";
 
 const AUTH_KEY = 'auth_session';
 
@@ -35,7 +36,8 @@ export class AuthSessionService {
     constructor(
         private http: HttpClient,
         private router: Router,
-        private cartService: ShoppingCartService
+        private cartService: ShoppingCartService,
+        private messageService: SystemMessageService
     ) {
 
         // Persist session
@@ -74,9 +76,10 @@ export class AuthSessionService {
     }
 
     // ---------- API ----------
-    login(payload: LoginRequestModel): Observable<AuthSessionModel> {
+    // LOGIN
+    login(payload: LoginRequestModel) {
         this.loading.set(true);
-        this.error.set(null);
+        this.messageService.clear();
 
         return this.http
             .post<ApiResponseModel<any>>(`${this.baseUrl}/login`, payload)
@@ -87,36 +90,58 @@ export class AuthSessionService {
                         email: res.data.email,
                         role: res.data.role as UserRoleEnum
                     };
+
                     this.session.set(session);
                     this.loading.set(false);
+
+                    // SUCCESS MESSAGE FROM API
+                    this.messageService.success(res.message || 'Login successful');
+
                     return session;
                 }),
-                catchError(() => {
+                catchError((err: HttpErrorResponse) => {
                     this.loading.set(false);
-                    this.error.set('Invalid email or password');
+
+                    // ERROR MESSAGE FROM API
+                    this.messageService.error(
+                        err.error?.message ?? 'Invalid email or password'
+                    );
+
                     return EMPTY;
                 })
             );
     }
 
-    register(payload: RegisterRequestModel): Observable<void> {
+    // REGISTER
+    register(payload: RegisterRequestModel) {
         this.loading.set(true);
-        this.error.set(null);
+        this.messageService.clear();
 
         return this.http
             .post<ApiResponseModel<void>>(`${this.baseUrl}/register`, payload)
             .pipe(
-                map(() => {
+                map(res => {
                     this.loading.set(false);
+
+                    // SUCCESS MESSAGE
+                    this.messageService.success(
+                        res.message || 'Registration successful'
+                    );
                 }),
-                catchError(() => {
+                catchError((err: HttpErrorResponse) => {
                     this.loading.set(false);
-                    this.error.set('Registration failed');
+
+                    // ERROR MESSAGE FROM API
+                    this.messageService.error(
+                        err.error?.message ?? 'Registration failed'
+                    );
+
                     return EMPTY;
                 })
             );
     }
 
+    // LOGOUT
     logout(): void {
         this.cartService.clearCart();
         this.session.set(null);

@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
 import { LoginRequestModel } from '../../../../models/api_models/core_api_models/auth_models/request_models/loginRequestModel';
+import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
 
 @Component({
   selector: 'app-login-component',
@@ -38,7 +39,8 @@ export class LoginComponent {
   });
 
   constructor(
-    private authSessionService: AuthSessionService
+    private authSessionService: AuthSessionService,
+    public messageService: SystemMessageService
   ) {
     this.loading = this.authSessionService.loading;
     this.error = this.authSessionService.error;

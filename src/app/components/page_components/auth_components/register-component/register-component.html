@@ -25,9 +25,14 @@
         </mat-form-field>
 
         <!-- ERROR -->
-        <mat-error *ngIf="error()">
-            {{ error() }}
+        <mat-error *ngIf="messageService.message()?.type === 'error'">
+            {{ messageService.message()?.text }}
         </mat-error>
+
+        <!-- SUCCESS -->
+        <div class="success-msg" *ngIf="messageService.message()?.type === 'success'">
+            {{ messageService.message()?.text }}
+        </div>
 
         <!-- SUBMIT -->
         <button mat-raised-button color="primary" class="full-width" (click)="register()"
