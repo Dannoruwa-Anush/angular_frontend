@@ -6,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../config/environment';
 import { ElectronicItemModel } from '../../../models/api_models/electronicItemModel';
 import { ElectronicItemService } from '../../../services/api_services/electronicItemService';
+import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
 
 @Component({
   selector: 'app-product-component',
@@ -32,6 +33,7 @@ export class ProductComponent {
 
   constructor(
     private electronicItemService: ElectronicItemService,
+    private shoppingCartService: ShoppingCartService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -93,18 +95,9 @@ export class ProductComponent {
   // ---------- Cart operation ----------
   addToCart(): void {
     const product = this.electronicItem();
+    if (!product) return;
 
-    if (!product) {
-      return;
-    }
-
-    // Validate quantity
-    if (this.quantity() < 1 || this.quantity() > product.qoh) {
-      alert('Invalid quantity');
-      return;
-    }
-
-    const cartItem = {
+    const result = this.shoppingCartService.addToCart({
       productId: product.electronicItemID!,
       name: product.electronicItemName,
       imageUrl: this.getImageUrl(product),
@@ -112,10 +105,13 @@ export class ProductComponent {
       quantity: this.quantity(),
       maxStock: product.qoh,
       subtotal: product.price * this.quantity(),
-    };
+    });
 
-    console.log('Added to cart:', cartItem);
+    if (!result.success) {
+      alert(result.message); // TODO: Change to notification later
+      return;
+    }
 
-    // TODO: Send to CartService
+    this.router.navigate(['/shoppingCart']);
   }
 }
