@@ -3,10 +3,13 @@ import { Component, Signal } from '@angular/core';
 import { MaterialModule } from '../../../custom_modules/material/material-module';
 import { RouterModule } from '@angular/router';
 import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
+import { AuthSessionService } from '../../../services/auth_services/authSessionService';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header-component',
   imports: [
+    CommonModule,
     MaterialModule,
     RouterModule,
   ],
@@ -21,8 +24,13 @@ export class HeaderComponent {
   cartItemCount!: Signal<number>;
 
   constructor(
-    private shoppingCartService: ShoppingCartService
+    private shoppingCartService: ShoppingCartService,
+    public authSessionService: AuthSessionService,
   ){
     this.cartItemCount = this.shoppingCartService.cartItemCount;
+  }
+
+  logout() {
+    this.authSessionService.logout();
   }
 }
