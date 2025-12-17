@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, Signal } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -17,24 +17,20 @@ import { DASHBOARD_NAV_ITEM_PERMISSIONS } from '../../../../config/DashboardNavI
   templateUrl: './base-dashboard-component.html',
   styleUrl: './base-dashboard-component.scss',
 })
-export class BaseDashboardComponent implements OnInit {
+export class BaseDashboardComponent {
 
-  navItemPermission: DashboardNavItemPermissionDataModel[] = [];
+  navItems!: Signal<DashboardNavItemPermissionDataModel[]>;
 
   constructor(
-    private authSessionService: AuthSessionService,
-  ) { }
+    private authSessionService: AuthSessionService
+  ) {
+    this.navItems = computed(() => {
+      const role = this.authSessionService.role();
+      if (!role) return [];
 
-  ngOnInit(): void {
-    const role = this.authSessionService.role(); 
-
-    if (!role) {
-      this.navItemPermission = [];
-      return;
-    }
-
-    this.navItemPermission = DASHBOARD_NAV_ITEM_PERMISSIONS.filter(
-      item => item.allowedRoles.includes(role)
-    );
+      return DASHBOARD_NAV_ITEM_PERMISSIONS.filter(item =>
+        item.allowedRoles.includes(role)
+      );
+    });
   }
 }
