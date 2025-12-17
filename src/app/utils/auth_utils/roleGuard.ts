@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 
-import { AuthSessionService } from "../services/auth_services/authSessionService";
+import { AuthSessionService } from "../../services/auth_services/authSessionService";
 import { ActivatedRouteSnapshot, Router } from "@angular/router";
-import { UserRoleEnum } from "../config/enums/userRoleEnum";
+import { UserRoleEnum } from "../../config/enums/userRoleEnum";
 
 @Injectable({ providedIn: 'root' })
 export class RoleGuard {

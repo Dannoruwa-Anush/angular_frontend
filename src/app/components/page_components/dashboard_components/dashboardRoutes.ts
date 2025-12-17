@@ -1,6 +1,6 @@
 import { Routes } from "@angular/router";
 import { BaseDashboardComponent } from "./base-dashboard-component/base-dashboard-component";
-import { RoleGuard } from "../../../util/roleGuard";
+import { RoleGuard } from "../../../utils/auth_utils/roleGuard";
 import { UserRoleEnum } from "../../../config/enums/userRoleEnum";
 import { DASHBOARD_NAV_ITEM_PERMISSIONS } from "../../../config/DashboardNavItemPermission";
 

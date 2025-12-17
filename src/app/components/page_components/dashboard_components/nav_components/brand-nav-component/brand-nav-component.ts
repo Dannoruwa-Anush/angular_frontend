@@ -7,7 +7,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
-import { CrudOperationConfirmationUiHelper } from '../../../../../util/crudOperationConfirmationUiHelper';
+import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 
 @Component({
