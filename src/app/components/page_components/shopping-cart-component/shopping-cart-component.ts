@@ -18,11 +18,8 @@ import { SystemMessageService } from '../../../services/ui_service/systemMessage
 })
 export class ShoppingCartComponent {
 
-  // ---------- STATE ----------
   cartItems!: Signal<ShoppingCartItemModel[]>;
   total!: Signal<number>;
-
-  // Mat table columns
   displayedColumns = ['index', 'product', 'price', 'quantity', 'subtotal', 'action'];
 
   constructor(
@@ -36,9 +33,7 @@ export class ShoppingCartComponent {
 
   updateQty(productId: number, qty: number) {
     const result = this.cartService.updateQuantity(productId, qty);
-    if (!result.success) {
-      alert(result.message);
-    }
+    if (!result.success) this.messageService.error(result.message ?? 'Invalid quantity');
   }
 
   remove(productId: number) {
@@ -54,7 +49,6 @@ export class ShoppingCartComponent {
       this.messageService.info('Item removed from cart');
     });
   }
-
 
   cancelCart() {
     this.confirmService.confirm({

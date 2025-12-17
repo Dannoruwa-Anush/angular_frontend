@@ -1,4 +1,5 @@
-import { Component, computed, effect, Signal, signal } from '@angular/core';
+import { Component, computed, Signal, signal } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
@@ -7,7 +8,6 @@ import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 import { RegisterRequestModel } from '../../../../models/api_models/core_api_models/auth_models/request_models/registerRequestModel';
 import { CommonModule } from '@angular/common';
 import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
-import { SystemMessageModel } from '../../../../models/ui_models/systemMessageModel';
 
 @Component({
   selector: 'app-register-component',
@@ -31,7 +31,6 @@ export class RegisterComponent {
 
   // ---------- UI STATE ----------
   loading!: Signal<boolean>;
-  message!: Signal<SystemMessageModel | null>;
 
   // ---------- VALIDATION ----------
   isFormValid = computed(() => {
@@ -50,18 +49,9 @@ export class RegisterComponent {
 
   constructor(
     private authSessionService: AuthSessionService,
-    public messageService: SystemMessageService
-  ) { 
+    private messageService: SystemMessageService
+  ) {
     this.loading = this.authSessionService.loading;
-    this.message = this.messageService.message;
-
-    // clear form after success
-    effect(() => {
-      const msg = this.message();
-      if (msg?.type === 'success') {
-        this.clearForm();
-      }
-    });
   }
 
   register(): void {
@@ -73,7 +63,16 @@ export class RegisterComponent {
       role: UserRoleEnum.Customer
     };
 
-    this.authSessionService.register(payload).subscribe();
+    this.authSessionService.register(payload).subscribe({
+      next: () => {
+        this.clearForm();
+        this.messageService.success('Account created successfully');
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Registration failed';
+        this.messageService.error(msg);
+      }
+    });
   }
 
   private clearForm() {

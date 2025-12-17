@@ -1,4 +1,5 @@
 import { Component, effect, signal } from '@angular/core';
+
 import { MaterialModule } from '../../../custom_modules/material/material-module';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -42,14 +43,13 @@ export class ProductComponent {
     private messageService: SystemMessageService
   ) {
 
+    // Load product on route change
     effect(() => {
       const id = Number(this.route.snapshot.paramMap.get('id'));
-
       if (!id) {
         this.router.navigate(['/']);
         return;
       }
-
       this.loadElectronicItemById(id);
     });
   }
@@ -57,7 +57,6 @@ export class ProductComponent {
   // ---------- LOADERS ----------
   private loadElectronicItemById(id: number): void {
     this.loading.set(true);
-
     this.electronicItemService.getById(id).subscribe({
       next: (item) => {
         this.electronicItem.set(item);
@@ -73,32 +72,22 @@ export class ProductComponent {
 
   // ---------- HELPERS ----------
   getImageUrl(item: ElectronicItemModel): string {
-    if (item.electronicItemImageUrl) {
-      return item.electronicItemImageUrl;
-    }
-    if (item.electronicItemImage) {
-      return `${this.baseUrl}/${item.electronicItemImage}`;
-    }
+    if (item.electronicItemImageUrl) return item.electronicItemImageUrl;
+    if (item.electronicItemImage) return `${this.baseUrl}/${item.electronicItemImage}`;
     return 'assets/images/no-image.png';
   }
 
   increaseQuantity() {
     const product = this.electronicItem();
     if (!product) return;
-
-    if (this.quantity() < product.qoh) {
-      this.quantity.update(q => q + 1);
-    }
+    if (this.quantity() < product.qoh) this.quantity.update(q => q + 1);
   }
 
   decreaseQuantity() {
-    if (this.quantity() > 1) {
-      this.quantity.update(q => q - 1);
-    }
+    if (this.quantity() > 1) this.quantity.update(q => q - 1);
   }
 
-  // ---------- Cart operation ----------
-  // UI confirmation
+  // ---------- Cart operation with confirmation ----------
   addToCart(): void {
     const product = this.electronicItem();
     if (!product) return;
@@ -109,13 +98,10 @@ export class ProductComponent {
       confirmText: 'Add',
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
-      if (confirmed) {
-        this.performAddToCart();
-      }
+      if (confirmed) this.performAddToCart();
     });
   }
 
-  // add to cart after confirmation
   private performAddToCart(): void {
     const product = this.electronicItem();
     if (!product) return;
@@ -136,9 +122,6 @@ export class ProductComponent {
     }
 
     this.messageService.success('Item added to cart successfully');
-    // clear message BEFORE route change
-    this.messageService.clear();
-    
     this.router.navigate(['/shoppingCart']);
   }
 }

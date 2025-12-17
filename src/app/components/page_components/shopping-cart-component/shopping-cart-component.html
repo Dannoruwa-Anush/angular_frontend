@@ -32,7 +32,8 @@
             <ng-container matColumnDef="quantity">
                 <th mat-header-cell *matHeaderCellDef>Quantity</th>
                 <td mat-cell *matCellDef="let item" data-label="Quantity">
-                    <input matInput type="number" class="qty-input" min="1" [max]="item.maxStock" [value]="item.quantity"
+                    <input matInput type="number" class="qty-input" min="1" [max]="item.maxStock"
+                        [value]="item.quantity"
                         (change)="updateQty(item.productId, $any($event.target).valueAsNumber)" />
                 </td>
             </ng-container>

@@ -1,81 +1,60 @@
 <div class="app-component-wrapper">
-<div class="product-details-row" *ngIf="electronicItem() as product">
+  <div class="product-details-row" *ngIf="electronicItem() as product">
 
-  <!-- LEFT COLUMN: Image -->
-  <div class="product-image-col">
-    <img
-      [src]="getImageUrl(product)"
-      [alt]="product.electronicItemName"
-    />
-  </div>
+    <!-- LEFT COLUMN: Image -->
+    <div class="product-image-col">
+      <img [src]="getImageUrl(product)" [alt]="product.electronicItemName" />
+    </div>
 
-  <!-- RIGHT COLUMN: Product Details -->
-  <div class="product-info-col">
-    <h2>{{ product.electronicItemName }}</h2>
+    <!-- RIGHT COLUMN: Product Details -->
+    <div class="product-info-col">
+      <h2>{{ product.electronicItemName }}</h2>
 
-    <p>
-      <strong>Brand:</strong>
-      {{ product.brandResponseDto?.brandName }}
-    </p>
+      <p>
+        <strong>Brand:</strong>
+        {{ product.brandResponseDto?.brandName }}
+      </p>
 
-    <p>
-      <strong>Category:</strong>
-      {{ product.categoryResponseDto?.categoryName }}
-    </p>
+      <p>
+        <strong>Category:</strong>
+        {{ product.categoryResponseDto?.categoryName }}
+      </p>
 
-    <p>
-      <strong>Price:</strong>
-      Rs. {{ product.price | number }}
-    </p>
+      <p>
+        <strong>Price:</strong>
+        Rs. {{ product.price | number }}
+      </p>
 
-    <!-- ACTIONS -->
-    <div class="product-actions">
+      <!-- ACTIONS -->
+      <div class="product-actions">
 
-      <!-- Row 1: Quantity Selector -->
-      <div class="quantity-selector">
-        <button
-          mat-mini-fab
-          color="primary"
-          (click)="decreaseQuantity()"
-        >
-          -
+        <!-- Row 1: Quantity Selector -->
+        <div class="quantity-selector">
+          <button mat-mini-fab color="primary" (click)="decreaseQuantity()">
+            -
+          </button>
+
+          <input type="number" [ngModel]="quantity()" (ngModelChange)="quantity.set($event)" [min]="1"
+            [max]="product.qoh" />
+
+          <button mat-mini-fab color="primary" (click)="increaseQuantity()">
+            +
+          </button>
+        </div>
+
+        <!-- Row 2: Add to Cart -->
+        <button class="add-to-cart-btn" mat-raised-button color="accent" [disabled]="product.qoh < 1"
+          (click)="addToCart()">
+          {{ product.qoh > 0 ? 'Add to Cart' : 'Out of Stock' }}
         </button>
 
-        <input
-          type="number"
-          [ngModel]="quantity()"
-          (ngModelChange)="quantity.set($event)"
-          [min]="1"
-          [max]="product.qoh"
-        />
-
-        <button
-          mat-mini-fab
-          color="primary"
-          (click)="increaseQuantity()"
-        >
-          +
-        </button>
       </div>
-
-      <!-- Row 2: Add to Cart -->
-      <button
-        class="add-to-cart-btn"
-        mat-raised-button
-        color="accent"
-        [disabled]="product.qoh < 1"
-        (click)="addToCart()"
-      >
-        {{ product.qoh > 0 ? 'Add to Cart' : 'Out of Stock' }}
-      </button>
-
     </div>
   </div>
-</div>
 
-<!-- Loading fallback -->
-<div *ngIf="!electronicItem()">
-  <p>Loading product details...</p>
-</div>
+  <!-- Loading fallback -->
+  <div *ngIf="!electronicItem()">
+    <p>Loading product details...</p>
+  </div>
 
 </div>

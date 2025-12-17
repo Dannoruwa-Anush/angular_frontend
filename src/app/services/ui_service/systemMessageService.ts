@@ -1,46 +1,40 @@
-import { Injectable, signal } from "@angular/core";
+import { Injectable } from "@angular/core";
 
-import { SystemMessageModel } from "../../models/ui_models/systemMessageModel";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({ providedIn: 'root' })
 export class SystemMessageService {
 
-  private _message = signal<SystemMessageModel | null>(null);
-  message = this._message.asReadonly();
+  constructor(private snackBar: MatSnackBar) { }
 
-  private timeoutId: number | null = null;
-
-  success(text: string, duration = 500) {
-    this.setMessage({ type: 'success', text }, duration);
+  success(message: string, duration = 3000) {
+    this.snackBar.open(message, 'OK', {
+      duration,
+      panelClass: ['snackbar-success'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top'
+    });
   }
 
-  error(text: string, duration = 1000) {
-    this.setMessage({ type: 'error', text }, duration);
+  error(message: string, duration = 4000) {
+    this.snackBar.open(message, 'Close', {
+      duration,
+      panelClass: ['snackbar-error'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top'
+    });
   }
 
-  info(text: string, duration = 1000) {
-    this.setMessage({ type: 'info', text }, duration);
+  info(message: string, duration = 3000) {
+    this.snackBar.open(message, 'OK', {
+      duration,
+      panelClass: ['snackbar-info'],
+      horizontalPosition: 'right',
+      verticalPosition: 'top'
+    });
   }
 
   clear() {
-    if (this.timeoutId !== null) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
-    }
-    this._message.set(null);
-  }
-
-  private setMessage(message: SystemMessageModel, duration: number) {
-    // cancel any existing message
-    this.clear();
-
-    // set new message
-    this._message.set(message);
-
-    // auto-clear after timeout
-    this.timeoutId = window.setTimeout(() => {
-      this._message.set(null);
-      this.timeoutId = null;
-    }, duration);
+    this.snackBar.dismiss();
   }
 }

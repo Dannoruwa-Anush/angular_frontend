@@ -1,3 +1,18 @@
-.success-msg {
-  color: green;
+.snackbar-success {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.snackbar-error {
+  background: #c62828;
+  color: #fff;
+}
+
+.snackbar-info {
+  background: #0277bd;
+  color: #fff;
+}
+
+.mat-mdc-snack-bar-action {
+  color: #fff;
 }

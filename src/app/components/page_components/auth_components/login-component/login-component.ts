@@ -1,12 +1,12 @@
+import { Component, computed, signal, Signal, } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, signal, Signal, } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
 import { LoginRequestModel } from '../../../../models/api_models/core_api_models/auth_models/request_models/loginRequestModel';
 import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
-import { SystemMessageModel } from '../../../../models/ui_models/systemMessageModel';
 
 @Component({
   selector: 'app-login-component',
@@ -28,7 +28,6 @@ export class LoginComponent {
 
   // ---------- UI STATE ----------
   loading!: Signal<boolean>;
-  message!: Signal<SystemMessageModel | null>;
 
   // ---------- VALIDATION ----------
   isFormValid = computed(() => {
@@ -41,18 +40,9 @@ export class LoginComponent {
 
   constructor(
     private authSessionService: AuthSessionService,
-    public messageService: SystemMessageService
+    private messageService: SystemMessageService
   ) {
     this.loading = this.authSessionService.loading;
-    this.message = this.messageService.message;
-
-    // clear form after success
-    effect(() => {
-      const msg = this.message();
-      if (msg?.type === 'success') {
-        this.clearForm();
-      }
-    });
   }
 
   login(): void {
@@ -63,7 +53,16 @@ export class LoginComponent {
       password: this.password()
     };
 
-    this.authSessionService.login(payload).subscribe();
+    this.authSessionService.login(payload).subscribe({
+      next: () => {
+        this.clearForm();
+        this.messageService.success('Logged in successfully');
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Login failed';
+        this.messageService.error(msg);
+      }
+    });
   }
 
   private clearForm() {

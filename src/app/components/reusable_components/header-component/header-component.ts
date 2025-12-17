@@ -6,6 +6,7 @@ import { ShoppingCartService } from '../../../services/ui_service/shoppingCartSe
 import { AuthSessionService } from '../../../services/auth_services/authSessionService';
 import { CommonModule } from '@angular/common';
 import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
+import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
 
 @Component({
   selector: 'app-header-component',
@@ -27,7 +28,8 @@ export class HeaderComponent {
   constructor(
     private shoppingCartService: ShoppingCartService,
     public authSessionService: AuthSessionService,
-    private confirmService: SystemOperationConfirmService
+    private confirmService: SystemOperationConfirmService,
+    private messageService: SystemMessageService
   ) {
     this.cartItemCount = this.shoppingCartService.cartItemCount;
   }
@@ -37,10 +39,12 @@ export class HeaderComponent {
     this.confirmService.confirm({
       title: 'Logout',
       message: 'Are you sure you want to logout?',
-      confirmText: 'Logout'
+      confirmText: 'Logout',
+      cancelText: 'Cancel'
     }).subscribe(confirmed => {
       if (confirmed) {
         this.authSessionService.logout();
+        this.messageService.success('Logged out successfully');
       }
     });
   }
