@@ -8,19 +8,39 @@ export class SystemMessageService {
   private _message = signal<SystemMessageModel | null>(null);
   message = this._message.asReadonly();
 
-  success(text: string) {
-    this._message.set({ type: 'success', text });
+  private timeoutId: number | null = null;
+
+  success(text: string, duration = 500) {
+    this.setMessage({ type: 'success', text }, duration);
   }
 
-  error(text: string) {
-    this._message.set({ type: 'error', text });
+  error(text: string, duration = 1000) {
+    this.setMessage({ type: 'error', text }, duration);
   }
 
-  info(text: string) {
-    this._message.set({ type: 'info', text });
+  info(text: string, duration = 1000) {
+    this.setMessage({ type: 'info', text }, duration);
   }
 
   clear() {
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
     this._message.set(null);
+  }
+
+  private setMessage(message: SystemMessageModel, duration: number) {
+    // cancel any existing message
+    this.clear();
+
+    // set new message
+    this._message.set(message);
+
+    // auto-clear after timeout
+    this.timeoutId = window.setTimeout(() => {
+      this._message.set(null);
+      this.timeoutId = null;
+    }, duration);
   }
 }

@@ -136,6 +136,9 @@ export class ProductComponent {
     }
 
     this.messageService.success('Item added to cart successfully');
+    // clear message BEFORE route change
+    this.messageService.clear();
+    
     this.router.navigate(['/shoppingCart']);
   }
 }
