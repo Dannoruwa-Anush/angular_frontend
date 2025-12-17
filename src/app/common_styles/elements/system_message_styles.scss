@@ -1,18 +1,22 @@
-.snackbar-success {
-  background: #2e7d32;
-  color: #fff;
+/* Target the actual MDC snack bar surface */
+.snackbar-success .mdc-snackbar__surface {
+  background-color: #2e7d32 !important;
+  color: #ffffff !important;
 }
 
-.snackbar-error {
-  background: #c62828;
-  color: #fff;
+.snackbar-error .mdc-snackbar__surface {
+  background-color: #c62828 !important;
+  color: #ffffff !important;
 }
 
-.snackbar-info {
-  background: #0277bd;
-  color: #fff;
+.snackbar-info .mdc-snackbar__surface {
+  background-color: #0277bd !important;
+  color: #ffffff !important;
 }
 
-.mat-mdc-snack-bar-action {
-  color: #fff;
+/* Action button inside the snack bar */
+.snackbar-success .mdc-snackbar__action,
+.snackbar-error .mdc-snackbar__action,
+.snackbar-info .mdc-snackbar__action {
+  color: #ffffff !important;
 }
