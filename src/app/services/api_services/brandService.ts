@@ -19,5 +19,15 @@ export class BrandService extends CrudService<BrandModel> {
     super(http, messageService);
   }
 
+  // Override : pagination
+  getBrandPaged(
+    pageNumber: number,
+    pageSize: number,
+    searchKey?: string
+  ) {
+    return this.getPaged(pageNumber, pageSize, {
+      searchKey
+    });
+  }
   // can add custom api methods here
 }

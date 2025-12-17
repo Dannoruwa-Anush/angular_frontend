@@ -1,1 +1,80 @@
-<p>brand-nav-component works!</p>
+<div class="dashboard-container">
+    <!-- FORM -->
+    <mat-card class="dashboard-form">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Brand Name</mat-label>
+            <input matInput [disabled]="isViewMode()" [value]="brandName()"
+                (input)="brandName.set($any($event.target).value)" />
+        </mat-form-field>
+
+
+        <div class="form-actions">
+            <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isFormValid() || isViewMode()">
+                {{ isEditMode() ? 'Update' : 'Save' }}
+            </button>
+
+            <button mat-stroked-button (click)="cancel()">
+                Cancel
+            </button>
+        </div>
+    </mat-card>
+
+    <!-- LIST -->
+    <mat-card class="dashboard-list">
+        <!-- SEARCH -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Search Brand</mat-label>
+            <!-- Bind to searchText directly -->
+            <input matInput [(ngModel)]="searchText" (ngModelChange)="onSearch($event)" />
+        </mat-form-field>
+
+        <!-- MAT TABLE -->
+        <table mat-table [dataSource]="brands()">
+            <!-- BRAND -->
+            <ng-container matColumnDef="brandName">
+                <th mat-header-cell *matHeaderCellDef>Brand</th>
+                <td mat-cell *matCellDef="let row">{{ row.brandName }}</td>
+            </ng-container>
+
+            <!-- CREATED -->
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Created</th>
+                <td mat-cell *matCellDef="let row">
+                    {{ row.createdAt | date:'short' }}
+                </td>
+            </ng-container>
+
+            <!-- ACTIONS -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button color="primary" (click)="view(row)">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+
+                    <button mat-icon-button color="accent" (click)="edit(row)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+
+                    <button mat-icon-button color="warn" (click)="delete(row)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Empty State (if no data) -->
+        <div *ngIf="brands().length === 0" class="empty-state">
+            <mat-icon>info</mat-icon>
+            <p>List is empty</p>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator [length]="totalCount()" [pageSize]="pageSize()" [pageSizeOptions]="[5, 10, 25]"
+            (page)="onPageChange($event)">
+        </mat-paginator>
+    </mat-card>
+</div>
