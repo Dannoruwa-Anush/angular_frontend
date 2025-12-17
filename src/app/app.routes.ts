@@ -6,6 +6,7 @@ import { ProductComponent } from './components/page_components/product-component
 import { ShoppingCartComponent } from './components/page_components/shopping-cart-component/shopping-cart-component';
 import { LoginComponent } from './components/page_components/auth_components/login-component/login-component';
 import { RegisterComponent } from './components/page_components/auth_components/register-component/register-component';
+import { DASHBOARD_ROUTES } from './components/page_components/dashboard_components/dashboardRoutes';
 
 export const routes: Routes = [
     {
@@ -20,6 +21,9 @@ export const routes: Routes = [
             { path: 'shoppingCart', component: ShoppingCartComponent},
             { path: 'login', component: LoginComponent },
             { path: 'register', component: RegisterComponent },
+
+            // Dashboard routes
+            ...DASHBOARD_ROUTES,
         ]
     }
 ];
