@@ -4,6 +4,8 @@ import { ShoppingCartService } from '../../../services/ui_service/shoppingCartSe
 import { ShoppingCartItemModel } from '../../../models/ui_models/shoppingCartItemModel';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../custom_modules/material/material-module';
+import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
+import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
 
 @Component({
   selector: 'app-shopping-cart-component',
@@ -21,10 +23,12 @@ export class ShoppingCartComponent {
   total!: Signal<number>;
 
   // Mat table columns
-  displayedColumns = ['index', 'product', 'price', 'quantity', 'subtotal', 'action']; 
+  displayedColumns = ['index', 'product', 'price', 'quantity', 'subtotal', 'action'];
 
   constructor(
-    private cartService: ShoppingCartService
+    private cartService: ShoppingCartService,
+    private confirmService: SystemOperationConfirmService,
+    private messageService: SystemMessageService
   ) {
     this.cartItems = this.cartService.cartItems;
     this.total = this.cartService.cartTotal;
@@ -38,15 +42,45 @@ export class ShoppingCartComponent {
   }
 
   remove(productId: number) {
-    this.cartService.removeItem(productId);
+    this.confirmService.confirm({
+      title: 'Remove Item',
+      message: 'Are you sure you want to remove this item from the cart?',
+      confirmText: 'Remove',
+      cancelText: 'Cancel'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.cartService.removeItem(productId);
+      this.messageService.info('Item removed from cart');
+    });
   }
 
+
   cancelCart() {
-    this.cartService.clearCart();
+    this.confirmService.confirm({
+      title: 'Cancel Cart',
+      message: 'This will remove all items from your cart. Continue?',
+      confirmText: 'Clear Cart',
+      cancelText: 'Keep Items'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.cartService.clearCart();
+      this.messageService.info('Cart cleared');
+    });
   }
 
   placeOrder() {
-    alert('Order placed successfully'); // TODO: Change to notification later
-    this.cartService.clearCart();
+    this.confirmService.confirm({
+      title: 'Place Order',
+      message: 'Do you want to place this order?',
+      confirmText: 'Place Order',
+      cancelText: 'Cancel'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.cartService.clearCart();
+      this.messageService.success('Order placed successfully');
+    });
   }
 }
