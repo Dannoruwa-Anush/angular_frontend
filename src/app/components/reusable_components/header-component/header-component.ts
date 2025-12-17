@@ -1,4 +1,4 @@
-import { Component, effect, Signal } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 
 import { MaterialModule } from '../../../custom_modules/material/material-module';
 import { RouterModule } from '@angular/router';
@@ -30,24 +30,18 @@ export class HeaderComponent {
     private confirmService: SystemOperationConfirmService
   ) {
     this.cartItemCount = this.shoppingCartService.cartItemCount;
-
-    // LOGOUT : Process After Confirmation (effect() in constructor lives with component)
-    effect(() => {
-      const confirmed = this.confirmService.confirmed();
-
-      if (confirmed === true) {
-        this.authSessionService.logout();
-        this.confirmService.clear();
-      }
-    });
   }
 
-  // LOGOUT : Get Confirmation
+  // LOGOUT 
   logout() {
     this.confirmService.confirm({
       title: 'Logout',
       message: 'Are you sure you want to logout?',
       confirmText: 'Logout'
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.authSessionService.logout();
+      }
     });
   }
 }

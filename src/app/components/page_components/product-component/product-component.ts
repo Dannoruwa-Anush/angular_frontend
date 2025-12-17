@@ -7,6 +7,8 @@ import { environment } from '../../../config/environment';
 import { ElectronicItemModel } from '../../../models/api_models/electronicItemModel';
 import { ElectronicItemService } from '../../../services/api_services/electronicItemService';
 import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
+import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
+import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
 
 @Component({
   selector: 'app-product-component',
@@ -35,8 +37,11 @@ export class ProductComponent {
     private electronicItemService: ElectronicItemService,
     private shoppingCartService: ShoppingCartService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private confirmService: SystemOperationConfirmService,
+    private messageService: SystemMessageService
   ) {
+
     effect(() => {
       const id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -93,7 +98,25 @@ export class ProductComponent {
   }
 
   // ---------- Cart operation ----------
+  // UI confirmation
   addToCart(): void {
+    const product = this.electronicItem();
+    if (!product) return;
+
+    this.confirmService.confirm({
+      title: 'Add to Cart',
+      message: `Add "${product.electronicItemName}" to cart?`,
+      confirmText: 'Add',
+      cancelText: 'Cancel'
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        this.performAddToCart();
+      }
+    });
+  }
+
+  // add to cart after confirmation
+  private performAddToCart(): void {
     const product = this.electronicItem();
     if (!product) return;
 
@@ -108,10 +131,11 @@ export class ProductComponent {
     });
 
     if (!result.success) {
-      alert(result.message); // TODO: Change to notification later
+      this.messageService.error(result.message ?? 'Unable to add item to cart');
       return;
     }
 
+    this.messageService.success('Item added to cart successfully');
     this.router.navigate(['/shoppingCart']);
   }
 }
