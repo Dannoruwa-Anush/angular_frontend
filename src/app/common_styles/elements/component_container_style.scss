@@ -1,4 +1,12 @@
-.app-container-wrapper {
+.app-component-wrapper {
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 40px auto;  
+}
+
+.app-element-wrapper {
   background-color: #fbfcff;
   padding: 32px;
   border-radius: 16px;
@@ -6,8 +14,7 @@
 
   width: fit-content;
 
-  /* horizontal centering */
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 40px;
+  /* center horizontally */
+  margin: 10px auto; // v | H
 }
+

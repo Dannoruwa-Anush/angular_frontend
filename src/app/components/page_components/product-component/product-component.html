@@ -1,3 +1,4 @@
+<div class="app-component-wrapper">
 <div class="product-details-row" *ngIf="electronicItem() as product">
 
   <!-- LEFT COLUMN: Image -->
@@ -75,4 +76,6 @@
 <!-- Loading fallback -->
 <div *ngIf="!electronicItem()">
   <p>Loading product details...</p>
+</div>
+
 </div>
