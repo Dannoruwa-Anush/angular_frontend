@@ -25,11 +25,11 @@
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Search Brand</mat-label>
             <!-- Bind to searchText directly -->
-            <input matInput [(ngModel)]="searchText" (ngModelChange)="onSearch($event)" />
+            <input matInput [ngModel]="searchText()" (ngModelChange)="onSearch($event)"/>
         </mat-form-field>
 
         <!-- MAT TABLE -->
-        <table mat-table [dataSource]="brands()">
+        <table mat-table [dataSource]="items()">
             <!-- BRAND -->
             <ng-container matColumnDef="brandName">
                 <th mat-header-cell *matHeaderCellDef>Brand</th>
@@ -67,7 +67,7 @@
         </table>
 
         <!-- Empty State (if no data) -->
-        <div *ngIf="brands().length === 0" class="empty-state">
+        <div *ngIf="items().length === 0" class="empty-state">
             <mat-icon>info</mat-icon>
             <p>List is empty</p>
         </div>

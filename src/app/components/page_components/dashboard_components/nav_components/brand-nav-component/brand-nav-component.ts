@@ -1,14 +1,14 @@
-import { Component, computed, effect, Signal, signal } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { BrandModel } from '../../../../../models/api_models/brandModel';
 import { BrandService } from '../../../../../services/api_services/brandService';
-import { PageEvent } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
+import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
 
 @Component({
   selector: 'app-brand-nav-component',
@@ -20,36 +20,16 @@ import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum
   templateUrl: './brand-nav-component.html',
   styleUrl: './brand-nav-component.scss',
 })
-export class BrandNavComponent {
+export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
 
 
-
-  // ======================================================
-  // STATE
-  // ======================================================
-  brands = signal<BrandModel[]>([]);
-  loading!: Signal<boolean>;
-
-  pageNumber = signal(1);
-  pageSize = signal(10);
-  totalCount = signal(0);
 
   // ======================================================
   // FORM STATE
   // ======================================================
   brandName = signal('');
-  searchText = signal('');
-
-  selectedBrandId = signal<number | null>(null);
-  formMode = signal<DashboardModeEnum>(DashboardModeEnum.CREATE);
 
   displayedColumns = ['brandName', 'createdAt', 'actions'];
-
-  // ======================================================
-  // MODE HELPERS
-  // ======================================================
-  isEditMode = computed(() => this.formMode() === DashboardModeEnum.EDIT);
-  isViewMode = computed(() => this.formMode() === DashboardModeEnum.VIEW);
 
   // ======================================================
   // VALIDATION
@@ -57,22 +37,8 @@ export class BrandNavComponent {
   isFormValid = computed(() => {
     const name = this.brandName().trim();
     const lettersOnlyRegex = /^[A-Za-z\s]+$/;
-
     return name.length > 0 && lettersOnlyRegex.test(name);
   });
-
-  // ======================================================
-  // DERIVED
-  // ======================================================
-  totalPages = computed(() =>
-    Math.ceil(this.totalCount() / this.pageSize())
-  );
-
-  requestParams = computed(() => ({
-    pageNumber: this.pageNumber(),
-    pageSize: this.pageSize(),
-    searchKey: this.searchText() || undefined,
-  }));
 
   // ======================================================
   // CONSTRUCTOR
@@ -82,17 +48,24 @@ export class BrandNavComponent {
     private messageService: SystemMessageService,
     private confirmationHelper: CrudOperationConfirmationUiHelper
   ) {
+    super();
     this.loading = this.brandService.loading;
 
+    // Auto reload when paging / search changes
     effect(() => {
-      this.loadBrands();
+      this.requestParams();
+      this.loadItems();
     });
   }
 
   // ======================================================
-  // LOADERS
+  // BASE CLASS IMPLEMENTATIONS
   // ======================================================
-  private loadBrands(): void {
+  protected getId(item: BrandModel): number | null {
+    return item.brandID ?? null;
+  }
+
+  protected loadItems(): void {
     const params = this.requestParams();
 
     this.brandService
@@ -102,40 +75,29 @@ export class BrandNavComponent {
         params.searchKey
       )
       .subscribe(res => {
-        this.brands.set(res.items);
+        this.items.set(res.items);
         this.totalCount.set(res.totalCount);
       });
   }
 
-  // ======================================================
-  // FORM LOADER
-  // ======================================================
-  private loadToForm(
+  protected loadToForm(
     brand: BrandModel,
     mode: DashboardModeEnum
   ): void {
-    this.selectedBrandId.set(brand.brandID ?? null);
+    this.selectedItemId.set(brand.brandID ?? null);
     this.brandName.set(brand.brandName);
     this.formMode.set(mode);
   }
 
-  private resetForm(): void {
+  protected resetForm(): void {
     this.brandName.set('');
-    this.selectedBrandId.set(null);
+    this.selectedItemId.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
   }
 
   // ======================================================
   // CRUD OPERATIONS
   // ======================================================
-  view(brand: BrandModel): void {
-    this.loadToForm(brand, DashboardModeEnum.VIEW);
-  }
-
-  edit(brand: BrandModel): void {
-    this.loadToForm(brand, DashboardModeEnum.EDIT);
-  }
-
   onSubmit(): void {
     if (this.isEditMode()) {
       this.update();
@@ -158,7 +120,7 @@ export class BrandNavComponent {
         next: () => {
           this.messageService.success('Brand saved successfully');
           this.resetForm();
-          this.loadBrands();
+          this.loadItems();
         },
         error: err => {
           this.messageService.error(err?.error?.message || 'Save failed');
@@ -168,13 +130,13 @@ export class BrandNavComponent {
   }
 
   update(): void {
-    if (!this.isFormValid() || !this.selectedBrandId()) return;
+    if (!this.isFormValid() || !this.selectedItemId()) return;
 
     this.confirmationHelper.confirmUpdate('brand').subscribe(confirmed => {
       if (!confirmed) return;
 
       const payload: BrandModel = {
-        brandID: this.selectedBrandId()!,
+        brandID: this.selectedItemId()!,
         brandName: this.brandName(),
       };
 
@@ -182,7 +144,7 @@ export class BrandNavComponent {
         next: () => {
           this.messageService.success('Brand updated successfully');
           this.resetForm();
-          this.loadBrands();
+          this.loadItems();
         },
         error: err => {
           this.messageService.error(err?.error?.message || 'Update failed');
@@ -198,29 +160,12 @@ export class BrandNavComponent {
       this.brandService.delete(brand.brandID!).subscribe({
         next: () => {
           this.messageService.success('Brand deleted successfully');
-          this.loadBrands();
+          this.loadItems();
         },
         error: err => {
           this.messageService.error(err?.error?.message || 'Delete failed');
         }
       });
     });
-  }
-
-  cancel(): void {
-    this.resetForm();
-  }
-
-  // ======================================================
-  // HANDLERS
-  // ======================================================
-  onSearch(text: string): void {
-    this.pageNumber.set(1);
-    this.searchText.set(text);
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.pageNumber.set(event.pageIndex + 1);
-    this.pageSize.set(event.pageSize);
   }
 }
