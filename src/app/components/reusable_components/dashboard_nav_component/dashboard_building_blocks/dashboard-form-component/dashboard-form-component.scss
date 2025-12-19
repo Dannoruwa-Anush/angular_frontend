@@ -1,10 +1,46 @@
-.dashboard-form,
-.dashboard-list {
-  padding: 16px;
+.dashboard-form {
+  padding: 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Projected form content */
+.dashboard-form ::ng-deep mat-form-field {
+  width: 100%;
+}
+
+/* Actions bar */
 .form-actions {
-  margin-top: 16px;
   display: flex;
+  justify-content: flex-end;
   gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Primary action */
+.form-actions button[mat-raised-button] {
+  min-width: 120px;
+}
+
+/* Secondary action */
+.form-actions button[mat-stroked-button] {
+  min-width: 100px;
+}
+
+/* Responsive: stack buttons on small screens */
+@media (max-width: 600px) {
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
 }
