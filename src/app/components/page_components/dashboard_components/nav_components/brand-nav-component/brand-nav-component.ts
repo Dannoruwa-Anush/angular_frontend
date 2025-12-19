@@ -10,6 +10,9 @@ import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOper
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
+import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
+import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
+
 
 @Component({
   selector: 'app-brand-nav-component',
@@ -17,7 +20,8 @@ import { DashboardFormComponent } from '../../../../reusable_components/dashboar
     MaterialModule,
     FormsModule,
     CommonModule,
-    DashboardFormComponent,   
+    DashboardFormComponent,
+    DashboardTableComponent
   ],
   templateUrl: './brand-nav-component.html',
   styleUrl: './brand-nav-component.scss',
@@ -30,6 +34,22 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   // FORM STATE
   // ======================================================
   brandName = signal('');
+
+  // ======================================================
+  // TABLE CONFIG
+  // ======================================================
+  columns: DashboardTableColumnModel<BrandModel>[] = [
+    {
+      key: 'brandName',
+      header: 'Brand',
+      cell: b => b.brandName
+    },
+    {
+      key: 'createdAt',
+      header: 'Created',
+      cell: b => new Date(b.createdAt!).toLocaleString()
+    }
+  ];
 
   displayedColumns = ['brandName', 'createdAt', 'actions'];
 

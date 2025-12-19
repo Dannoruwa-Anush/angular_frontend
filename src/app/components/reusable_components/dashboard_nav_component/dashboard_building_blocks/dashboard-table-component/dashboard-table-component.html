@@ -1,0 +1,53 @@
+<mat-card class="dashboard-list">
+
+    <!-- SEARCH -->
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ searchLabel }}</mat-label>
+        <input matInput [ngModel]="searchValue" (ngModelChange)="searchChange.emit($event)" />
+    </mat-form-field>
+
+    <!-- TABLE -->
+    <table mat-table [dataSource]="data">
+
+        <!-- ROW NUMBER -->
+        <ng-container *ngIf="showRowNumber" matColumnDef="rowNumber">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let row; let i = index">
+                {{ getRowNumber(i) }}
+            </td>
+        </ng-container>
+
+        <!-- Dynamic columns -->
+        <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
+            <th mat-header-cell *matHeaderCellDef>
+                {{ col.header }}
+            </th>
+            <td mat-cell *matCellDef="let row">
+                {{ col.cell(row) }}
+            </td>
+        </ng-container>
+
+        <!-- ACTIONS -->
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+                <ng-container *ngIf="actionsTemplate">
+                    <ng-container *ngTemplateOutlet="actionsTemplate; context: { $implicit: row }"></ng-container>
+                </ng-container>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnKeys"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnKeys"></tr>
+    </table>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="data.length === 0" class="empty-state">
+        <mat-icon>info</mat-icon>
+        <p>List is empty</p>
+    </div>
+
+    <!-- PAGINATION -->
+    <mat-paginator [length]="totalCount" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+        (page)="pageChange.emit($event)" />
+</mat-card>

@@ -1,69 +1,32 @@
 <div class="dashboard-container">
-    
+
     <!-- Reusable Form -->
-    <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="!isFormValid() || isViewMode()" (submit)="onSubmit()" (cancel)="cancel()">
+    <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+        [submitDisabled]="!isFormValid() || isViewMode()" (submit)="onSubmit()" (cancel)="cancel()">
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Brand Name</mat-label>
-            <input matInput [disabled]="isViewMode()" [value]="brandName()" (input)="brandName.set($any($event.target).value)" />
+            <input matInput [disabled]="isViewMode()" [value]="brandName()"
+                (input)="brandName.set($any($event.target).value)" />
         </mat-form-field>
     </app-dashboard-form-component>
 
-    <!-- LIST -->
-    <mat-card class="dashboard-list">
-        <!-- SEARCH -->
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Search Brand</mat-label>
-            <!-- Bind to searchText directly -->
-            <input matInput [ngModel]="searchText()" (ngModelChange)="onSearch($event)" />
-        </mat-form-field>
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Brand"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
 
-        <!-- MAT TABLE -->
-        <table mat-table [dataSource]="items()">
-            <!-- BRAND -->
-            <ng-container matColumnDef="brandName">
-                <th mat-header-cell *matHeaderCellDef>Brand</th>
-                <td mat-cell *matCellDef="let row">{{ row.brandName }}</td>
-            </ng-container>
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
 
-            <!-- CREATED -->
-            <ng-container matColumnDef="createdAt">
-                <th mat-header-cell *matHeaderCellDef>Created</th>
-                <td mat-cell *matCellDef="let row">
-                    {{ row.createdAt | date:'short' }}
-                </td>
-            </ng-container>
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
 
-            <!-- ACTIONS -->
-            <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef></th>
-                <td mat-cell *matCellDef="let row">
-                    <button mat-icon-button color="primary" (click)="view(row)">
-                        <mat-icon>visibility</mat-icon>
-                    </button>
-
-                    <button mat-icon-button color="accent" (click)="edit(row)">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-
-                    <button mat-icon-button color="warn" (click)="delete(row)">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-
-        <!-- Empty State (if no data) -->
-        <div *ngIf="items().length === 0" class="empty-state">
-            <mat-icon>info</mat-icon>
-            <p>List is empty</p>
-        </div>
-
-        <!-- Pagination -->
-        <mat-paginator [length]="totalCount()" [pageSize]="pageSize()" [pageSizeOptions]="[5, 10, 25]"
-            (page)="onPageChange($event)">
-        </mat-paginator>
-    </mat-card>
+            <button mat-icon-button color="warn" (click)="delete(row)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-template>
+    </app-dashboard-table-component>
 </div>
