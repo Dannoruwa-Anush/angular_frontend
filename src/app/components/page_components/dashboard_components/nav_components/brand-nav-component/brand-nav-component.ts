@@ -9,6 +9,7 @@ import { SystemMessageService } from '../../../../../services/ui_service/systemM
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
+import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
 
 @Component({
   selector: 'app-brand-nav-component',
@@ -16,6 +17,7 @@ import { DashboardNavStateBase } from '../../../../reusable_components/dashboard
     MaterialModule,
     FormsModule,
     CommonModule,
+    DashboardFormComponent,   
   ],
   templateUrl: './brand-nav-component.html',
   styleUrl: './brand-nav-component.scss',

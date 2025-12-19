@@ -1,0 +1,13 @@
+<mat-card class="dashboard-form">
+    <ng-content></ng-content>
+
+    <div class="form-actions">
+        <button mat-raised-button color="primary" (click)="submit.emit()" [disabled]="submitDisabled">
+            {{ submitLabel }}
+        </button>
+
+        <button mat-stroked-button (click)="cancel.emit()">
+            Cancel
+        </button>
+    </div>
+</mat-card>

@@ -1,23 +1,12 @@
 <div class="dashboard-container">
-    <!-- FORM -->
-    <mat-card class="dashboard-form">
+    
+    <!-- Reusable Form -->
+    <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="!isFormValid() || isViewMode()" (submit)="onSubmit()" (cancel)="cancel()">
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Brand Name</mat-label>
-            <input matInput [disabled]="isViewMode()" [value]="brandName()"
-                (input)="brandName.set($any($event.target).value)" />
+            <input matInput [disabled]="isViewMode()" [value]="brandName()" (input)="brandName.set($any($event.target).value)" />
         </mat-form-field>
-
-
-        <div class="form-actions">
-            <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isFormValid() || isViewMode()">
-                {{ isEditMode() ? 'Update' : 'Save' }}
-            </button>
-
-            <button mat-stroked-button (click)="cancel()">
-                Cancel
-            </button>
-        </div>
-    </mat-card>
+    </app-dashboard-form-component>
 
     <!-- LIST -->
     <mat-card class="dashboard-list">
@@ -25,7 +14,7 @@
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Search Brand</mat-label>
             <!-- Bind to searchText directly -->
-            <input matInput [ngModel]="searchText()" (ngModelChange)="onSearch($event)"/>
+            <input matInput [ngModel]="searchText()" (ngModelChange)="onSearch($event)" />
         </mat-form-field>
 
         <!-- MAT TABLE -->
