@@ -2,18 +2,20 @@
 
     <!-- Reusable Form -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="form.invalid || isViewMode()" (cancel)="cancel()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+            [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Brand Name</mat-label>
                 <input matInput formControlName="brandName" />
 
-                <mat-error *ngIf="brandNameCtrl.hasError('required')">
+                <mat-error *ngIf="brandNameCtrl.hasError('required') && (brandNameCtrl.touched || brandNameCtrl.dirty)">
                     Brand name is required
                 </mat-error>
 
-                <mat-error *ngIf="brandNameCtrl.hasError('pattern')">
+                <mat-error *ngIf="brandNameCtrl.hasError('pattern') && (brandNameCtrl.touched || brandNameCtrl.dirty)">
                     Only letters and spaces allowed
                 </mat-error>
+
             </mat-form-field>
         </app-dashboard-form-component>
     </form>

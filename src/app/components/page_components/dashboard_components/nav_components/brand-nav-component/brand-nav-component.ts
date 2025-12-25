@@ -34,6 +34,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   // FORM
   // ======================================================
   form!: FormGroup;
+  submitted = false;
 
   // ======================================================
   // TABLE CONFIG
@@ -137,12 +138,19 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
 
   protected resetForm(): void {
     this.form.reset();
+
+    // clear UI state
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+
     this.form.enable();
     this.selectedItemId.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
   }
 
   onSubmit(): void {
+    this.submitted = true;
+
     if (this.form.invalid || this.isViewMode()) {
       this.form.markAllAsTouched();
       return;
