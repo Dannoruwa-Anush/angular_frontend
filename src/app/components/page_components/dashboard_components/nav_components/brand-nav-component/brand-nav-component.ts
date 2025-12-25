@@ -83,13 +83,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   // ======================================================
   private buildForm(): void {
     this.form = this.fb.group({
-      brandName: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^[A-Za-z\s]+$/)
-        ]
-      ]
+      brandName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]]
     });
   }
 
