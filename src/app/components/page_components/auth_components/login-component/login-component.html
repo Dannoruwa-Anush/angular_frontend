@@ -31,7 +31,8 @@
       <!-- BUTTON -->
       <button mat-raised-button color="primary" type="submit" class="auth-submit-btn"
         [disabled]="loading() || (submitted && form.invalid)">
-        Login
+        <mat-spinner *ngIf="loading()" diameter="18" class="btn-spinner"></mat-spinner>
+        <span *ngIf="!loading()">Login</span>
       </button>
 
     </form>

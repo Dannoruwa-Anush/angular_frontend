@@ -31,6 +31,9 @@ export class LoginComponent {
   @ViewChild(FormGroupDirective)
   private formDirective!: FormGroupDirective;
 
+  // ===============================
+  // UI STATE
+  // ===============================
   loading!: Signal<boolean>;
 
   constructor(
