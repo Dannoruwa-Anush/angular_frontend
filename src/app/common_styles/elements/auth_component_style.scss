@@ -1,21 +1,41 @@
 .auth-card {
   width: 380px;
-  padding: 12px 20px;
+  padding: 20px;
   margin: 0;
   box-shadow: none;
+
+  display: flex;
+  flex-direction: column;
 }
 
+/* Title */
 .auth-title {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
-.auth-full-width {
-  width: 100%;
-  margin-bottom: 16px;
+/* Form layout */
+form {
+  display: flex;
+  flex-direction: column;
 }
 
+/* Inputs */
+.auth-input {
+  width: 100%;
+  margin-bottom: 16px;
+  display: block;
+}
+
+/* Submit button */
+.auth-submit-btn {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Switch link */
 .auth-switch-link {
   margin-top: 16px;
   text-align: center;
+  font-size: 14px;
 }

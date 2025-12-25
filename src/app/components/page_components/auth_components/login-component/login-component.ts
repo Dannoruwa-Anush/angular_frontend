@@ -1,7 +1,7 @@
-import { Component, computed, signal, Signal, } from '@angular/core';
+import { Component, computed, signal, Signal, ViewChild, } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
@@ -12,7 +12,7 @@ import { SystemMessageService } from '../../../../services/ui_service/systemMess
   selector: 'app-login-component',
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     MaterialModule
   ],
@@ -22,51 +22,85 @@ import { SystemMessageService } from '../../../../services/ui_service/systemMess
 export class LoginComponent {
 
 
-  // ---------- FORM ----------
-  email = signal('');
-  password = signal('');
+  // ===============================
+  // FORM
+  // ===============================
+  form!: FormGroup;
+  submitted = false;
 
-  // ---------- UI STATE ----------
+  @ViewChild(FormGroupDirective)
+  private formDirective!: FormGroupDirective;
+
   loading!: Signal<boolean>;
-
-  // ---------- VALIDATION ----------
-  isFormValid = computed(() => {
-    const email = this.email();
-    const password = this.password();
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) && password.length > 0;
-  });
 
   constructor(
     private authSessionService: AuthSessionService,
-    private messageService: SystemMessageService
+    private messageService: SystemMessageService,
+    private fb: FormBuilder
   ) {
+    this.buildForm();
     this.loading = this.authSessionService.loading;
   }
 
-  login(): void {
-    if (!this.isFormValid()) return;
+  // ===============================
+  // FORM SETUP
+  // ===============================
+  private buildForm(): void {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
 
-    const payload: LoginRequestModel = {
-      email: this.email(),
-      password: this.password()
-    };
+  // ===============================
+  // GETTERS
+  // ===============================
+  get emailCtrl() {
+    return this.form.get('email')!;
+  }
+
+  get passwordCtrl() {
+    return this.form.get('password')!;
+  }
+
+  // ===============================
+  // SUBMIT
+  // ===============================
+  onSubmit(): void {
+    this.submitted = true;
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.login();
+  }
+
+  // ===============================
+  // RESET
+  // ===============================
+  private resetForm(): void {
+    this.submitted = false;
+    this.formDirective.resetForm();
+    this.form.enable();
+  }
+
+  // ===============================
+  // LOGIN
+  // ===============================
+  private login(): void {
+    const payload: LoginRequestModel = this.form.getRawValue();
 
     this.authSessionService.login(payload).subscribe({
       next: () => {
-        this.clearForm();
+        this.resetForm();
         this.messageService.success('Logged in successfully');
       },
-      error: (err) => {
+      error: err => {
         const msg = err?.error?.message || 'Login failed';
         this.messageService.error(msg);
       }
     });
-  }
-
-  private clearForm() {
-    this.email.set('');
-    this.password.set('');
   }
 }
