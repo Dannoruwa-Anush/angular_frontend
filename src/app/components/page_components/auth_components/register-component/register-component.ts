@@ -69,6 +69,10 @@ export class RegisterComponent {
         confirmPassword: [
           '',
           Validators.required
+        ],
+        role: [
+          UserRoleEnum.Customer, // default role
+          Validators.required
         ]
       },
       {
@@ -81,13 +85,9 @@ export class RegisterComponent {
     const password = group.get('password')?.value;
     const confirm = group.get('confirmPassword')?.value;
 
-    if (!password || !confirm) {
-      return null;
-    }
+    if (!confirm) return null; // required validation handled separately
 
-    return password === confirm
-      ? null
-      : { passwordsMismatch: true };
+    return password === confirm ? null : { passwordsMismatch: true };
   }
 
   // ===============================
@@ -135,7 +135,7 @@ export class RegisterComponent {
     const payload: RegisterRequestModel = {
       email: this.form.value.email,
       password: this.form.value.password,
-      role: UserRoleEnum.Customer
+      role: this.form.value.role as UserRoleEnum
     };
 
     this.authSessionService.register(payload).subscribe({

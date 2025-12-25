@@ -34,6 +34,11 @@
                 <input matInput type="password" formControlName="confirmPassword" />
 
                 <mat-error
+                    *ngIf="confirmPasswordCtrl.hasError('required') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
+                    Confirm password is required
+                </mat-error>
+
+                <mat-error
                     *ngIf="form.hasError('passwordsMismatch') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
                     Passwords do not match
                 </mat-error>
