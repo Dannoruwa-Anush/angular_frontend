@@ -93,9 +93,9 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     });
   }
 
-  // ======================================================
-  // GET FORM DATA
-  // ======================================================
+  // ===============================
+  // GETTERS
+  // ===============================
   get brandNameCtrl() {
     return this.form.get('brandName')!;
   }
@@ -139,6 +139,9 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     this.formMode.set(mode);
   }
 
+  // ===============================
+  // RESET
+  // ===============================
   protected resetForm(): void {
     this.submitted = false;
     this.formDirective.resetForm();
@@ -148,6 +151,9 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     this.formMode.set(DashboardModeEnum.CREATE);
   }
 
+  // ===============================
+  // SUBMIT
+  // ===============================
   onSubmit(): void {
     this.submitted = true;
 
