@@ -4,7 +4,7 @@ import { MaterialModule } from '../../../../../custom_modules/material/material-
 import { BrandModel } from '../../../../../models/api_models/brandModel';
 import { BrandService } from '../../../../../services/api_services/brandService';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
@@ -18,7 +18,7 @@ import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashb
   selector: 'app-brand-nav-component',
   imports: [
     MaterialModule,
-    FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     DashboardFormComponent,
     DashboardTableComponent
@@ -31,9 +31,9 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
 
 
   // ======================================================
-  // FORM STATE
+  // FORM
   // ======================================================
-  brandName = signal('');
+  form!: FormGroup;
 
   // ======================================================
   // TABLE CONFIG
@@ -54,23 +54,17 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   displayedColumns = ['brandName', 'createdAt', 'actions'];
 
   // ======================================================
-  // VALIDATION
-  // ======================================================
-  isFormValid = computed(() => {
-    const name = this.brandName().trim();
-    const lettersOnlyRegex = /^[A-Za-z\s]+$/;
-    return name.length > 0 && lettersOnlyRegex.test(name);
-  });
-
-  // ======================================================
   // CONSTRUCTOR
   // ======================================================
   constructor(
     private brandService: BrandService,
     private messageService: SystemMessageService,
-    private confirmationHelper: CrudOperationConfirmationUiHelper
+    private confirmationHelper: CrudOperationConfirmationUiHelper,
+    private fb: FormBuilder,
   ) {
     super();
+
+    this.buildForm();
     this.loading = this.brandService.loading;
 
     // Auto reload when paging / search changes
@@ -78,6 +72,28 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
       this.requestParams();
       this.loadItems();
     });
+  }
+
+  // ======================================================
+  // REACTIVE FORM SETUP
+  // ======================================================
+  private buildForm(): void {
+    this.form = this.fb.group({
+      brandName: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-Za-z\s]+$/)
+        ]
+      ]
+    });
+  }
+
+  // ======================================================
+  // GET FORM DATA
+  // ======================================================
+  get brandNameCtrl() {
+    return this.form.get('brandName')!;
   }
 
   // ======================================================
@@ -107,36 +123,42 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     mode: DashboardModeEnum
   ): void {
     this.selectedItemId.set(brand.brandID ?? null);
-    this.brandName.set(brand.brandName);
+
+    this.form.patchValue({
+      brandName: brand.brandName
+    });
+
+    mode === DashboardModeEnum.VIEW
+      ? this.form.disable()
+      : this.form.enable();
+
     this.formMode.set(mode);
   }
 
   protected resetForm(): void {
-    this.brandName.set('');
+    this.form.reset();
+    this.form.enable();
     this.selectedItemId.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid || this.isViewMode()) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isEditMode() ? this.update() : this.save();
   }
 
   // ======================================================
   // CRUD OPERATIONS
   // ======================================================
-  onSubmit(): void {
-    if (this.isEditMode()) {
-      this.update();
-    } else {
-      this.save();
-    }
-  }
-
   save(): void {
-    if (!this.isFormValid()) return;
-
     this.confirmationHelper.confirmSave('brand').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: BrandModel = {
-        brandName: this.brandName(),
-      };
+      const payload: BrandModel = this.form.getRawValue();
 
       this.brandService.create(payload).subscribe({
         next: () => {
@@ -152,15 +174,16 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   }
 
   update(): void {
-    if (!this.isFormValid() || !this.selectedItemId()) return;
+    const id = this.selectedItemId();
+    if (!id) return;
 
     this.confirmationHelper.confirmUpdate('brand').subscribe(confirmed => {
       if (!confirmed) return;
 
       const payload: BrandModel = {
-        brandID: this.selectedItemId()!,
-        brandName: this.brandName(),
-      };
+        brandID: id,
+        ...this.form.getRawValue()
+      }
 
       this.brandService.update(payload.brandID!, payload).subscribe({
         next: () => {

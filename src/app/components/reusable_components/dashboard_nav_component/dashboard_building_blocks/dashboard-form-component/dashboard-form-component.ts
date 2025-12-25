@@ -14,6 +14,5 @@ export class DashboardFormComponent {
   @Input() submitLabel = 'Save';
   @Input() submitDisabled = false;
 
-  @Output() submit = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
 }

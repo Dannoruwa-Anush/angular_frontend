@@ -1,14 +1,22 @@
 <div class="dashboard-container">
 
     <!-- Reusable Form -->
-    <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
-        [submitDisabled]="!isFormValid() || isViewMode()" (submit)="onSubmit()" (cancel)="cancel()">
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Brand Name</mat-label>
-            <input matInput [disabled]="isViewMode()" [value]="brandName()"
-                (input)="brandName.set($any($event.target).value)" />
-        </mat-form-field>
-    </app-dashboard-form-component>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="form.invalid || isViewMode()" (cancel)="cancel()">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Brand Name</mat-label>
+                <input matInput formControlName="brandName" />
+
+                <mat-error *ngIf="brandNameCtrl.hasError('required')">
+                    Brand name is required
+                </mat-error>
+
+                <mat-error *ngIf="brandNameCtrl.hasError('pattern')">
+                    Only letters and spaces allowed
+                </mat-error>
+            </mat-form-field>
+        </app-dashboard-form-component>
+    </form>
 
     <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
     <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Brand"

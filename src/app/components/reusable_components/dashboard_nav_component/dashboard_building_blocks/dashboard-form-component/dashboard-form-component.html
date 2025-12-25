@@ -2,11 +2,11 @@
     <ng-content></ng-content>
 
     <div class="form-actions">
-        <button mat-raised-button color="primary" (click)="submit.emit()" [disabled]="submitDisabled">
+        <button mat-raised-button color="primary" type="submit" [disabled]="submitDisabled">
             {{ submitLabel }}
         </button>
 
-        <button mat-stroked-button (click)="cancel.emit()">
+        <button mat-stroked-button type="button" (click)="cancel.emit()">
             Cancel
         </button>
     </div>
