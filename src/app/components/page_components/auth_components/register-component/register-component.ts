@@ -53,41 +53,36 @@ export class RegisterComponent {
   private buildForm(): void {
     this.form = this.fb.group(
       {
-        email: [
-          '',
-          [
-            Validators.required,
-            Validators.email
-          ]
-        ],
-        password: [
-          '',
-          [
-            Validators.required,
-          ]
-        ],
-        confirmPassword: [
-          '',
-          Validators.required
-        ],
-        role: [
-          UserRoleEnum.Customer, // default role
-          Validators.required
-        ]
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required]],
+        confirmPassword: ['', [Validators.required]],
+        role: [UserRoleEnum.Customer, Validators.required]
       },
       {
-        validators: this.passwordsMatchValidator
+        validators: this.passwordsMatchValidator,
+        updateOn: 'change' // important for real-time validation
       }
     );
   }
 
   private passwordsMatchValidator(group: FormGroup) {
-    const password = group.get('password')?.value;
-    const confirm = group.get('confirmPassword')?.value;
+    const password = group.get('password');
+    const confirm = group.get('confirmPassword');
 
-    if (!confirm) return null; // required validation handled separately
+    if (!confirm?.value) return null; // required handled separately
 
-    return password === confirm ? null : { passwordsMismatch: true };
+    const mismatch = password?.value !== confirm.value;
+
+    if (mismatch) {
+      confirm.setErrors({ ...confirm.errors, passwordsMismatch: true });
+    } else {
+      if (confirm.errors) {
+        delete confirm.errors['passwordsMismatch'];
+        if (!Object.keys(confirm.errors).length) confirm.setErrors(null);
+      }
+    }
+
+    return mismatch ? { passwordsMismatch: true } : null;
   }
 
   // ===============================

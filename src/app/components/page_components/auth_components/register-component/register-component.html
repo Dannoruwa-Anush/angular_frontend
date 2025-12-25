@@ -39,7 +39,7 @@
                 </mat-error>
 
                 <mat-error
-                    *ngIf="form.hasError('passwordsMismatch') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
+                    *ngIf="confirmPasswordCtrl.hasError('passwordsMismatch') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
                     Passwords do not match
                 </mat-error>
             </mat-form-field>
