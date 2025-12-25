@@ -1,10 +1,10 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, effect, signal, ViewChild } from '@angular/core';
 
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { BrandModel } from '../../../../../models/api_models/brandModel';
 import { BrandService } from '../../../../../services/api_services/brandService';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
@@ -35,6 +35,9 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   // ======================================================
   form!: FormGroup;
   submitted = false;
+
+  @ViewChild(FormGroupDirective)
+  private formDirective!: FormGroupDirective;
 
   // ======================================================
   // TABLE CONFIG
@@ -137,11 +140,8 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   }
 
   protected resetForm(): void {
-    this.form.reset();
-
-    // clear UI state
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
+    this.submitted = false;
+    this.formDirective.resetForm();
 
     this.form.enable();
     this.selectedItemId.set(null);
