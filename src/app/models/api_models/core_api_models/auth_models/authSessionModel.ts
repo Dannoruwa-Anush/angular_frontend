@@ -4,4 +4,5 @@ export interface AuthSessionModel {
   token: string;
   email: string;
   role: UserRoleEnum;
+  userID: number;
 }

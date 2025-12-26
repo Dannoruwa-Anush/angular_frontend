@@ -32,6 +32,7 @@ export class AuthSessionService {
     token = computed(() => this.session()?.token ?? null);
     email = computed(() => this.session()?.email ?? null);
     role = computed(() => this.session()?.role ?? null);
+    userID = computed(() => this.session()?.userID ?? null);
 
     constructor(
         private http: HttpClient,
@@ -101,7 +102,8 @@ export class AuthSessionService {
                     const session: AuthSessionModel = {
                         token: res.data.token,
                         email: res.data.email,
-                        role: this.mapRole(res.data.role)
+                        role: this.mapRole(res.data.role),
+                        userID: res.data.userID,
                     };
 
                     this.session.set(session);
