@@ -1,1 +1,91 @@
-<p>product-nav-component works!</p>
+<div class="dashboard-container">
+
+    <!-- Reusable Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+            [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Product Name</mat-label>
+                <input matInput formControlName="electronicItemName" />
+
+                <mat-error
+                    *ngIf="electronicItemNameCtrl.hasError('required') && (electronicItemNameCtrl.touched || electronicItemNameCtrl.dirty)">
+                    Product name is required
+                </mat-error>
+
+                <mat-error
+                    *ngIf="electronicItemNameCtrl.hasError('pattern') && (electronicItemNameCtrl.touched || electronicItemNameCtrl.dirty)">
+                    Only letters and spaces allowed
+                </mat-error>
+
+            </mat-form-field>
+        </app-dashboard-form-component>
+    </form>
+
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <mat-toolbar color="primary" class="products-toolbar">
+
+
+
+        <!-- [Start: Brand menu] -->
+        <button mat-button [matMenuTriggerFor]="brandsMenu" class="filter-button"
+            [class.active-filter]="selectedBrandId() !== undefined">
+            {{ selectedBrandName() ?? 'Brands' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #brandsMenu="matMenu">
+            <button mat-menu-item (click)="onBrandSelect(undefined)"
+                [class.selected-menu-item]="selectedBrandId() === undefined">
+                All Brands
+            </button>
+
+            <button mat-menu-item *ngFor="let brand of brands()" (click)="onBrandSelect(brand.brandID)"
+                [class.selected-menu-item]="selectedBrandId() === brand.brandID">
+                {{ brand.brandName }}
+            </button>
+        </mat-menu>
+        <!-- [End: Brand menu] -->
+
+
+        <!-- [Start: Categories menu] -->
+        <button mat-button [matMenuTriggerFor]="categoryMenu" class="filter-button"
+            [class.active-filter]="selectedCategoryId() !== undefined">
+            {{ selectedCategoryName() ?? 'Category' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #categoryMenu="matMenu">
+            <button mat-menu-item (click)="onCategorySelect(undefined)"
+                [class.selected-menu-item]="selectedCategoryId() === undefined">
+                All Categories
+            </button>
+
+            <button mat-menu-item *ngFor="let category of categories()" (click)="onCategorySelect(category.categoryID)"
+                [class.selected-menu-item]="selectedCategoryId() === category.categoryID">
+                {{ category.categoryName }}
+            </button>
+        </mat-menu>
+        <!-- [End: Categories menu] -->
+
+    </mat-toolbar>
+
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Category"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="delete(row)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-template>
+    </app-dashboard-table-component>
+</div>
