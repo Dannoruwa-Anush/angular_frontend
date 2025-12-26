@@ -60,22 +60,31 @@
 
             <!-- Image Upload -->
             <div class="image-upload">
-                <label>Product Image</label>
-                <input type="file" accept="image/*" (change)="onImageSelect($event)" />
 
+                <button mat-raised-button color="primary" type="button" (click)="fileInput.click()">
+
+                    <mat-icon>upload</mat-icon>
+                    Choose Image
+                </button>
+
+                <input #fileInput type="file" accept="image/*" hidden (change)="onImageSelect($event)" />
+
+                <!-- File name -->
+                <div class="file-name" *ngIf="form.get('imageFile')?.value">
+                    {{ form.get('imageFile')?.value?.name }}
+                </div>
+
+                <!-- Preview -->
                 <div class="image-preview" *ngIf="imagePreview">
                     <img [src]="imagePreview" />
                 </div>
-            </div>
 
+            </div>
         </app-dashboard-form-component>
     </form>
 
     <!-- ================= LIST ================= -->
     <mat-toolbar color="primary" class="products-toolbar">
-
-
-
         <!-- [Start: Brand menu] -->
         <button mat-button [matMenuTriggerFor]="brandsMenu" class="filter-button"
             [class.active-filter]="selectedBrandId() !== undefined">

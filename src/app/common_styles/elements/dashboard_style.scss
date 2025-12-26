@@ -3,3 +3,20 @@
   flex-direction: column;
   gap: 16px;
 }
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-name {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.image-preview img {
+  max-width: 180px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
