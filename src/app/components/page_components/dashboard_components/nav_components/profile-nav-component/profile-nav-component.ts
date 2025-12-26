@@ -216,7 +216,6 @@ export class ProfileNavComponent {
 
     return {
       employeeName: raw.name,
-      position: raw.position
     };
   }
 

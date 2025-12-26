@@ -4,7 +4,7 @@ import { UserModel } from "./userModel";
 export interface EmployeeModel{
     employeeID?: number;
     employeeName: string;
-    position: EmployeePositionEnum,
+    position?: EmployeePositionEnum,
 
     //FK: Fields
     userResponseDto?: UserModel;
