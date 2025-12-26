@@ -75,8 +75,8 @@ export class ProfileNavComponent {
     this.form = this.fb.group({
       name: ['', Validators.required],
       position: [{ value: '', disabled: true }], // always disabled for edit
-      phoneNo: [''],
-      address: ['']
+      phoneNo: ['', Validators.pattern(/^[0-9]{10}$/)],
+      address: ['', Validators.maxLength(255)]
     });
   }
 
