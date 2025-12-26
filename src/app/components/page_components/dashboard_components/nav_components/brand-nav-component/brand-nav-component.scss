@@ -1,5 +1,1 @@
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+@use '../../../../../common_styles/elements/dashboard_style.scss'
