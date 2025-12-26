@@ -48,6 +48,14 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
     this.categories().find(c => c.categoryID === this.selectedCategoryId())?.categoryName
   );
 
+  override requestParams = computed(() => ({
+    pageNumber: this.pageNumber(),
+    pageSize: this.pageSize(),
+    brandId: this.selectedBrandId(),
+    categoryId: this.selectedCategoryId(),
+    searchKey: this.searchText() || undefined,
+  }));
+
   private loadBrands(): void {
     this.brandService.getAll().subscribe(res => {
       this.brands.set(res);
@@ -197,8 +205,8 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
       .getElectronicItemPaged(
         params.pageNumber,
         params.pageSize,
-        1,//this.selectedCategoryId,
-        1,//this.selectedBrandId,
+        params.categoryId,
+        params.brandId,
         params.searchKey
       )
       .subscribe(res => {
