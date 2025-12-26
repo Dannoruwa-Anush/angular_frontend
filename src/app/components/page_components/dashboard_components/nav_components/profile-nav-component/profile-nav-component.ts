@@ -81,12 +81,27 @@ export class ProfileNavComponent {
   }
 
   private enableEditableControls(): void {
-    this.form.get('name')?.enable();
-    this.form.get('phoneNo')?.enable();
-    this.form.get('address')?.enable();
+    this.nameCtrl.enable();
+    this.phoneNoCtrl.enable();
+    this.addressCtrl.enable();
 
     // enforce non-editable field
     this.form.get('position')?.disable();
+  }
+
+  // ===============================
+  // GETTERS
+  // ===============================
+  get nameCtrl() {
+    return this.form.get('name')!;
+  }
+
+  get phoneNoCtrl() {
+    return this.form.get('phoneNo')!;
+  }
+
+  get addressCtrl() {
+    return this.form.get('address')!;
   }
 
   // ======================================================

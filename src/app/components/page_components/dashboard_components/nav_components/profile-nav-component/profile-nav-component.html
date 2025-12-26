@@ -2,7 +2,8 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+            [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
 
             <!-- VIEW MODE ACTION -->
             <button mat-icon-button *ngIf="isViewMode()" type="button" (click)="enableEdit()">
@@ -13,6 +14,14 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Name</mat-label>
                 <input matInput formControlName="name">
+
+                <mat-error *ngIf="nameCtrl.hasError('required') && (nameCtrl.touched || nameCtrl.dirty)">
+                    Name is required
+                </mat-error>
+
+                <mat-error *ngIf="nameCtrl.hasError('pattern') && (nameCtrl.touched || nameCtrl.dirty)">
+                    Only letters and spaces allowed
+                </mat-error>
             </mat-form-field>
 
             <!-- EMPLOYEE -->
@@ -28,11 +37,27 @@
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Phone</mat-label>
                     <input matInput formControlName="phoneNo">
+
+                    <mat-error *ngIf="(phoneNoCtrl.touched || phoneNoCtrl.dirty)">
+                        Phone No is required
+                    </mat-error>
+
+                    <mat-error *ngIf="phoneNoCtrl.hasError('pattern') && (phoneNoCtrl.touched || phoneNoCtrl.dirty)">
+                        10-digit phone number is allowed
+                    </mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Address</mat-label>
                     <input matInput formControlName="address">
+
+                    <mat-error *ngIf="(addressCtrl.touched || addressCtrl.dirty)">
+                        Addess is required
+                    </mat-error>
+
+                    <mat-error *ngIf="addressCtrl.hasError('pattern') && (addressCtrl)">
+                        Only letters and spaces allowed
+                    </mat-error>
                 </mat-form-field>
             </ng-container>
 
