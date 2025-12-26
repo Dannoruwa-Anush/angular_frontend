@@ -12,7 +12,6 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         icon: 'person',
         component: ProfileNavComponent,
         allowedRoles: [
-            UserRoleEnum.Admin,
             UserRoleEnum.Employee,
             UserRoleEnum.Customer
         ]

@@ -1,3 +1,42 @@
 <div class="dashboard-container">
-    
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+
+            <!-- VIEW MODE ACTION -->
+            <button mat-icon-button *ngIf="isViewMode()" type="button" (click)="enableEdit()">
+                <mat-icon>edit</mat-icon>
+            </button>
+
+            <!-- NAME -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name">
+            </mat-form-field>
+
+            <!-- EMPLOYEE -->
+            <ng-container *ngIf="role === UserRoleEnum.Employee">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Position</mat-label>
+                    <input matInput formControlName="position">
+                </mat-form-field>
+            </ng-container>
+
+            <!-- CUSTOMER -->
+            <ng-container *ngIf="role === UserRoleEnum.Customer">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Phone</mat-label>
+                    <input matInput formControlName="phoneNo">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Address</mat-label>
+                    <input matInput formControlName="address">
+                </mat-form-field>
+            </ng-container>
+
+        </app-dashboard-form-component>
+
+    </form>
 </div>
