@@ -64,6 +64,7 @@ export class ProfileNavComponent {
   ) {
     this.role = this.auth.role()!;
     this.buildForm();
+    this.applyRoleValidators();
 
     this.loadProfile();
   }
@@ -73,11 +74,35 @@ export class ProfileNavComponent {
   // ======================================================
   private buildForm(): void {
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      position: [{ value: '', disabled: true }], // always disabled for edit
-      phoneNo: ['', Validators.pattern(/^[0-9]{10}$/)],
-      address: ['', Validators.maxLength(255)]
+      name: ['', []],
+      position: [{ value: '', disabled: true }],
+      phoneNo: ['', [Validators.pattern(/^[0-9]{10}$/)]],
+      address: ['', [Validators.maxLength(255)]],
     });
+  }
+
+  private applyRoleValidators(): void {
+    // name is required for both
+    this.nameCtrl.setValidators([Validators.required]);
+
+    if (this.role === UserRoleEnum.Customer) {
+      this.phoneNoCtrl.setValidators([
+        Validators.required,
+        Validators.pattern(/^[0-9]{10}$/),
+      ]);
+
+      this.addressCtrl.setValidators([
+        Validators.required,
+        Validators.maxLength(255),
+      ]);
+    } else {
+      this.phoneNoCtrl.clearValidators();
+      this.addressCtrl.clearValidators();
+    }
+
+    this.nameCtrl.updateValueAndValidity();
+    this.phoneNoCtrl.updateValueAndValidity();
+    this.addressCtrl.updateValueAndValidity();
   }
 
   private enableEditableControls(): void {

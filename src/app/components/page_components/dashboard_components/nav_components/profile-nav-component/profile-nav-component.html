@@ -38,7 +38,7 @@
                     <mat-label>Phone</mat-label>
                     <input matInput formControlName="phoneNo">
 
-                    <mat-error *ngIf="(phoneNoCtrl.touched || phoneNoCtrl.dirty)">
+                    <mat-error *ngIf="phoneNoCtrl.hasError('required') && (phoneNoCtrl.touched || phoneNoCtrl.dirty)">
                         Phone No is required
                     </mat-error>
 
@@ -51,11 +51,11 @@
                     <mat-label>Address</mat-label>
                     <input matInput formControlName="address">
 
-                    <mat-error *ngIf="(addressCtrl.touched || addressCtrl.dirty)">
-                        Addess is required
+                    <mat-error *ngIf="addressCtrl.hasError('required') && (addressCtrl.touched || addressCtrl.dirty)">
+                        Address is required
                     </mat-error>
 
-                    <mat-error *ngIf="addressCtrl.hasError('pattern') && (addressCtrl)">
+                    <mat-error *ngIf="addressCtrl.hasError('pattern') && (addressCtrl.touched || addressCtrl.dirty)">
                         Only letters and spaces allowed
                     </mat-error>
                 </mat-form-field>
