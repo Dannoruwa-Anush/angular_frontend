@@ -1,28 +1,77 @@
 <div class="dashboard-container">
 
-    <!-- Reusable Form -->
+    <!-- ================= FORM ================= -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
             [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+
+            <!-- Product Name -->
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Product Name</mat-label>
                 <input matInput formControlName="electronicItemName" />
-
-                <mat-error
-                    *ngIf="electronicItemNameCtrl.hasError('required') && (electronicItemNameCtrl.touched || electronicItemNameCtrl.dirty)">
+                <mat-error *ngIf="electronicItemNameCtrl.hasError('required')">
                     Product name is required
                 </mat-error>
-
-                <mat-error
-                    *ngIf="electronicItemNameCtrl.hasError('pattern') && (electronicItemNameCtrl.touched || electronicItemNameCtrl.dirty)">
+                <mat-error *ngIf="electronicItemNameCtrl.hasError('pattern')">
                     Only letters and spaces allowed
                 </mat-error>
-
             </mat-form-field>
+
+            <!-- Price -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Price (Rs.)</mat-label>
+                <input matInput type="number" formControlName="price" />
+                <mat-error *ngIf="form.get('price')?.hasError('required')">
+                    Price is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- QOH -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Quantity On Hand</mat-label>
+                <input matInput type="number" formControlName="qoh" />
+            </mat-form-field>
+
+            <!-- Brand -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Brand</mat-label>
+                <mat-select formControlName="brandId">
+                    <mat-option *ngFor="let brand of brands()" [value]="brand.brandID">
+                        {{ brand.brandName }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('brandId')?.hasError('required')">
+                    Brand is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Category -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Category</mat-label>
+                <mat-select formControlName="categoryId">
+                    <mat-option *ngFor="let category of categories()" [value]="category.categoryID">
+                        {{ category.categoryName }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('categoryId')?.hasError('required')">
+                    Category is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Image Upload -->
+            <div class="image-upload">
+                <label>Product Image</label>
+                <input type="file" accept="image/*" (change)="onImageSelect($event)" />
+
+                <div class="image-preview" *ngIf="imagePreview">
+                    <img [src]="imagePreview" />
+                </div>
+            </div>
+
         </app-dashboard-form-component>
     </form>
 
-    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <!-- ================= LIST ================= -->
     <mat-toolbar color="primary" class="products-toolbar">
 
 
@@ -69,8 +118,7 @@
         <!-- [End: Categories menu] -->
 
     </mat-toolbar>
-
-    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Category"
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Product"
         [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
         (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
 
@@ -87,5 +135,7 @@
                 <mat-icon>delete</mat-icon>
             </button>
         </ng-template>
+
     </app-dashboard-table-component>
+
 </div>

@@ -32,6 +32,7 @@ import { DashboardTableComponent } from '../../../../reusable_components/dashboa
 export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemModel> {
 
 
+  imagePreview: string | ArrayBuffer | null = null;
   // ---------- COMPONENT SPECIFIC STATE ----------
   brands = signal<BrandModel[]>([]);
   categories = signal<CategoryModel[]>([]);
@@ -67,6 +68,18 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
   onCategorySelect(id?: number) {
     this.pageNumber.set(1);
     this.selectedCategoryId.set(id);
+  }
+
+  onImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    this.form.patchValue({ imageFile: file });
+
+    const reader = new FileReader();
+    reader.onload = () => (this.imagePreview = reader.result);
+    reader.readAsDataURL(file);
   }
 
   private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
@@ -156,11 +169,11 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
   private buildForm(): void {
     this.form = this.fb.group({
       electronicItemName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      price: [''],
-      qoh: [''],
-      imageFile: [''],
-      brandId: [''],
-      categoryId: [''],
+      price: ['', [Validators.required, Validators.min(0)]],
+      qoh: ['', [Validators.required, Validators.min(0)]],
+      imageFile: [null],
+      brandId: ['', Validators.required],
+      categoryId: ['', Validators.required],
     });
   }
 
@@ -198,19 +211,22 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
     this.selectedItemId.set(item.electronicItemID ?? null);
 
     this.form.patchValue({
-      electronicItemName: item.electronicItemName
+      electronicItemName: item.electronicItemName,
+      price: item.price,
+      qoh: item.qoh,
+      brandId: item.brandResponseDto?.brandID,
+      categoryId: item.categoryResponseDto?.categoryID,
     });
 
-    mode === DashboardModeEnum.VIEW
-      ? this.form.disable()
-      : this.form.enable();
-
+    this.imagePreview = this.getImageUrl(item);
+    mode === DashboardModeEnum.VIEW ? this.form.disable() : this.form.enable();
     this.formMode.set(mode);
   }
+
   protected override resetForm(): void {
     this.submitted = false;
     this.formDirective.resetForm();
-
+    this.imagePreview = null;
     this.form.enable();
     this.selectedItemId.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
