@@ -1,1 +1,42 @@
-<p>category-nav-component works!</p>
+<div class="dashboard-container">
+
+    <!-- Reusable Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+            [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Category Name</mat-label>
+                <input matInput formControlName="categoryName" />
+
+                <mat-error *ngIf="categoryNameCtrl.hasError('required') && (categoryNameCtrl.touched || categoryNameCtrl.dirty)">
+                    Category name is required
+                </mat-error>
+
+                <mat-error *ngIf="categoryNameCtrl.hasError('pattern') && (categoryNameCtrl.touched || categoryNameCtrl.dirty)">
+                    Only letters and spaces allowed
+                </mat-error>
+
+            </mat-form-field>
+        </app-dashboard-form-component>
+    </form>
+
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Category"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="delete(row)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-template>
+    </app-dashboard-table-component>
+</div>

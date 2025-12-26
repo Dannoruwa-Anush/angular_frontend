@@ -19,5 +19,16 @@ export class CategoryService extends CrudService<CategoryModel> {
     super(http, messageService);
   }
 
+  // Override : pagination
+  getCategoryPaged(
+    pageNumber: number,
+    pageSize: number,
+    searchKey?: string
+  ) {
+    return this.getPaged(pageNumber, pageSize, {
+      searchKey
+    });
+  }
+
   // can add custom api methods here
 }

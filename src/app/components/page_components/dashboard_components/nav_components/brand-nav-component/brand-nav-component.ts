@@ -116,10 +116,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
       });
   }
 
-  protected loadToForm(
-    brand: BrandModel,
-    mode: DashboardModeEnum
-  ): void {
+  protected loadToForm(brand: BrandModel, mode: DashboardModeEnum): void {
     this.selectedItemId.set(brand.brandID ?? null);
 
     this.form.patchValue({
@@ -133,9 +130,6 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     this.formMode.set(mode);
   }
 
-  // ===============================
-  // RESET
-  // ===============================
   protected resetForm(): void {
     this.submitted = false;
     this.formDirective.resetForm();
