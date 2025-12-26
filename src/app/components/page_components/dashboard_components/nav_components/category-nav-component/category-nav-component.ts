@@ -99,6 +99,7 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
   protected override getId(item: CategoryModel): number | null {
     return item.categoryID ?? null;
   }
+
   protected override loadItems(): void {
     const params = this.requestParams();
 
@@ -114,11 +115,11 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
       });
   }
 
-  protected override loadToForm(category: CategoryModel, mode: DashboardModeEnum): void {
-    this.selectedItemId.set(category.categoryID ?? null);
+  protected override loadToForm(item: CategoryModel, mode: DashboardModeEnum): void {
+    this.selectedItemId.set(item.categoryID ?? null);
 
     this.form.patchValue({
-      categoryName: category.categoryName
+      categoryName: item.categoryName
     });
 
     mode === DashboardModeEnum.VIEW
