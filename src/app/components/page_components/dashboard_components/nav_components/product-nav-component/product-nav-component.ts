@@ -83,15 +83,27 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
     this.selectedCategoryId.set(id);
   }
 
-  onImageSelect(event: Event): void {
+  onImageSelect(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
+
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
 
     const file = input.files[0];
-    this.form.patchValue({ imageFile: file });
 
+    // put the File object into the form
+    this.form.patchValue({
+      imageFile: file
+    });
+
+    this.form.get('imageFile')?.updateValueAndValidity();
+
+    // preview
     const reader = new FileReader();
-    reader.onload = () => (this.imagePreview = reader.result);
+    reader.onload = () => {
+      this.imagePreview = reader.result;
+    };
     reader.readAsDataURL(file);
   }
 
@@ -184,9 +196,9 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
       electronicItemName: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
       qoh: ['', [Validators.required, Validators.min(0)]],
-      imageFile: [null],
-      brandId: ['', Validators.required],
-      categoryId: ['', Validators.required],
+      imageFile: [null as File | null],
+      brandID: ['', Validators.required],
+      categoryID: ['', Validators.required],
     });
   }
 
@@ -227,8 +239,8 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
       electronicItemName: item.electronicItemName,
       price: item.price,
       qoh: item.qoh,
-      brandId: item.brandResponseDto?.brandID,
-      categoryId: item.categoryResponseDto?.categoryID,
+      brandID: item.brandResponseDto?.brandID,
+      categoryID: item.categoryResponseDto?.categoryID,
     });
 
     this.imagePreview = this.getImageUrl(item);
