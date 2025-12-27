@@ -32,8 +32,13 @@ import { DashboardTableComponent } from '../../../../reusable_components/dashboa
 export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemModel> {
 
 
+
+
+  // ======================================================
+  // COMPONENT SPECIFIC THINGS
+  // ======================================================
   imagePreview: string | ArrayBuffer | null = null;
-  // ---------- COMPONENT SPECIFIC STATE ----------
+
   brands = signal<BrandModel[]>([]);
   categories = signal<CategoryModel[]>([]);
 
@@ -176,7 +181,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
   // ======================================================
   private buildForm(): void {
     this.form = this.fb.group({
-      electronicItemName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
+      electronicItemName: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
       qoh: ['', [Validators.required, Validators.min(0)]],
       imageFile: [null],
