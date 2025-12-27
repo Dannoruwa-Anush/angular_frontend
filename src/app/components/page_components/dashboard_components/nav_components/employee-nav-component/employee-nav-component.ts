@@ -85,7 +85,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     {
       key: 'position',
       header: 'Position',
-      cell: em => getEmployeePositionName(em.position!)
+      cell: em => em.position!
     },
     {
       key: 'email',
@@ -134,7 +134,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
       password: [''],
       role: [UserRoleEnum.Employee, Validators.required],  //fixed
       employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      positionID: ['', Validators.required]
+      position: ['', Validators.required]
     });
   }
 
@@ -171,6 +171,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
         params.searchKey
       )
       .subscribe(res => {
+        console.log(res);
         this.items.set(res.items);
         this.totalCount.set(res.totalCount);
       });
@@ -182,7 +183,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     this.form.patchValue({
       email: item.user?.email,
       employeeName: item.employeeName,
-      positionID: item.position
+      position: item.position
     });
 
     mode === DashboardModeEnum.VIEW

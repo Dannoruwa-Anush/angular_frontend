@@ -38,13 +38,13 @@
 
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Position</mat-label>
-                <mat-select formControlName="positionID">
+                <mat-select formControlName="position">
                     <mat-option *ngFor="let position of employeePositions()" [value]="position.positionID">
                         {{ position.positionName }}
                     </mat-option>
                 </mat-select>
                 
-                <mat-error *ngIf="form.get('positionID')?.hasError('required')">
+                <mat-error *ngIf="form.get('position')?.hasError('required')">
                     Position is required
                 </mat-error>
             </mat-form-field>
