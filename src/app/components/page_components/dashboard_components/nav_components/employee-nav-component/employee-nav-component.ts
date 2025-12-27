@@ -13,6 +13,7 @@ import { EmployeePositionEnum, getEmployeePositionName } from '../../../../../co
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
+import { EmployeePositionUiModel } from '../../../../../models/ui_models/employeePositionUiModel';
 
 @Component({
   selector: 'app-employee-nav-component',
