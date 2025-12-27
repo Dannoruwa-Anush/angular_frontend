@@ -11,6 +11,8 @@ import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOper
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
 import { EmployeePositionEnum, getEmployeePositionName } from '../../../../../config/enums/employeePositionEnum';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
+import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
+import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 
 @Component({
   selector: 'app-employee-nav-component',
@@ -18,6 +20,8 @@ import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
     MaterialModule,
     ReactiveFormsModule,
     CommonModule,
+    DashboardFormComponent,
+    DashboardTableComponent
   ],
   templateUrl: './employee-nav-component.html',
   styleUrl: './employee-nav-component.scss',
@@ -26,16 +30,16 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
 
 
 
-
   // ======================================================
   // COMPONENT SPECIFIC THINGS
   // ======================================================
-  employeePositions = signal<EmployeePositionEnum[]>([]);
+  employeePositions = signal<EmployeePositionUiModel[]>([]);
   selectedEmployeePositionId = signal<number | undefined>(undefined);
 
-  //selectedemployeePositionName = computed(() =>
-  //this.employeePositions().find(p => p.brandID === this.selectedBrandId())?.brandName
-  //);
+  selectedPositionName = computed(() => {
+    const id = this.selectedEmployeePositionId();
+    return id ? getEmployeePositionName(id as EmployeePositionEnum) : undefined;
+  });
 
   override requestParams = computed(() => ({
     pageNumber: this.pageNumber(),
@@ -44,9 +48,15 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     searchKey: this.searchText() || undefined,
   }));
 
-
   private loadEmployeePositions(): void {
+    const positions = Object.values(EmployeePositionEnum)
+      .filter(v => typeof v === 'number')
+      .map(v => ({
+        positionID: v as number,
+        positionName: getEmployeePositionName(v as EmployeePositionEnum)
+      }));
 
+    this.employeePositions.set(positions);
   }
 
   onEmployeePositionSelect(id?: number) {
@@ -105,6 +115,9 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     this.buildForm();
     this.loading = this.employeeService.loading;
 
+    // Load static data
+    this.loadEmployeePositions();
+
     // Auto reload when paging / search changes
     effect(() => {
       this.requestParams();
@@ -118,11 +131,26 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
   private buildForm(): void {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required], // can't update
+      password: [''],
       role: [UserRoleEnum.Employee, Validators.required],  //fixed
       employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      position: ['', Validators.required]
+      positionID: ['', Validators.required]
     });
+  }
+
+  // ===============================
+  // GETTERS
+  // ===============================
+  get employeeNameCtrl() {
+    return this.form.get('employeeName')!;
+  }
+
+  get emailCtrl() {
+    return this.form.get('email')!;
+  }
+
+  get passwordCtrl() {
+    return this.form.get('password')!;
   }
 
   // ======================================================
@@ -139,7 +167,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
       .getEmployeePaged(
         params.pageNumber,
         params.pageSize,
-        1,// params.positionId,
+        params.positionId,
         params.searchKey
       )
       .subscribe(res => {
@@ -154,7 +182,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     this.form.patchValue({
       email: item.user?.email,
       employeeName: item.employeeName,
-      position: item.position
+      positionID: item.position
     });
 
     mode === DashboardModeEnum.VIEW

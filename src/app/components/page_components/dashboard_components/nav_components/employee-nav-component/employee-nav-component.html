@@ -1,1 +1,97 @@
-<p>employee-nav-component works!</p>
+<div class="dashboard-container">
+
+    <!-- ================= FORM ================= -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Employee Name</mat-label>
+                <input matInput formControlName="employeeName" />
+                
+                <mat-error *ngIf="employeeNameCtrl.hasError('required')">
+                    Employee name is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="auth-input">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" />
+
+                <mat-error *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || emailCtrl.dirty)">
+                    Email is required
+                </mat-error>
+
+                <mat-error *ngIf="emailCtrl.hasError('email') && (emailCtrl.touched || emailCtrl.dirty)">
+                    Enter a valid email
+                </mat-error>
+            </mat-form-field>
+
+            <!-- PASSWORD -->
+            <mat-form-field appearance="outline" class="auth-input">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" formControlName="password" />
+
+                <mat-error *ngIf="passwordCtrl.hasError('required') && (passwordCtrl.touched || passwordCtrl.dirty)">
+                    Password is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Position</mat-label>
+                <mat-select formControlName="positionID">
+                    <mat-option *ngFor="let position of employeePositions()" [value]="position.positionID">
+                        {{ position.positionName }}
+                    </mat-option>
+                </mat-select>
+                
+                <mat-error *ngIf="form.get('positionID')?.hasError('required')">
+                    Position is required
+                </mat-error>
+            </mat-form-field>
+        </app-dashboard-form-component>
+    </form>
+
+    <!-- ================= LIST ================= -->
+    <mat-toolbar color="primary" class="products-toolbar">
+        <!-- [Start: Brand menu] -->
+        <button mat-button [matMenuTriggerFor]="employeePositionsMenu" class="filter-button"
+            [class.active-filter]="selectedEmployeePositionId() !== undefined">
+            {{ selectedPositionName() ?? 'Positions' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #employeePositionsMenu="matMenu">
+            <button mat-menu-item (click)="onEmployeePositionSelect(undefined)"
+                [class.selected-menu-item]="selectedEmployeePositionId() === undefined">
+                All EmployeePositions
+            </button>
+
+            <button mat-menu-item *ngFor="let position of employeePositions()" (click)="onEmployeePositionSelect(position.positionID)"
+                [class.selected-menu-item]="selectedEmployeePositionId() === position.positionID">
+                {{ position.positionName }}
+            </button>
+        </mat-menu>
+        <!-- [End: Brand menu] -->
+    </mat-toolbar>
+
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Employee"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="delete(row)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-template>
+
+    </app-dashboard-table-component>
+
+</div>
