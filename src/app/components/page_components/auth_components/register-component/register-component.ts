@@ -1,7 +1,7 @@
 import { Component, Signal, ViewChild } from '@angular/core';
 
 import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
 import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
@@ -43,7 +43,8 @@ export class RegisterComponent {
     private authSessionService: AuthSessionService,
     private customerService: CustomerService,
     private messageService: SystemMessageService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.buildForm();
     this.loading = this.authSessionService.loading;
@@ -164,6 +165,8 @@ export class RegisterComponent {
       next: () => {
         this.resetForm();
         this.messageService.success('Account created successfully');
+
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         const msg = err?.error?.message || 'Registration failed';
