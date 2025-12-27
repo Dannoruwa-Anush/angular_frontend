@@ -26,9 +26,11 @@ export class EmployeeService extends CrudService<EmployeeModel> {
     getEmployeePaged(
         pageNumber: number,
         pageSize: number,
+        positionId?: number,
         searchKey?: string
     ) {
         return this.getPaged(pageNumber, pageSize, {
+            positionId,
             searchKey
         });
     }

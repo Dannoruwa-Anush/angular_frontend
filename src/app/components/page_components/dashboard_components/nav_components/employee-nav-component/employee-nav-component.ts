@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, ViewChild } from '@angular/core';
+import { Component, computed, effect, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
@@ -9,7 +9,7 @@ import { EmployeeService } from '../../../../../services/api_services/employeeSe
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
-import { getEmployeePositionName } from '../../../../../config/enums/employeePositionEnum';
+import { EmployeePositionEnum, getEmployeePositionName } from '../../../../../config/enums/employeePositionEnum';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 
 @Component({
@@ -26,6 +26,33 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
 
 
 
+
+  // ======================================================
+  // COMPONENT SPECIFIC THINGS
+  // ======================================================
+  employeePositions = signal<EmployeePositionEnum[]>([]);
+  selectedEmployeePositionId = signal<number | undefined>(undefined);
+
+  //selectedemployeePositionName = computed(() =>
+  //this.employeePositions().find(p => p.brandID === this.selectedBrandId())?.brandName
+  //);
+
+  override requestParams = computed(() => ({
+    pageNumber: this.pageNumber(),
+    pageSize: this.pageSize(),
+    positionId: this.selectedEmployeePositionId(),
+    searchKey: this.searchText() || undefined,
+  }));
+
+
+  private loadEmployeePositions(): void {
+
+  }
+
+  onEmployeePositionSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedEmployeePositionId.set(id);
+  }
 
   // ======================================================
   // FORM
@@ -53,7 +80,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     {
       key: 'email',
       header: 'Email',
-      cell: em => em.userResponseDto!.email
+      cell: em => em.user!.email
     },
     {
       key: 'createdAt',
@@ -91,25 +118,135 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
   private buildForm(): void {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: [123], //fixed
-      role: [UserRoleEnum.Employee],  //fixed
+      password: ['', Validators.required], // can't update
+      role: [UserRoleEnum.Employee, Validators.required],  //fixed
       employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      position: ['']
+      position: ['', Validators.required]
     });
   }
+
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
   protected override getId(item: EmployeeModel): number | null {
-    throw new Error('Method not implemented.');
+    return item.employeeID ?? null;
   }
+
   protected override loadItems(): void {
-    throw new Error('Method not implemented.');
+    const params = this.requestParams();
+
+    this.employeeService
+      .getEmployeePaged(
+        params.pageNumber,
+        params.pageSize,
+        1,// params.positionId,
+        params.searchKey
+      )
+      .subscribe(res => {
+        this.items.set(res.items);
+        this.totalCount.set(res.totalCount);
+      });
   }
+
   protected override loadToForm(item: EmployeeModel, mode: DashboardModeEnum): void {
-    throw new Error('Method not implemented.');
+    this.selectedItemId.set(item.employeeID ?? null);
+
+    this.form.patchValue({
+      email: item.user?.email,
+      employeeName: item.employeeName,
+      position: item.position
+    });
+
+    mode === DashboardModeEnum.VIEW
+      ? this.form.disable()
+      : this.form.enable();
+
+    this.formMode.set(mode);
   }
+
   protected override resetForm(): void {
-    throw new Error('Method not implemented.');
+    this.submitted = false;
+    this.formDirective.resetForm();
+
+    this.form.enable();
+    this.selectedItemId.set(null);
+    this.formMode.set(DashboardModeEnum.CREATE);
+  }
+
+  // ===============================
+  // SUBMIT
+  // ===============================
+  onSubmit(): void {
+    this.submitted = true;
+
+    if (this.form.invalid || this.isViewMode()) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.isEditMode() ? this.update() : this.save();
+  }
+
+  // ======================================================
+  // CRUD OPERATIONS
+  // ======================================================
+  save(): void {
+    this.confirmationHelper.confirmSave('employee').subscribe(confirmed => {
+      if (!confirmed) return;
+
+      const payload: EmployeeModel = this.form.getRawValue();
+
+      this.employeeService.create(payload).subscribe({
+        next: () => {
+          this.messageService.success('Employee saved successfully');
+          this.resetForm();
+          this.loadItems();
+        },
+        error: err => {
+          this.messageService.error(err?.error?.message || 'Save failed');
+        }
+      });
+    });
+  }
+
+  update(): void {
+    const id = this.selectedItemId();
+    if (!id) return;
+
+    this.confirmationHelper.confirmUpdate('employee').subscribe(confirmed => {
+      if (!confirmed) return;
+
+      const payload: EmployeeModel = {
+        employeeID: id,
+        ...this.form.getRawValue()
+      }
+
+      this.employeeService.update(payload.employeeID!, payload).subscribe({
+        next: () => {
+          this.messageService.success('Employee updated successfully');
+          this.resetForm();
+          this.loadItems();
+        },
+        error: err => {
+          this.messageService.error(err?.error?.message || 'Update failed');
+        }
+      });
+    });
+  }
+
+  delete(employee: EmployeeModel): void {
+    this.confirmationHelper.confirmDelete('employee').subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.employeeService.delete(employee.employeeID!).subscribe({
+        next: () => {
+          this.messageService.success('employee deleted successfully');
+          this.loadItems();
+        },
+        error: err => {
+          this.messageService.error(err?.error?.message || 'Delete failed');
+        }
+      });
+    });
   }
 }

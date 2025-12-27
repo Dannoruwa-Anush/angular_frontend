@@ -9,5 +9,5 @@ export interface EmployeeModel {
     updatedAt?: string;
     
     //FK: Fields
-    userResponseDto?: UserModel;
+    user?: UserModel;
 }
