@@ -57,19 +57,6 @@ export class AuthSessionService {
     }
 
     // ---------- PRIVATE ----------
-    private mapRole(role: string): UserRoleEnum {
-        switch (role) {
-            case 'Admin':
-                return UserRoleEnum.Admin;
-            case 'Employee':
-                return UserRoleEnum.Employee;
-            case 'Customer':
-                return UserRoleEnum.Customer;
-            default:
-                throw new Error(`Unknown role: ${role}`);
-        }
-    }
-
     private loadSession(): AuthSessionModel | null {
         const data = localStorage.getItem(AUTH_KEY);
         return data ? JSON.parse(data) : null;
@@ -102,7 +89,7 @@ export class AuthSessionService {
                     const session: AuthSessionModel = {
                         token: res.data.token,
                         email: res.data.email,
-                        role: this.mapRole(res.data.role),
+                        role: res.data.role,
                         userID: res.data.userID,
                     };
 
@@ -142,6 +129,8 @@ export class AuthSessionService {
                     this.messageService.success(
                         res.message || 'Registration successful'
                     );
+                    
+                    this.router.navigate(['/login']);
                 }),
                 catchError((err: HttpErrorResponse) => {
                     this.loading.set(false);
