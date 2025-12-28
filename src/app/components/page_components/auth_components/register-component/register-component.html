@@ -1,104 +1,104 @@
 <div class="app-element-wrapper">
-    <mat-card class="auth-card">
+  <mat-card class="auth-card register-card">
+    <h2 class="auth-title">Register</h2>
 
-        <h2 class="auth-title">Register</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="register-form-container">
+        <!-- NAME -->
+        <mat-form-field appearance="outline" class="auth-input">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name">
 
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
-            <!-- NAME -->
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Name</mat-label>
-                <input matInput formControlName="name">
+          <mat-error *ngIf="nameCtrl.hasError('required') && (nameCtrl.touched || nameCtrl.dirty)">
+            Name is required
+          </mat-error>
 
-                <mat-error *ngIf="nameCtrl.hasError('required') && (nameCtrl.touched || nameCtrl.dirty)">
-                    Name is required
-                </mat-error>
+          <mat-error *ngIf="nameCtrl.hasError('pattern') && (nameCtrl.touched || nameCtrl.dirty)">
+            Only letters and spaces allowed
+          </mat-error>
+        </mat-form-field>
 
-                <mat-error *ngIf="nameCtrl.hasError('pattern') && (nameCtrl.touched || nameCtrl.dirty)">
-                    Only letters and spaces allowed
-                </mat-error>
-            </mat-form-field>
+        <!-- PHONE NO -->
+        <mat-form-field appearance="outline" class="auth-input">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phoneNo">
 
-            <!-- PHONE NO -->
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Phone</mat-label>
-                <input matInput formControlName="phoneNo">
+          <mat-error *ngIf="phoneNoCtrl.hasError('required') && (phoneNoCtrl.touched || phoneNoCtrl.dirty)">
+            Phone No is required
+          </mat-error>
 
-                <mat-error *ngIf="phoneNoCtrl.hasError('required') && (phoneNoCtrl.touched || phoneNoCtrl.dirty)">
-                    Phone No is required
-                </mat-error>
+          <mat-error *ngIf="phoneNoCtrl.hasError('pattern') && (phoneNoCtrl.touched || phoneNoCtrl.dirty)">
+            10-digit phone number is allowed
+          </mat-error>
+        </mat-form-field>
 
-                <mat-error *ngIf="phoneNoCtrl.hasError('pattern') && (phoneNoCtrl.touched || phoneNoCtrl.dirty)">
-                    10-digit phone number is allowed
-                </mat-error>
-            </mat-form-field>
+        <!-- ADDRESS -->
+        <mat-form-field appearance="outline" class="auth-input">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address">
 
-            <!-- ADDRESS -->
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Address</mat-label>
-                <input matInput formControlName="address">
+          <mat-error *ngIf="addressCtrl.hasError('required') && (addressCtrl.touched || addressCtrl.dirty)">
+            Address is required
+          </mat-error>
 
-                <mat-error *ngIf="addressCtrl.hasError('required') && (addressCtrl.touched || addressCtrl.dirty)">
-                    Address is required
-                </mat-error>
+          <mat-error *ngIf="addressCtrl.hasError('pattern') && (addressCtrl.touched || addressCtrl.dirty)">
+            Only letters and spaces allowed
+          </mat-error>
+        </mat-form-field>
 
-                <mat-error *ngIf="addressCtrl.hasError('pattern') && (addressCtrl.touched || addressCtrl.dirty)">
-                    Only letters and spaces allowed
-                </mat-error>
-            </mat-form-field>
+        <!-- EMAIL -->
+        <mat-form-field appearance="outline" class="auth-input">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" />
 
-            <!-- EMAIL -->
-            <mat-form-field appearance="outline" class="auth-input">
-                <mat-label>Email</mat-label>
-                <input matInput formControlName="email" />
+          <mat-error *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || emailCtrl.dirty)">
+            Email is required
+          </mat-error>
 
-                <mat-error *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || emailCtrl.dirty)">
-                    Email is required
-                </mat-error>
+          <mat-error *ngIf="emailCtrl.hasError('email') && (emailCtrl.touched || emailCtrl.dirty)">
+            Enter a valid email
+          </mat-error>
+        </mat-form-field>
 
-                <mat-error *ngIf="emailCtrl.hasError('email') && (emailCtrl.touched || emailCtrl.dirty)">
-                    Enter a valid email
-                </mat-error>
-            </mat-form-field>
+        <!-- PASSWORD -->
+        <mat-form-field appearance="outline" class="auth-input">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
 
-            <!-- PASSWORD -->
-            <mat-form-field appearance="outline" class="auth-input">
-                <mat-label>Password</mat-label>
-                <input matInput type="password" formControlName="password" />
+          <mat-error
+            *ngIf="passwordCtrl.hasError('required') && (passwordCtrl.touched || passwordCtrl.dirty)">
+            Password is required
+          </mat-error>
+        </mat-form-field>
 
-                <mat-error *ngIf="passwordCtrl.hasError('required') && (passwordCtrl.touched || passwordCtrl.dirty)">
-                    Password is required
-                </mat-error>
-            </mat-form-field>
+        <!-- CONFIRM PASSWORD -->
+        <mat-form-field appearance="outline" class="auth-input">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" />
 
-            <!-- CONFIRM PASSWORD -->
-            <mat-form-field appearance="outline" class="auth-input">
-                <mat-label>Confirm Password</mat-label>
-                <input matInput type="password" formControlName="confirmPassword" />
+          <mat-error
+            *ngIf="confirmPasswordCtrl.hasError('required') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
+            Confirm password is required
+          </mat-error>
 
-                <mat-error
-                    *ngIf="confirmPasswordCtrl.hasError('required') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
-                    Confirm password is required
-                </mat-error>
+          <mat-error
+            *ngIf="confirmPasswordCtrl.hasError('passwordsMismatch') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
+            Passwords do not match
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-                <mat-error
-                    *ngIf="confirmPasswordCtrl.hasError('passwordsMismatch') && (confirmPasswordCtrl.touched || confirmPasswordCtrl.dirty)">
-                    Passwords do not match
-                </mat-error>
-            </mat-form-field>
+      <!-- SUBMIT -->
+      <button mat-raised-button color="primary" type="submit" class="auth-submit-btn"
+              [disabled]="loading() || (submitted && form.invalid)">
+        <mat-spinner *ngIf="loading()" diameter="18" class="btn-spinner"></mat-spinner>
+        <span *ngIf="!loading()">Create Account</span>
+      </button>
+    </form>
 
-            <!-- SUBMIT -->
-            <button mat-raised-button color="primary" type="submit" class="auth-submit-btn"
-                [disabled]="loading() || (submitted && form.invalid)">
-                <mat-spinner *ngIf="loading()" diameter="18" class="btn-spinner"></mat-spinner>
-                <span *ngIf="!loading()">Create Account</span>
-            </button>
-        </form>
-
-        <!-- SWITCH -->
-        <p class="auth-switch-link">
-            Already have an account?
-            <a routerLink="/login">Login</a>
-        </p>
-
-    </mat-card>
+    <!-- SWITCH -->
+    <p class="auth-switch-link">
+      Already have an account? <a routerLink="/login">Login</a>
+    </p>
+  </mat-card>
 </div>

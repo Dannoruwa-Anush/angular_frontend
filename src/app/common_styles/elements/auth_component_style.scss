@@ -1,41 +1,147 @@
+/* auth-card (Used in both Login and Register components) */
 .auth-card {
-  width: 380px;
-  padding: 20px;
-  margin: 0;
+  width: 100%;               
+  max-width: 450px;          /* Default max width for Login form */
+  margin: 0 auto;            /* Center the card horizontally */
+  padding: 20px;             
+  background-color: #fff;    
+  border-radius: 12px;       
   box-shadow: none;
-
-  display: flex;
-  flex-direction: column;
+  display: flex;             /* Flex layout for vertical stacking */
+  flex-direction: column;    /* Stack elements vertically */
+  justify-content: flex-start;   /* Align content from the top */
+  align-items: center;       /* Align items to the center horizontally */
+  padding-bottom: 40px;      
+  transition: box-shadow 0.3s ease-in-out; 
 }
 
-/* Title */
+/* Register Card */
+.register-card {
+  max-width: 600px; 
+}
+
 .auth-title {
-  margin-bottom: 20px;
-  text-align: center;
+  font-size: 24px;           
+  font-weight: 600;           
+  color: #333;              
+  margin-bottom: 20px;      
+  text-align: center;        
 }
 
-/* Form layout */
-form {
-  display: flex;
-  flex-direction: column;
+/* Form container layout for Register component (two-column grid) */
+.register-form-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 20px; /* Space between form fields */
+  margin: 20px 0;
 }
 
-/* Inputs */
 .auth-input {
-  width: 100%;
-  margin-bottom: 16px;
-  display: block;
+  width: 100%; 
+  margin-bottom: 5px; 
 }
 
-/* Submit button */
 .auth-submit-btn {
-  width: 100%;
-  margin-top: 4px;
+  width: 100%;           
+  padding: 12px 0;       
+  margin-top: 16px;
+  font-size: 16px;       
+  font-weight: 600;     
+  text-transform: uppercase;
+  border-radius: 8px;    
+  transition: background-color 0.3s ease-in-out; 
 }
 
-/* Switch link */
+.auth-submit-btn:hover {
+  background-color: #dcd9e0; 
+  cursor: pointer;      
+}
+
 .auth-switch-link {
   margin-top: 16px;
   text-align: center;
   font-size: 14px;
+}
+
+.auth-switch-link a {
+  color: #5e35b1;             
+  text-decoration: none;       /* No underline */
+  font-weight: 500;            
+}
+
+.auth-switch-link a:hover {
+  text-decoration: underline;  
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 1200px) {
+  .auth-card {
+    max-width: 90%;             
+    padding: 25px;
+  }
+
+  .auth-title {
+    font-size: 22px;           
+  }
+
+  .auth-submit-btn {
+    font-size: 14px;           
+  }
+
+  .auth-switch-link {
+    font-size: 12px;          
+  }
+}
+
+@media (max-width: 900px) {
+  .register-form-container {
+    grid-template-columns: 1fr; 
+  }
+
+  .auth-card {
+    padding: 20px;
+    max-width: 100%;           
+  }
+
+  .auth-title {
+    font-size: 20px;           
+  }
+
+  .auth-submit-btn {
+    font-size: 15px;
+  }
+
+  .auth-switch-link {
+    font-size: 13px;
+  }
+}
+
+/* For small mobile screens */
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 15px;            
+    max-width: 100%;         
+    margin: 20px;              
+  }
+
+  .auth-title {
+    font-size: 18px;           
+  }
+
+  .auth-submit-btn {
+    font-size: 14px;           
+    padding: 10px 0;          
+  }
+
+  .auth-switch-link {
+    font-size: 12px;           
+  }
+
+  .register-form-container {
+    grid-template-columns: 1fr; 
+  }
+
+  .auth-submit-btn {
+    width: 100%;          
+  }
 }
