@@ -3,7 +3,6 @@ import { Component, computed, effect, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
-import { EmployeeModel } from '../../../../../models/api_models/employeeModel';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { EmployeeService } from '../../../../../services/api_services/employeeService';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
@@ -14,7 +13,9 @@ import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { EmployeePositionUiModel } from '../../../../../models/ui_models/employeePositionUiModel';
-import { EmployeeRegisterRequestModel } from '../../../../../models/api_models/core_api_models/user_registration/employeeRegisterRequestModel';
+import { EmployeeCreateModel } from '../../../../../models/api_models/create_update_models/create_models/employee_create_Model';
+import { EmployeeReadModel } from '../../../../../models/api_models/read_models/employee_read_Model';
+import { EmployeeUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/employee_update_Model';
 
 @Component({
   selector: 'app-employee-nav-component',
@@ -28,7 +29,7 @@ import { EmployeeRegisterRequestModel } from '../../../../../models/api_models/c
   templateUrl: './employee-nav-component.html',
   styleUrl: './employee-nav-component.scss',
 })
-export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
+export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadModel> {
 
 
 
@@ -78,7 +79,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
   // ======================================================
   // TABLE CONFIG
   // ======================================================
-  columns: DashboardTableColumnModel<EmployeeModel>[] = [
+  columns: DashboardTableColumnModel<EmployeeReadModel>[] = [
     {
       key: 'employeeName',
       header: 'Name',
@@ -158,7 +159,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
-  protected override getId(item: EmployeeModel): number | null {
+  protected override getId(item: EmployeeReadModel): number | null {
     return item.employeeID ?? null;
   }
 
@@ -178,7 +179,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
       });
   }
 
-  protected override loadToForm(item: EmployeeModel, mode: DashboardModeEnum): void {
+  protected override loadToForm(item: EmployeeReadModel, mode: DashboardModeEnum): void {
     this.selectedItemId.set(item.employeeID ?? null);
 
     this.form.patchValue({
@@ -224,7 +225,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     this.confirmationHelper.confirmSave('employee').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: EmployeeRegisterRequestModel = {
+      const payload: EmployeeCreateModel = {
         employeeName: this.form.value.employeeName,
         position: this.form.value.position,
 
@@ -235,9 +236,6 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
         }
       };
 
-      console.log(payload); //??????????????????????
-
-      /*
       this.employeeService.create(payload).subscribe({
         next: () => {
           this.messageService.success('Employee saved successfully');
@@ -248,7 +246,6 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
           this.messageService.error(err?.error?.message || 'Save failed');
         }
       });
-      */
     });
   }
 
@@ -259,12 +256,11 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     this.confirmationHelper.confirmUpdate('employee').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: EmployeeModel = {
-        employeeID: id,
+      const payload: EmployeeUpdateModel = {
         ...this.form.getRawValue()
       }
 
-      this.employeeService.update(payload.employeeID!, payload).subscribe({
+      this.employeeService.update(id, payload).subscribe({
         next: () => {
           this.messageService.success('Employee updated successfully');
           this.resetForm();
@@ -277,7 +273,7 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeModel> {
     });
   }
 
-  delete(employee: EmployeeModel): void {
+  delete(employee: EmployeeReadModel): void {
     this.confirmationHelper.confirmDelete('employee').subscribe(confirmed => {
       if (!confirmed) return;
 
