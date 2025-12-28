@@ -11,8 +11,9 @@ import { AuthSessionService } from '../../../../../services/auth_services/authSe
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { EmployeeReadModel } from '../../../../../models/api_models/read_models/employee_read_Model';
-import { EmployeeCreateModel } from '../../../../../models/api_models/create_update_models/create_models/employee_create_Model';
 import { CustomerReadModel } from '../../../../../models/api_models/read_models/customer_read_Model';
+import { CustomerUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/customer_update_Model';
+import { EmployeeUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/employee_update_Model';
 
 @Component({
   selector: 'app-profile-nav-component',
@@ -221,14 +222,14 @@ export class ProfileNavComponent {
       return;
     }
 
-    //this.isEditMode() ? this.update() : this.save();
+    this.update();
   }
 
   // ======================================================
   // CRUD OPERATIONS
   // ======================================================
-  /*
-  private buildCustomerPayload(): CustomerModel {
+  
+  private buildUpdateCustomerPayload(): CustomerUpdateModel {
     const raw = this.form.getRawValue();
 
     return {
@@ -237,46 +238,16 @@ export class ProfileNavComponent {
       address: raw.address,
     };
   }
-  */
 
-  /*
-  private buildEmployeePayload(): EmployeeCreateModel {
+  private buildUpdateEmployeePayload(): EmployeeUpdateModel {
     const raw = this.form.getRawValue();
 
     return {
       employeeName: raw.name,
       position: raw.position,
-      user : {}
     };
   }
-*/
-/*
-  save(): void {
-    this.confirmationHelper.confirmSave('Profile').subscribe(confirmed => {
-      if (!confirmed) return;
 
-      if (this.role === UserRoleEnum.Customer) {
-        this.customerService.create(this.buildCustomerPayload()).subscribe(() => {
-          this.messageService.success('Profile saved successfully');
-          this.resetForm();
-          this.loadProfile();
-        });
-      }
-
-      /*
-      if (this.role === UserRoleEnum.Employee) {
-        this.employeeService.create(this.buildEmployeePayload()).subscribe(() => {
-          this.messageService.success('Profile saved successfully');
-          this.resetForm();
-          this.loadProfile();
-        });
-      }
-
-    });
-  }
-   */
-
-  /*
   update(): void {
     const id = this.selectedItemId();
     if (!id) return;
@@ -285,9 +256,7 @@ export class ProfileNavComponent {
       if (!confirmed) return;
 
       if (this.role === UserRoleEnum.Customer) {
-        this.customerService.update(
-          id,
-          { ...this.buildCustomerPayload(), customerID: id }
+        this.customerService.update(id, { ...this.buildUpdateCustomerPayload()}
         ).subscribe(() => {
           this.messageService.success('Profile updated successfully');
           this.resetForm();
@@ -295,19 +264,14 @@ export class ProfileNavComponent {
         });
       }
 
-      /*
       if (this.role === UserRoleEnum.Employee) {
-        this.employeeService.update(
-          id,
-          { ...this.buildEmployeePayload(), employeeID: id }
+        this.employeeService.update(id,{ ...this.buildUpdateEmployeePayload()}
         ).subscribe(() => {
           this.messageService.success('Profile updated successfully');
           this.resetForm();
           this.loadProfile();
         });
       }
-    
     });
   }
-      */
 }
