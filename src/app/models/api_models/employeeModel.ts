@@ -1,5 +1,5 @@
 import { EmployeePositionEnum } from "../../config/enums/employeePositionEnum";
-import { UserModel } from "./userModel";
+import { UserReadModel } from "./read_models/user_read_Model";
 
 export interface EmployeeModel {
     employeeID?: number;
@@ -9,5 +9,5 @@ export interface EmployeeModel {
     updatedAt?: string;
     
     //FK: Fields
-    user?: UserModel;
+    user?: UserReadModel;
 }

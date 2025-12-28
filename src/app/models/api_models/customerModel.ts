@@ -1,4 +1,4 @@
-import { UserModel } from "./userModel";
+import { UserReadModel } from "./read_models/user_read_Model";
 
 export interface CustomerModel {
     customerID?: number;
@@ -7,5 +7,5 @@ export interface CustomerModel {
     address: string;
 
     //FK: Fields
-    userResponseDto?: UserModel;
+    userResponseDto?: UserReadModel;
 }
