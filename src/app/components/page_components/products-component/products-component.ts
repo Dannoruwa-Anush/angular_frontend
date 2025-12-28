@@ -1,7 +1,6 @@
 import { Component, computed, effect, OnInit, signal } from '@angular/core';
 
 import { BrandService } from '../../../services/api_services/brandService';
-import { CategoryModel } from '../../../models/api_models/categoryModel';
 import { ElectronicItemModel } from '../../../models/api_models/electronicItemModel';
 import { CategoryService } from '../../../services/api_services/categoryService';
 import { ElectronicItemService } from '../../../services/api_services/electronicItemService';
@@ -11,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../config/environment';
 import { BrandReadModel } from '../../../models/api_models/read_models/brand_read_Model';
+import { CategoryReadModel } from '../../../models/api_models/read_models/category_read_Model';
 
 @Component({
   selector: 'app-products-component',
@@ -31,7 +31,7 @@ export class ProductsComponent {
 
   // ---------- STATE ----------
   brands = signal<BrandReadModel[]>([]);
-  categories = signal<CategoryModel[]>([]);
+  categories = signal<CategoryReadModel[]>([]);
   electronicItems = signal<ElectronicItemModel[]>([]);
 
   pageNumber = signal(1);

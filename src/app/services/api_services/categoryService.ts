@@ -1,14 +1,15 @@
 import { Injectable } from "@angular/core";
 
 import { CrudService } from "./core_services/crud-service";
-import { CategoryModel } from "../../models/api_models/categoryModel";
 import { HttpClient } from "@angular/common/http";
 import { SystemMessageService } from "../ui_service/systemMessageService";
+import { CategoryReadModel } from "../../models/api_models/read_models/category_read_Model";
+import { CategoryCreateUpdateModel } from "../../models/api_models/create_update_models/category_create_update_Model";
 
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryService extends CrudService<CategoryModel, CategoryModel, CategoryModel> {
+export class CategoryService extends CrudService<CategoryReadModel, CategoryCreateUpdateModel, CategoryCreateUpdateModel> {
 
   protected endpoint = 'category';
 

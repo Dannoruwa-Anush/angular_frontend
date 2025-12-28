@@ -4,7 +4,7 @@ import { CrudService } from "./core_services/crud-service";
 import { HttpClient } from "@angular/common/http";
 import { SystemMessageService } from "../ui_service/systemMessageService";
 import { BrandReadModel } from "../../models/api_models/read_models/brand_read_Model";
-import { BrandCreateUpdateModel } from "../../models/api_models/create_update_models/brand_Create_Model";
+import { BrandCreateUpdateModel } from "../../models/api_models/create_update_models/brand_create_update_Model";
 
 @Injectable({
   providedIn: 'root',

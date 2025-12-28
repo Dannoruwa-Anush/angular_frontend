@@ -12,7 +12,7 @@ import { DashboardFormComponent } from '../../../../reusable_components/dashboar
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
 import { BrandReadModel } from '../../../../../models/api_models/read_models/brand_read_Model';
-import { BrandCreateUpdateModel } from '../../../../../models/api_models/create_update_models/brand_Create_Model';
+import { BrandCreateUpdateModel } from '../../../../../models/api_models/create_update_models/brand_create_update_Model';
 
 
 @Component({

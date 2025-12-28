@@ -1,6 +1,6 @@
 
-import { CategoryModel } from "./categoryModel";
 import { BrandReadModel } from "./read_models/brand_read_Model";
+import { CategoryReadModel } from "./read_models/category_read_Model";
 
 export interface ElectronicItemModel {
     electronicItemID?: number;
@@ -12,5 +12,5 @@ export interface ElectronicItemModel {
 
     //FK: Fields
     brandResponseDto?: BrandReadModel;
-    categoryResponseDto?: CategoryModel;
+    categoryResponseDto?: CategoryReadModel;
 }

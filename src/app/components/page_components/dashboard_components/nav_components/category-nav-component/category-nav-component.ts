@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Valida
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
-import { CategoryModel } from '../../../../../models/api_models/categoryModel';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { CategoryService } from '../../../../../services/api_services/categoryService';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
+import { CategoryReadModel } from '../../../../../models/api_models/read_models/category_read_Model';
+import { CategoryCreateUpdateModel } from '../../../../../models/api_models/create_update_models/category_create_update_Model';
 
 @Component({
   selector: 'app-category-nav-component',
@@ -24,7 +25,7 @@ import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashb
   templateUrl: './category-nav-component.html',
   styleUrl: './category-nav-component.scss',
 })
-export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
+export class CategoryNavComponent extends DashboardNavStateBase<CategoryReadModel> {
 
 
 
@@ -41,7 +42,7 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
   // ======================================================
   // TABLE CONFIG
   // ======================================================
-  columns: DashboardTableColumnModel<CategoryModel>[] = [
+  columns: DashboardTableColumnModel<CategoryReadModel>[] = [
     {
       key: 'categoryName',
       header: 'Category',
@@ -96,7 +97,7 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
-  protected override getId(item: CategoryModel): number | null {
+  protected override getId(item: CategoryReadModel): number | null {
     return item.categoryID ?? null;
   }
 
@@ -115,7 +116,7 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
       });
   }
 
-  protected override loadToForm(item: CategoryModel, mode: DashboardModeEnum): void {
+  protected override loadToForm(item: CategoryReadModel, mode: DashboardModeEnum): void {
     this.selectedItemId.set(item.categoryID ?? null);
 
     this.form.patchValue({
@@ -158,7 +159,7 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
     this.confirmationHelper.confirmSave('category').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: CategoryModel = this.form.getRawValue();
+      const payload: CategoryCreateUpdateModel = this.form.getRawValue();
 
       this.categoryService.create(payload).subscribe({
         next: () => {
@@ -180,12 +181,11 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
     this.confirmationHelper.confirmUpdate('category').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: CategoryModel = {
-        categoryID: id,
+      const payload: CategoryCreateUpdateModel = {
         ...this.form.getRawValue()
       }
 
-      this.categoryService.update(payload.categoryID!, payload).subscribe({
+      this.categoryService.update(id, payload).subscribe({
         next: () => {
           this.messageService.success('Category updated successfully');
           this.resetForm();
@@ -198,7 +198,7 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryModel> {
     });
   }
 
-  delete(category: CategoryModel): void {
+  delete(category: CategoryReadModel): void {
     this.confirmationHelper.confirmDelete('category').subscribe(confirmed => {
       if (!confirmed) return;
 
