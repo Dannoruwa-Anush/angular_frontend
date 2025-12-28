@@ -6,7 +6,6 @@ import { SystemMessageService } from "../ui_service/systemMessageService";
 import { EmployeeModel } from "../../models/api_models/employeeModel";
 import { catchError, map, Observable } from "rxjs";
 import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
-import { CustomerModel } from "../../models/api_models/customerModel";
 
 @Injectable({
     providedIn: 'root',

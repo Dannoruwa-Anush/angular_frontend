@@ -158,8 +158,6 @@ export class RegisterComponent {
       }
     };
 
-    console.log(payload);
-
     //customer service
     this.customerService.create(payload).subscribe({
       next: () => {

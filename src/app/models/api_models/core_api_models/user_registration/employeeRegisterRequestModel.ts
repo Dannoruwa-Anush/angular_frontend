@@ -1,9 +1,9 @@
+import { EmployeePositionEnum } from "../../../../config/enums/employeePositionEnum";
 import { RegisterRequestModel } from "../auth_models/request_models/registerRequestModel";
 
 export interface EmployeeRegisterRequestModel {
-    customerName: string;
-    phoneNo: string;
-    address: string;
+    employeeName: string;
+    position: EmployeePositionEnum;
 
     //FK: Fields 
     user: RegisterRequestModel;
