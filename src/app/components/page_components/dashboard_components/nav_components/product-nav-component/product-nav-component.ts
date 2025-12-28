@@ -7,7 +7,6 @@ import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Valida
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
-import { BrandModel } from '../../../../../models/api_models/brandModel';
 import { CategoryModel } from '../../../../../models/api_models/categoryModel';
 import { BrandService } from '../../../../../services/api_services/brandService';
 import { CategoryService } from '../../../../../services/api_services/categoryService';
@@ -16,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
+import { BrandReadModel } from '../../../../../models/api_models/read_models/brand_read_Model';
 
 @Component({
   selector: 'app-product-nav-component',
@@ -39,7 +39,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
   // ======================================================
   imagePreview: string | ArrayBuffer | null = null;
 
-  brands = signal<BrandModel[]>([]);
+  brands = signal<BrandReadModel[]>([]);
   categories = signal<CategoryModel[]>([]);
 
   selectedBrandId = signal<number | undefined>(undefined);

@@ -1,14 +1,15 @@
 import { Injectable } from "@angular/core";
 
 import { CrudService } from "./core_services/crud-service";
-import { BrandModel } from "../../models/api_models/brandModel";
 import { HttpClient } from "@angular/common/http";
 import { SystemMessageService } from "../ui_service/systemMessageService";
+import { BrandReadModel } from "../../models/api_models/read_models/brand_read_Model";
+import { BrandCreateUpdateModel } from "../../models/api_models/create_update_models/brand_Create_Model";
 
 @Injectable({
   providedIn: 'root',
 })
-export class BrandService extends CrudService<BrandModel, BrandModel, BrandModel> {
+export class BrandService extends CrudService<BrandReadModel, BrandCreateUpdateModel, BrandCreateUpdateModel> {
 
   protected endpoint = 'brand';
 

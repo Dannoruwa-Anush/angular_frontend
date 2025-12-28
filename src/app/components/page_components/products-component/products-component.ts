@@ -1,6 +1,5 @@
 import { Component, computed, effect, OnInit, signal } from '@angular/core';
 
-import { BrandModel } from '../../../models/api_models/brandModel';
 import { BrandService } from '../../../services/api_services/brandService';
 import { CategoryModel } from '../../../models/api_models/categoryModel';
 import { ElectronicItemModel } from '../../../models/api_models/electronicItemModel';
@@ -11,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../config/environment';
+import { BrandReadModel } from '../../../models/api_models/read_models/brand_read_Model';
 
 @Component({
   selector: 'app-products-component',
@@ -30,7 +30,7 @@ export class ProductsComponent {
   private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
   // ---------- STATE ----------
-  brands = signal<BrandModel[]>([]);
+  brands = signal<BrandReadModel[]>([]);
   categories = signal<CategoryModel[]>([]);
   electronicItems = signal<ElectronicItemModel[]>([]);
 

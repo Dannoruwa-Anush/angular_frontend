@@ -1,7 +1,6 @@
 import { Component, computed, effect, signal, ViewChild } from '@angular/core';
 
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
-import { BrandModel } from '../../../../../models/api_models/brandModel';
 import { BrandService } from '../../../../../services/api_services/brandService';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,6 +11,8 @@ import { DashboardNavStateBase } from '../../../../reusable_components/dashboard
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
+import { BrandReadModel } from '../../../../../models/api_models/read_models/brand_read_Model';
+import { BrandCreateUpdateModel } from '../../../../../models/api_models/create_update_models/brand_Create_Model';
 
 
 @Component({
@@ -26,7 +27,7 @@ import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashb
   templateUrl: './brand-nav-component.html',
   styleUrl: './brand-nav-component.scss',
 })
-export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
+export class BrandNavComponent extends DashboardNavStateBase<BrandReadModel> {
 
 
 
@@ -42,7 +43,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   // ======================================================
   // TABLE CONFIG
   // ======================================================
-  columns: DashboardTableColumnModel<BrandModel>[] = [
+  columns: DashboardTableColumnModel<BrandReadModel>[] = [
     {
       key: 'brandName',
       header: 'Brand',
@@ -97,7 +98,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
-  protected getId(item: BrandModel): number | null {
+  protected getId(item: BrandReadModel): number | null {
     return item.brandID ?? null;
   }
 
@@ -116,7 +117,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
       });
   }
 
-  protected loadToForm(item: BrandModel, mode: DashboardModeEnum): void {
+  protected loadToForm(item: BrandReadModel, mode: DashboardModeEnum): void {
     this.selectedItemId.set(item.brandID ?? null);
 
     this.form.patchValue({
@@ -160,7 +161,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     this.confirmationHelper.confirmSave('brand').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: BrandModel = this.form.getRawValue();
+      const payload: BrandCreateUpdateModel = this.form.getRawValue();
 
       this.brandService.create(payload).subscribe({
         next: () => {
@@ -182,12 +183,11 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     this.confirmationHelper.confirmUpdate('brand').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: BrandModel = {
-        brandID: id,
+      const payload: BrandCreateUpdateModel = {
         ...this.form.getRawValue()
       }
 
-      this.brandService.update(payload.brandID!, payload).subscribe({
+      this.brandService.update(id, payload).subscribe({
         next: () => {
           this.messageService.success('Brand updated successfully');
           this.resetForm();
@@ -200,7 +200,7 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandModel> {
     });
   }
 
-  delete(brand: BrandModel): void {
+  delete(brand: BrandReadModel): void {
     this.confirmationHelper.confirmDelete('brand').subscribe(confirmed => {
       if (!confirmed) return;
 

@@ -2,12 +2,12 @@ import { computed, Signal, signal } from "@angular/core";
 import { DashboardModeEnum } from "../../../config/enums/dashboardModeEnum";
 import { PageEvent } from "@angular/material/paginator";
 
-export abstract class DashboardNavStateBase<T> {
+export abstract class DashboardNavStateBase<TRead> {
 
   // =====================
   // DATA
   // =====================
-  items = signal<T[]>([]);
+  items = signal<TRead[]>([]);
   loading!: Signal<boolean>;
 
   // =====================
@@ -46,19 +46,19 @@ export abstract class DashboardNavStateBase<T> {
   // =====================
   // ABSTRACT HOOKS
   // =====================
-  protected abstract getId(item: T): number | null;
+  protected abstract getId(item: TRead): number | null;
   protected abstract loadItems(): void;
-  protected abstract loadToForm(item: T, mode: DashboardModeEnum): void;
+  protected abstract loadToForm(item: TRead, mode: DashboardModeEnum): void;
   protected abstract resetForm(): void;
 
   // =====================
   // COMMON HANDLERS
   // =====================
-  view(item: T): void {
+  view(item: TRead): void {
     this.loadToForm(item, DashboardModeEnum.VIEW);
   }
 
-  edit(item: T): void {
+  edit(item: TRead): void {
     this.loadToForm(item, DashboardModeEnum.EDIT);
   }
 
