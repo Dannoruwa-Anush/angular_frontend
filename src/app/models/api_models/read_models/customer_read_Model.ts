@@ -1,7 +1,7 @@
-import { UserReadModel } from "./read_models/user_read_Model";
+import { UserReadModel } from "./user_read_Model";
 
-export interface CustomerModel {
-    customerID?: number;
+export interface CustomerReadModel {
+    customerID: number;
     customerName: string;
     phoneNo: string;
     address: string;

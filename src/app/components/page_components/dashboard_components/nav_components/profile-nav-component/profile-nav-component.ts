@@ -10,9 +10,9 @@ import { CustomerService } from '../../../../../services/api_services/customerSe
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
-import { CustomerModel } from '../../../../../models/api_models/customerModel';
 import { EmployeeReadModel } from '../../../../../models/api_models/read_models/employee_read_Model';
 import { EmployeeCreateModel } from '../../../../../models/api_models/create_update_models/create_models/employee_create_Model';
+import { CustomerReadModel } from '../../../../../models/api_models/read_models/customer_read_Model';
 
 @Component({
   selector: 'app-profile-nav-component',
@@ -152,7 +152,7 @@ export class ProfileNavComponent {
     }
   }
 
-  private loadCustomer(customer: CustomerModel): void {
+  private loadCustomer(customer: CustomerReadModel): void {
     if (!customer) {
       this.setCreateMode();
       return;
@@ -221,12 +221,13 @@ export class ProfileNavComponent {
       return;
     }
 
-    this.isEditMode() ? this.update() : this.save();
+    //this.isEditMode() ? this.update() : this.save();
   }
 
   // ======================================================
   // CRUD OPERATIONS
   // ======================================================
+  /*
   private buildCustomerPayload(): CustomerModel {
     const raw = this.form.getRawValue();
 
@@ -236,6 +237,7 @@ export class ProfileNavComponent {
       address: raw.address,
     };
   }
+  */
 
   /*
   private buildEmployeePayload(): EmployeeCreateModel {
@@ -248,6 +250,7 @@ export class ProfileNavComponent {
     };
   }
 */
+/*
   save(): void {
     this.confirmationHelper.confirmSave('Profile').subscribe(confirmed => {
       if (!confirmed) return;
@@ -268,10 +271,12 @@ export class ProfileNavComponent {
           this.loadProfile();
         });
       }
-        */
+
     });
   }
+   */
 
+  /*
   update(): void {
     const id = this.selectedItemId();
     if (!id) return;
@@ -301,7 +306,8 @@ export class ProfileNavComponent {
           this.loadProfile();
         });
       }
-      */
+    
     });
   }
+      */
 }

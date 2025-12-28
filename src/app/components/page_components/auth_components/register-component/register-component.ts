@@ -7,8 +7,8 @@ import { AuthSessionService } from '../../../../services/auth_services/authSessi
 import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 import { CommonModule } from '@angular/common';
 import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
-import { CustomerRegisterRequestModel } from '../../../../models/api_models/core_api_models/user_registration/customerRegisterRequestModel';
 import { CustomerService } from '../../../../services/api_services/customerService';
+import { CustomerCreateModel } from '../../../../models/api_models/create_update_models/create_models/customer_create_Model';
 
 @Component({
   selector: 'app-register-component',
@@ -146,7 +146,7 @@ export class RegisterComponent {
   // REGISTER
   // ===============================
   register(): void {
-    const payload: CustomerRegisterRequestModel = {
+    const payload: CustomerCreateModel = {
       customerName: this.form.value.name,
       phoneNo: this.form.value.phoneNo,
       address: this.form.value.address,
