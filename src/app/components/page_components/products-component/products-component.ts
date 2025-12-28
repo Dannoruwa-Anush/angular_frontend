@@ -1,7 +1,6 @@
 import { Component, computed, effect, OnInit, signal } from '@angular/core';
 
 import { BrandService } from '../../../services/api_services/brandService';
-import { ElectronicItemModel } from '../../../models/api_models/electronicItemModel';
 import { CategoryService } from '../../../services/api_services/categoryService';
 import { ElectronicItemService } from '../../../services/api_services/electronicItemService';
 import { MaterialModule } from '../../../custom_modules/material/material-module';
@@ -11,6 +10,7 @@ import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../config/environment';
 import { BrandReadModel } from '../../../models/api_models/read_models/brand_read_Model';
 import { CategoryReadModel } from '../../../models/api_models/read_models/category_read_Model';
+import { ElectronicItemReadModel } from '../../../models/api_models/read_models/electronicItem_read_Model';
 
 @Component({
   selector: 'app-products-component',
@@ -32,7 +32,7 @@ export class ProductsComponent {
   // ---------- STATE ----------
   brands = signal<BrandReadModel[]>([]);
   categories = signal<CategoryReadModel[]>([]);
-  electronicItems = signal<ElectronicItemModel[]>([]);
+  electronicItems = signal<ElectronicItemReadModel[]>([]);
 
   pageNumber = signal(1);
   pageSize = signal(10);
@@ -142,7 +142,7 @@ export class ProductsComponent {
     this.router.navigate(['/product', id]);
   }
 
-  getImageUrl(item: ElectronicItemModel): string {
+  getImageUrl(item: ElectronicItemReadModel): string {
     if (item.electronicItemImageUrl) {
       return item.electronicItemImageUrl;
     }

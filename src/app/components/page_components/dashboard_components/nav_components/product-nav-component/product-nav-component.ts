@@ -1,6 +1,5 @@
 import { Component, computed, effect, signal, ViewChild } from '@angular/core';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
-import { ElectronicItemModel } from '../../../../../models/api_models/electronicItemModel';
 import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { ElectronicItemService } from '../../../../../services/api_services/electronicItemService';
 import { FormBuilder, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -16,6 +15,8 @@ import { DashboardFormComponent } from '../../../../reusable_components/dashboar
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { BrandReadModel } from '../../../../../models/api_models/read_models/brand_read_Model';
 import { CategoryReadModel } from '../../../../../models/api_models/read_models/category_read_Model';
+import { ElectronicItemReadModel } from '../../../../../models/api_models/read_models/electronicItem_read_Model';
+import { ElectronicItemCreateUpdateModel } from '../../../../../models/api_models/create_update_models/electronicItem_create_update_Model';
 
 @Component({
   selector: 'app-product-nav-component',
@@ -29,7 +30,7 @@ import { CategoryReadModel } from '../../../../../models/api_models/read_models/
   templateUrl: './product-nav-component.html',
   styleUrl: './product-nav-component.scss',
 })
-export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemModel> {
+export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemReadModel> {
 
 
 
@@ -109,7 +110,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
 
   private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
-  getImageUrl(item: ElectronicItemModel): string {
+  getImageUrl(item: ElectronicItemReadModel): string {
     if (item.electronicItemImageUrl) {
       return item.electronicItemImageUrl;
     }
@@ -131,7 +132,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
   // ======================================================
   // TABLE CONFIG
   // ======================================================
-  columns: DashboardTableColumnModel<ElectronicItemModel>[] = [
+  columns: DashboardTableColumnModel<ElectronicItemReadModel>[] = [
     {
       key: 'electronicItemName',
       header: 'Name',
@@ -212,7 +213,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
-  protected override getId(item: ElectronicItemModel): number | null {
+  protected override getId(item: ElectronicItemReadModel): number | null {
     return item.electronicItemID ?? null;
   }
   protected override loadItems(): void {
@@ -232,7 +233,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
       });
   }
 
-  protected override loadToForm(item: ElectronicItemModel, mode: DashboardModeEnum): void {
+  protected override loadToForm(item: ElectronicItemReadModel, mode: DashboardModeEnum): void {
     this.selectedItemId.set(item.electronicItemID ?? null);
 
     this.form.patchValue({
@@ -278,7 +279,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
     this.confirmationHelper.confirmSave('product').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: ElectronicItemModel = this.form.getRawValue();
+      const payload: ElectronicItemCreateUpdateModel = this.form.getRawValue();
 
       this.electronicItemService.create(payload).subscribe({
         next: () => {
@@ -300,12 +301,11 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
     this.confirmationHelper.confirmUpdate('product').subscribe(confirmed => {
       if (!confirmed) return;
 
-      const payload: ElectronicItemModel = {
-        electronicItemID: id,
+      const payload: ElectronicItemCreateUpdateModel = {
         ...this.form.getRawValue()
       }
 
-      this.electronicItemService.update(payload.electronicItemID!, payload).subscribe({
+      this.electronicItemService.update(id, payload).subscribe({
         next: () => {
           this.messageService.success('Product updated successfully');
           this.resetForm();
@@ -318,7 +318,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemMod
     });
   }
 
-  delete(item: ElectronicItemModel): void {
+  delete(item: ElectronicItemReadModel): void {
     this.confirmationHelper.confirmDelete('product').subscribe(confirmed => {
       if (!confirmed) return;
 

@@ -5,11 +5,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { environment } from '../../../config/environment';
-import { ElectronicItemModel } from '../../../models/api_models/electronicItemModel';
 import { ElectronicItemService } from '../../../services/api_services/electronicItemService';
 import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
 import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
+import { ElectronicItemReadModel } from '../../../models/api_models/read_models/electronicItem_read_Model';
 
 @Component({
   selector: 'app-product-component',
@@ -30,7 +30,7 @@ export class ProductComponent {
   private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
   // ---------- STATE ----------
-  electronicItem = signal<ElectronicItemModel | null>(null);
+  electronicItem = signal<ElectronicItemReadModel | null>(null);
   quantity = signal<number>(1);
   loading = signal<boolean>(false);
 
@@ -71,7 +71,7 @@ export class ProductComponent {
   }
 
   // ---------- HELPERS ----------
-  getImageUrl(item: ElectronicItemModel): string {
+  getImageUrl(item: ElectronicItemReadModel): string {
     if (item.electronicItemImageUrl) return item.electronicItemImageUrl;
     if (item.electronicItemImage) return `${this.baseUrl}/${item.electronicItemImage}`;
     return 'assets/images/no-image.png';

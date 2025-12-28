@@ -1,16 +1,17 @@
 import { Injectable } from "@angular/core";
 
 import { CrudService } from "./core_services/crud-service";
-import { ElectronicItemModel } from "../../models/api_models/electronicItemModel";
 import { HttpClient } from "@angular/common/http";
 import { SystemMessageService } from "../ui_service/systemMessageService";
 import { catchError, map, Observable } from "rxjs";
 import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
+import { ElectronicItemCreateUpdateModel } from "../../models/api_models/create_update_models/electronicItem_create_update_Model";
+import { ElectronicItemReadModel } from "../../models/api_models/read_models/electronicItem_read_Model";
 
 @Injectable({
   providedIn: 'root',
 })
-export class ElectronicItemService extends CrudService<ElectronicItemModel, ElectronicItemModel, ElectronicItemModel> {
+export class ElectronicItemService extends CrudService<ElectronicItemReadModel, ElectronicItemCreateUpdateModel, ElectronicItemCreateUpdateModel> {
 
   protected endpoint = 'electronicItem';
 
@@ -38,13 +39,13 @@ export class ElectronicItemService extends CrudService<ElectronicItemModel, Elec
 
   // Override : Create for multipart
   override create(
-    data: ElectronicItemModel
-  ): Observable<ElectronicItemModel> {
+    data: ElectronicItemCreateUpdateModel
+  ): Observable<ElectronicItemReadModel> {
 
     const formData = this.toFormData(data);
 
     return this.http
-      .post<ApiResponseModel<ElectronicItemModel>>(
+      .post<ApiResponseModel<ElectronicItemReadModel>>(
         `${this.baseUrl}/${this.endpoint}`,
         formData
       )
@@ -60,13 +61,13 @@ export class ElectronicItemService extends CrudService<ElectronicItemModel, Elec
   // Override : Update for multipart
   override update(
     id: number | string,
-    data: ElectronicItemModel
-  ): Observable<ElectronicItemModel> {
+    data: ElectronicItemCreateUpdateModel
+  ): Observable<ElectronicItemReadModel> {
 
     const formData = this.toFormData(data);
 
     return this.http
-      .put<ApiResponseModel<ElectronicItemModel>>(
+      .put<ApiResponseModel<ElectronicItemReadModel>>(
         `${this.baseUrl}/${this.endpoint}/${id}`,
         formData
       )
@@ -80,7 +81,7 @@ export class ElectronicItemService extends CrudService<ElectronicItemModel, Elec
   }
 
   // Helper : to convert to formdata
-  private toFormData(data: Partial<ElectronicItemModel>): FormData {
+  private toFormData(data: Partial<ElectronicItemCreateUpdateModel>): FormData {
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {

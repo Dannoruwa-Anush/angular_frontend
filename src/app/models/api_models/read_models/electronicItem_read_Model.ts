@@ -1,9 +1,8 @@
+import { BrandReadModel } from "./brand_read_Model";
+import { CategoryReadModel } from "./category_read_Model";
 
-import { BrandReadModel } from "./read_models/brand_read_Model";
-import { CategoryReadModel } from "./read_models/category_read_Model";
-
-export interface ElectronicItemModel {
-    electronicItemID?: number;
+export interface ElectronicItemReadModel {
+    electronicItemID: number;
     electronicItemName: string;
     price: number;
     qoh: number;
