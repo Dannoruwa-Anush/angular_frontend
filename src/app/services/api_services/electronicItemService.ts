@@ -10,7 +10,7 @@ import { ApiResponseModel } from "../../models/api_models/core_api_models/apiRes
 @Injectable({
   providedIn: 'root',
 })
-export class ElectronicItemService extends CrudService<ElectronicItemModel> {
+export class ElectronicItemService extends CrudService<ElectronicItemModel, ElectronicItemModel, ElectronicItemModel> {
 
   protected endpoint = 'electronicItem';
 

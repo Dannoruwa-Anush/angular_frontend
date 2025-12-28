@@ -8,7 +8,7 @@ import { SystemMessageService } from "../ui_service/systemMessageService";
 @Injectable({
   providedIn: 'root',
 })
-export class BrandService extends CrudService<BrandModel> {
+export class BrandService extends CrudService<BrandModel, BrandModel, BrandModel> {
 
   protected endpoint = 'brand';
 

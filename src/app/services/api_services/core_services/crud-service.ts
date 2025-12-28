@@ -10,7 +10,7 @@ import { SystemMessageService } from '../../ui_service/systemMessageService';
 @Injectable({
   providedIn: 'root',
 })
-export abstract class CrudService<T> {
+export abstract class CrudService<TRead, TCreate, TUpdate> {
 
   protected baseUrl = `${environment.BASE_API_URL.replace(/\/$/, '')}/api`;
   protected abstract endpoint: string;
@@ -35,11 +35,11 @@ export abstract class CrudService<T> {
 
   // ---------- CRUD ----------
   // GET_ALL
-  getAll(): Observable<T[]> {
+  getAll(): Observable<TRead[]> {
     this._loading.set(true);
 
     return this.http
-      .get<ApiResponseModel<T[]>>(`${this.baseUrl}/${this.endpoint}`)
+      .get<ApiResponseModel<TRead[]>>(`${this.baseUrl}/${this.endpoint}`)
       .pipe(
         map(res => {
           this._loading.set(false);
@@ -50,11 +50,11 @@ export abstract class CrudService<T> {
   }
 
   // GET_BY_ID
-  getById(id: number | string): Observable<T> {
+  getById(id: number | string): Observable<TRead> {
     this._loading.set(true);
 
     return this.http
-      .get<ApiResponseModel<T>>(`${this.baseUrl}/${this.endpoint}/${id}`)
+      .get<ApiResponseModel<TRead>>(`${this.baseUrl}/${this.endpoint}/${id}`)
       .pipe(
         map(res => {
           this._loading.set(false);
@@ -65,12 +65,12 @@ export abstract class CrudService<T> {
   }
 
   // SAVE
-  create(data: T): Observable<T> {
+  create(data: TCreate): Observable<TRead> {
     this._loading.set(true);
     this.messageService.clear();
 
     return this.http
-      .post<ApiResponseModel<T>>(`${this.baseUrl}/${this.endpoint}`, data)
+      .post<ApiResponseModel<TRead>>(`${this.baseUrl}/${this.endpoint}`, data)
       .pipe(
         map(res => {
           this._loading.set(false);
@@ -82,12 +82,12 @@ export abstract class CrudService<T> {
   }
 
   // UPDATE
-  update(id: number | string, data: T): Observable<T> {
+  update(id: number | string, data: TUpdate): Observable<TRead> {
     this._loading.set(true);
     this.messageService.clear();
 
     return this.http
-      .put<ApiResponseModel<T>>(`${this.baseUrl}/${this.endpoint}/${id}`, data)
+      .put<ApiResponseModel<TRead>>(`${this.baseUrl}/${this.endpoint}/${id}`, data)
       .pipe(
         map(res => {
           this._loading.set(false);
@@ -119,7 +119,7 @@ export abstract class CrudService<T> {
     pageNumber: number,
     pageSize: number,
     extraParams?: Record<string, any>
-  ): Observable<PaginationResponseModel<T>> {
+  ): Observable<PaginationResponseModel<TRead>> {
 
     this._loading.set(true);
 
@@ -137,7 +137,7 @@ export abstract class CrudService<T> {
     }
 
     return this.http
-      .get<ApiResponseModel<PaginationResponseModel<T>>>(
+      .get<ApiResponseModel<PaginationResponseModel<TRead>>>(
         `${this.baseUrl}/${this.endpoint}/paged`,
         { params }
       )

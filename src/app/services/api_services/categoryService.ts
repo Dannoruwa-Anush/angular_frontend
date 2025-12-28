@@ -8,7 +8,7 @@ import { SystemMessageService } from "../ui_service/systemMessageService";
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryService extends CrudService<CategoryModel> {
+export class CategoryService extends CrudService<CategoryModel, CategoryModel, CategoryModel> {
 
   protected endpoint = 'category';
 
