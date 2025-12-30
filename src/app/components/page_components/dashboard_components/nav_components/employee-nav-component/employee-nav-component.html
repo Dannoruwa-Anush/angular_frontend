@@ -7,9 +7,13 @@
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Employee Name</mat-label>
                 <input matInput formControlName="employeeName" />
-                
-                <mat-error *ngIf="employeeNameCtrl.hasError('required')">
+            
+                <mat-error *ngIf="employeeNameCtrl.hasError('required') && (employeeNameCtrl.touched || employeeNameCtrl.dirty)">
                     Employee name is required
+                </mat-error>
+
+                <mat-error *ngIf="employeeNameCtrl.hasError('pattern') && (employeeNameCtrl.touched || employeeNameCtrl.dirty)">
+                    Only letters and spaces allowed
                 </mat-error>
             </mat-form-field>
 
