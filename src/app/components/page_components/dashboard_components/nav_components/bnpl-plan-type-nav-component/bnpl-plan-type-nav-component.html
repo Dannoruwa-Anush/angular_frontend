@@ -46,14 +46,14 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Late Pay Interest Rate</mat-label>
-                <input matInput type="number" formControlName="latePayInterestRate" />
+                <mat-label>Late Pay Interest Rate (Per day)</mat-label>
+                <input matInput type="number" formControlName="latePayInterestRatePerDay" />
 
-                <mat-error *ngIf="latePayInterestRateCtrl.hasError('required')">
+                <mat-error *ngIf="latePayInterestRatePerDayCtrl.hasError('required')">
                     Late Pay Interest Rate is required
                 </mat-error>
 
-                <mat-error *ngIf="latePayInterestRateCtrl.hasError('min')">
+                <mat-error *ngIf="latePayInterestRatePerDayCtrl.hasError('min')">
                     Late Pay Interest rate cannot be negative
                 </mat-error>
             </mat-form-field>

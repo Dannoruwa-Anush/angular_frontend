@@ -59,9 +59,9 @@ export class BnplPlanTypeNavComponent extends DashboardNavStateBase<BnplPlanType
       cell: p => p.interestRate
     },
     {
-      key: 'latePayInterestRate',
-      header: 'Late Pay Interest Rate',
-      cell: p => p.latePayInterestRate
+      key: 'latePayInterestRatePerDay',
+      header: 'Late Pay Interest Rate (Per day)',
+      cell: p => p.latePayInterestRatePerDay
     },
     {
       key: 'bnpl_Description',
@@ -101,7 +101,7 @@ export class BnplPlanTypeNavComponent extends DashboardNavStateBase<BnplPlanType
       bnpl_PlanTypeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
       bnpl_DurationDays: ['', [Validators.required, Validators.min(1)]],
       interestRate: ['', [Validators.required, Validators.min(0)]],
-      latePayInterestRate: ['', [Validators.required, Validators.min(0)]],
+      latePayInterestRatePerDay: ['', [Validators.required, Validators.min(0)]],
       bnpl_Description: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
     });
   }
@@ -121,8 +121,8 @@ export class BnplPlanTypeNavComponent extends DashboardNavStateBase<BnplPlanType
     return this.form.get('interestRate')!;
   }
 
-  get latePayInterestRateCtrl() {
-    return this.form.get('latePayInterestRate')!;
+  get latePayInterestRatePerDayCtrl() {
+    return this.form.get('latePayInterestRatePerDay')!;
   }
 
   get bnpl_DescriptionCtrl() {
@@ -158,7 +158,7 @@ export class BnplPlanTypeNavComponent extends DashboardNavStateBase<BnplPlanType
       bnpl_PlanTypeName: item.bnpl_PlanTypeName,
       bnpl_DurationDays: item.bnpl_DurationDays,
       interestRate: item.interestRate,
-      latePayInterestRate: item.latePayInterestRate,
+      latePayInterestRatePerDay: item.latePayInterestRatePerDay,
       bnpl_Description: item.bnpl_Description,
     });
 
