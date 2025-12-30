@@ -1,1 +1,85 @@
-<p>bnpl-plan-type-nav-component works!</p>
+<div class="dashboard-container">
+
+    <!-- Reusable Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+            [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Bnpl Plan Type Name</mat-label>
+                <input matInput formControlName="bnpl_PlanTypeName" />
+
+                <mat-error
+                    *ngIf="bnpl_PlanTypeNameCtrl.hasError('required') && (bnpl_PlanTypeNameCtrl.touched || bnpl_PlanTypeNameCtrl.dirty)">
+                    Bnpl Plan Type Name is required
+                </mat-error>
+
+                <mat-error
+                    *ngIf="bnpl_PlanTypeNameCtrl.hasError('pattern') && (bnpl_PlanTypeNameCtrl.touched || bnpl_PlanTypeNameCtrl.dirty)">
+                    Only letters and spaces allowed
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Duration (in Days)</mat-label>
+                <input matInput type="number" formControlName="bnpl_DurationDays" />
+
+                <mat-error *ngIf="bnpl_DurationDaysCtrl.hasError('required')">
+                    Duration is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Interest Rate</mat-label>
+                <input matInput type="number" formControlName="interestRate" />
+
+                <mat-error *ngIf="interestRateCtrl.hasError('required')">
+                    Interest Rate is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Late Pay Interest Rate</mat-label>
+                <input matInput type="number" formControlName="latePayInterestRate" />
+
+                <mat-error *ngIf="latePayInterestRateCtrl.hasError('required')">
+                    Late Pay Interest Rate is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Description</mat-label>
+                <input matInput formControlName="bnpl_Description" />
+
+                <mat-error
+                    *ngIf="bnpl_DescriptionCtrl.hasError('required') && (bnpl_DescriptionCtrl.touched || bnpl_DescriptionCtrl.dirty)">
+                    Description is required
+                </mat-error>
+
+                <mat-error
+                    *ngIf="bnpl_DescriptionCtrl.hasError('pattern') && (bnpl_DescriptionCtrl.touched || bnpl_DescriptionCtrl.dirty)">
+                    Only letters and spaces allowed
+                </mat-error>
+            </mat-form-field>
+        </app-dashboard-form-component>
+    </form>
+
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Bnpl Plan Type"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="delete(row)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </ng-template>
+    </app-dashboard-table-component>
+</div>
