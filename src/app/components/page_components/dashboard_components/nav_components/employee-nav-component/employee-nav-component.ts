@@ -126,6 +126,13 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
     this.loadEmployeePositions();
 
     // Auto reload when paging / search changes
+    // Validators follow mode
+    effect(() => {
+      this.formMode();
+      this.applyModeValidators();
+    });
+
+    // Table reload follows filters
     effect(() => {
       this.requestParams();
       this.loadItems();
@@ -138,11 +145,31 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
   private buildForm(): void {
     this.form = this.fb.group({
       employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required], 
+      email: [''],
+      password: [''],
       role: [UserRoleEnum.Employee, Validators.required],
       position: ['', Validators.required]
     });
+  }
+
+  private applyModeValidators(): void {
+
+    if (this.isCreateMode()) {
+      this.emailCtrl.setValidators([
+        Validators.required,
+        Validators.email
+      ]);
+
+      this.passwordCtrl.setValidators([
+        Validators.required
+      ]);
+    } else {
+      this.emailCtrl.clearValidators();
+      this.passwordCtrl.clearValidators();
+    }
+
+    this.emailCtrl.updateValueAndValidity({ emitEvent: false });
+    this.passwordCtrl.updateValueAndValidity({ emitEvent: false });
   }
 
   // ===============================
@@ -192,12 +219,6 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
       position: item.position
     });
 
-    // EMAIL & PASSWORD NOT REQUIRED IN EDIT / VIEW
-    this.emailCtrl.clearValidators();
-    this.emailCtrl.updateValueAndValidity();
-    this.passwordCtrl.clearValidators();
-    this.passwordCtrl.updateValueAndValidity();
-
     mode === DashboardModeEnum.VIEW
       ? this.form.disable()
       : this.form.enable();
@@ -209,12 +230,10 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
     this.submitted = false;
     this.formDirective.resetForm();
 
-    // EMAIL & PASSWORD REQUIRED ONLY FOR CREATE
-    this.emailCtrl.setValidators([Validators.required]);
-    this.emailCtrl.updateValueAndValidity();
-    this.passwordCtrl.setValidators([Validators.required]);
-    this.passwordCtrl.updateValueAndValidity();
-
+    this.form.reset({
+      role: UserRoleEnum.Employee
+    });
+    
     this.form.enable();
     this.selectedItemId.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
@@ -225,6 +244,9 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
   // ===============================
   onSubmit(): void {
     this.submitted = true;
+
+    console.log(this.form.invalid);
+    console.log(this.isViewMode());
 
     if (this.form.invalid || this.isViewMode()) {
       this.form.markAllAsTouched();

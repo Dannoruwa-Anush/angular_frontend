@@ -2,35 +2,41 @@
 
     <!-- ================= FORM ================= -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'" [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
+        <app-dashboard-form-component [submitLabel]="isEditMode() ? 'Update' : 'Save'"
+            [submitDisabled]="isViewMode() || (submitted && form.invalid)" (cancel)="cancel()">
 
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Employee Name</mat-label>
                 <input matInput formControlName="employeeName" />
-            
-                <mat-error *ngIf="employeeNameCtrl.hasError('required') && (employeeNameCtrl.touched || employeeNameCtrl.dirty)">
+
+                <mat-error
+                    *ngIf="employeeNameCtrl.hasError('required') && (employeeNameCtrl.touched || employeeNameCtrl.dirty)">
                     Employee name is required
                 </mat-error>
 
-                <mat-error *ngIf="employeeNameCtrl.hasError('pattern') && (employeeNameCtrl.touched || employeeNameCtrl.dirty)">
+                <mat-error
+                    *ngIf="employeeNameCtrl.hasError('pattern') && (employeeNameCtrl.touched || employeeNameCtrl.dirty)">
                     Only letters and spaces allowed
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field *ngIf="!isEditMode()" appearance="outline" class="auth-input">
-                <mat-label>Email</mat-label>
-                <input matInput formControlName="email" />
+            <mat-form-field *ngIf="isCreateMode() || isViewMode()" appearance="outline" class="auth-input">
 
-                <mat-error *ngIf="emailCtrl.hasError('required') && (emailCtrl.touched || emailCtrl.dirty)">
+                <mat-label>Email</mat-label>
+
+                <input matInput formControlName="email" [readonly]="isViewMode()" />
+
+                <mat-error
+                    *ngIf="isCreateMode() && emailCtrl.hasError('required') && (emailCtrl.touched || emailCtrl.dirty)">
                     Email is required
                 </mat-error>
 
-                <mat-error *ngIf="emailCtrl.hasError('email') && (emailCtrl.touched || emailCtrl.dirty)">
+                <mat-error
+                    *ngIf="isCreateMode() && emailCtrl.hasError('email') && (emailCtrl.touched || emailCtrl.dirty)">
                     Enter a valid email
                 </mat-error>
             </mat-form-field>
 
-            <!-- PASSWORD -->
             <mat-form-field *ngIf="isCreateMode()" appearance="outline" class="auth-input">
                 <mat-label>Password</mat-label>
                 <input matInput type="password" formControlName="password" />
@@ -47,7 +53,7 @@
                         {{ position.positionName }}
                     </mat-option>
                 </mat-select>
-                
+
                 <mat-error *ngIf="form.get('position')?.hasError('required')">
                     Position is required
                 </mat-error>
@@ -70,7 +76,8 @@
                 All EmployeePositions
             </button>
 
-            <button mat-menu-item *ngFor="let position of employeePositions()" (click)="onEmployeePositionSelect(position.positionID)"
+            <button mat-menu-item *ngFor="let position of employeePositions()"
+                (click)="onEmployeePositionSelect(position.positionID)"
                 [class.selected-menu-item]="selectedEmployeePositionId() === position.positionID">
                 {{ position.positionName }}
             </button>
