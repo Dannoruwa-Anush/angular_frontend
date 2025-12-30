@@ -67,6 +67,10 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
     this.selectedEmployeePositionId.set(id);
   }
 
+  isCreateMode(): boolean {
+    return this.formMode() === DashboardModeEnum.CREATE;
+  }
+
   // ======================================================
   // FORM
   // ======================================================
@@ -134,8 +138,8 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
   private buildForm(): void {
     this.form = this.fb.group({
       employeeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      email: ['', [Validators.required, Validators.email]], //noneditable field
-      password: [''], //noneditable field
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required], 
       role: [UserRoleEnum.Employee, Validators.required],
       position: ['', Validators.required]
     });
@@ -188,6 +192,12 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
       position: item.position
     });
 
+    // EMAIL & PASSWORD NOT REQUIRED IN EDIT / VIEW
+    this.emailCtrl.clearValidators();
+    this.emailCtrl.updateValueAndValidity();
+    this.passwordCtrl.clearValidators();
+    this.passwordCtrl.updateValueAndValidity();
+
     mode === DashboardModeEnum.VIEW
       ? this.form.disable()
       : this.form.enable();
@@ -198,6 +208,12 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
   protected override resetForm(): void {
     this.submitted = false;
     this.formDirective.resetForm();
+
+    // EMAIL & PASSWORD REQUIRED ONLY FOR CREATE
+    this.emailCtrl.setValidators([Validators.required]);
+    this.emailCtrl.updateValueAndValidity();
+    this.passwordCtrl.setValidators([Validators.required]);
+    this.passwordCtrl.updateValueAndValidity();
 
     this.form.enable();
     this.selectedItemId.set(null);
@@ -253,11 +269,14 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
     const id = this.selectedItemId();
     if (!id) return;
 
+    const raw = this.form.getRawValue();
+
     this.confirmationHelper.confirmUpdate('employee').subscribe(confirmed => {
       if (!confirmed) return;
 
       const payload: EmployeeUpdateModel = {
-        ...this.form.getRawValue()
+        employeeName: raw.employeeName,
+        position: raw.position,
       }
 
       this.employeeService.update(id, payload).subscribe({
