@@ -14,6 +14,7 @@ import { EmployeeReadModel } from '../../../../../models/api_models/read_models/
 import { CustomerReadModel } from '../../../../../models/api_models/read_models/customer_read_Model';
 import { CustomerUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/customer_update_Model';
 import { EmployeeUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/employee_update_Model';
+import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 
 @Component({
   selector: 'app-profile-nav-component',
@@ -77,7 +78,7 @@ export class ProfileNavComponent {
   private buildForm(): void {
     this.form = this.fb.group({
       name: ['', []],
-      position: [{ value: '', disabled: true }],
+      position: [{ value: EmployeePositionEnum.Cashier, disabled: true }],
       phoneNo: ['', [Validators.pattern(/^[0-9]{10}$/)]],
       address: ['', [Validators.maxLength(255)]],
     });
@@ -181,7 +182,7 @@ export class ProfileNavComponent {
 
     this.form.patchValue({
       name: employee.employeeName,
-      position: employee.position
+      position: EmployeePositionEnum[employee.position]
     });
 
     this.form.disable();
