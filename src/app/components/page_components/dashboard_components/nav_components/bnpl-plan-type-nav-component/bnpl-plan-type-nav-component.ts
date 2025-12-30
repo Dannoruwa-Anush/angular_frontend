@@ -99,9 +99,9 @@ export class BnplPlanTypeNavComponent extends DashboardNavStateBase<BnplPlanType
   private buildForm(): void {
     this.form = this.fb.group({
       bnpl_PlanTypeName: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
-      bnpl_DurationDays: ['', [Validators.required], Validators.min(1)],
-      interestRate: ['', [Validators.required], Validators.min(0)],
-      latePayInterestRate: ['', [Validators.required], Validators.min(0)],
+      bnpl_DurationDays: ['', [Validators.required, Validators.min(1)]],
+      interestRate: ['', [Validators.required, Validators.min(0)]],
+      latePayInterestRate: ['', [Validators.required, Validators.min(0)]],
       bnpl_Description: ['', [Validators.required, Validators.pattern(/^[A-Za-z\s]+$/)]],
     });
   }

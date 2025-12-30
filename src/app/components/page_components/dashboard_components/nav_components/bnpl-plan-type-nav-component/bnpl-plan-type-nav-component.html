@@ -26,6 +26,10 @@
                 <mat-error *ngIf="bnpl_DurationDaysCtrl.hasError('required')">
                     Duration is required
                 </mat-error>
+
+                <mat-error *ngIf="bnpl_DurationDaysCtrl.hasError('min')">
+                    Duration must be at least 1 day
+                </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
@@ -35,6 +39,10 @@
                 <mat-error *ngIf="interestRateCtrl.hasError('required')">
                     Interest Rate is required
                 </mat-error>
+
+                <mat-error *ngIf="interestRateCtrl.hasError('min')">
+                    Interest rate cannot be negative
+                </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
@@ -43,6 +51,10 @@
 
                 <mat-error *ngIf="latePayInterestRateCtrl.hasError('required')">
                     Late Pay Interest Rate is required
+                </mat-error>
+
+                <mat-error *ngIf="latePayInterestRateCtrl.hasError('min')">
+                    Late Pay Interest rate cannot be negative
                 </mat-error>
             </mat-form-field>
 
