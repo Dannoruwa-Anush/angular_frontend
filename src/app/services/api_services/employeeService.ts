@@ -8,6 +8,7 @@ import { ApiResponseModel } from "../../models/api_models/core_api_models/apiRes
 import { EmployeeCreateModel } from "../../models/api_models/create_update_models/create_models/employee_create_Model";
 import { EmployeeUpdateModel } from "../../models/api_models/create_update_models/update_models/employee_update_Model";
 import { EmployeeReadModel } from "../../models/api_models/read_models/employee_read_Model";
+import { EmployeeProfileUpdateModel } from "../../models/api_models/create_update_models/update_models/employeeProfile_update_Model";
 
 @Injectable({
     providedIn: 'root',
@@ -36,12 +37,29 @@ export class EmployeeService extends CrudService<EmployeeReadModel, EmployeeCrea
         });
     }
 
+    // Override : update
+    updateProfile(id: number | string, data: EmployeeProfileUpdateModel): Observable<EmployeeReadModel> {
+        this._loading.set(true);
+        this.messageService.clear();
+
+        return this.http
+            .put<ApiResponseModel<EmployeeReadModel>>(`${this.baseUrl}/${this.endpoint}/profile/${id}`, data)
+            .pipe(
+                map(res => {
+                    this._loading.set(false);
+                    this.messageService.success(res.message || 'Profile updated successfully');
+                    return res.data;
+                }),
+                catchError(err => this.handleHttpError(err))
+            );
+    }
+
     // can add custom api methods here
     getByUserId(id: number | string): Observable<EmployeeReadModel> {
         this._loading.set(true);
 
         return this.http
-            .get<ApiResponseModel<EmployeeReadModel>>(`${this.baseUrl}/employee/user/${id}`)
+            .get<ApiResponseModel<EmployeeReadModel>>(`${this.baseUrl}/${this.endpoint}/user/${id}`)
             .pipe(
                 map(res => {
                     this._loading.set(false);

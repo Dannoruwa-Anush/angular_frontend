@@ -8,6 +8,7 @@ import { ApiResponseModel } from "../../models/api_models/core_api_models/apiRes
 import { CustomerReadModel } from "../../models/api_models/read_models/customer_read_Model";
 import { CustomerCreateModel } from "../../models/api_models/create_update_models/create_models/customer_create_Model";
 import { CustomerUpdateModel } from "../../models/api_models/create_update_models/update_models/customer_update_Model";
+import { CustomerProfileUpdateModel } from "../../models/api_models/create_update_models/update_models/customerProfile_update_Model";
 
 @Injectable({
     providedIn: 'root',
@@ -34,12 +35,30 @@ export class CustomerService extends CrudService<CustomerReadModel, CustomerCrea
         });
     }
 
+    // Override : update
+    updateProfile(id: number | string, data: CustomerProfileUpdateModel): Observable<CustomerReadModel> {
+        this._loading.set(true);
+        this.messageService.clear();
+
+        return this.http
+            .put<ApiResponseModel<CustomerReadModel>>(`${this.baseUrl}/${this.endpoint}/profile/${id}`, data)
+            .pipe(
+                map(res => {
+                    this._loading.set(false);
+                    this.messageService.success(res.message || 'Profile updated successfully');
+                    return res.data;
+                }),
+                catchError(err => this.handleHttpError(err))
+            );
+    }
+
     // can add custom api methods here
     getByUserId(id: number | string): Observable<CustomerReadModel> {
         this._loading.set(true);
+        this.messageService.clear();
 
         return this.http
-            .get<ApiResponseModel<CustomerReadModel>>(`${this.baseUrl}/customer/user/${id}`)
+            .get<ApiResponseModel<CustomerReadModel>>(`${this.baseUrl}/${this.endpoint}/user/${id}`)
             .pipe(
                 map(res => {
                     this._loading.set(false);

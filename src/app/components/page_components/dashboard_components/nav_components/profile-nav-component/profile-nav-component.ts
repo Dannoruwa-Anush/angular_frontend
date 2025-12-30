@@ -12,9 +12,9 @@ import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { EmployeeReadModel } from '../../../../../models/api_models/read_models/employee_read_Model';
 import { CustomerReadModel } from '../../../../../models/api_models/read_models/customer_read_Model';
-import { CustomerUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/customer_update_Model';
-import { EmployeeUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/employee_update_Model';
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
+import { CustomerProfileUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/customerProfile_update_Model';
+import { EmployeeProfileUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/employeeProfile_update_Model';
 
 @Component({
   selector: 'app-profile-nav-component',
@@ -229,26 +229,6 @@ export class ProfileNavComponent {
   // ======================================================
   // CRUD OPERATIONS
   // ======================================================
-  
-  private buildUpdateCustomerPayload(): CustomerUpdateModel {
-    const raw = this.form.getRawValue();
-
-    return {
-      customerName: raw.name,
-      phoneNo: raw.phoneNo,
-      address: raw.address,
-    };
-  }
-
-  private buildUpdateEmployeePayload(): EmployeeUpdateModel {
-    const raw = this.form.getRawValue();
-
-    return {
-      employeeName: raw.name,
-      position: raw.position,
-    };
-  }
-
   update(): void {
     const id = this.selectedItemId();
     if (!id) return;
@@ -256,21 +236,41 @@ export class ProfileNavComponent {
     this.confirmationHelper.confirmUpdate('Profile').subscribe(confirmed => {
       if (!confirmed) return;
 
+      const raw = this.form.getRawValue();
+
       if (this.role === UserRoleEnum.Customer) {
-        this.customerService.update(id, { ...this.buildUpdateCustomerPayload()}
-        ).subscribe(() => {
-          this.messageService.success('Profile updated successfully');
-          this.resetForm();
-          this.loadProfile();
+        const payload: CustomerProfileUpdateModel = {
+          customerName: raw.name,
+          phoneNo: raw.phoneNo,
+          address: raw.address,
+        }
+
+        this.customerService.updateProfile(id, payload).subscribe({
+          next: () => {
+            this.messageService.success('Profile updated successfully');
+            this.resetForm();
+            this.loadProfile();
+          },
+          error: err => {
+            this.messageService.error(err?.error?.message || 'Update failed');
+          }
         });
       }
 
       if (this.role === UserRoleEnum.Employee) {
-        this.employeeService.update(id,{ ...this.buildUpdateEmployeePayload()}
-        ).subscribe(() => {
-          this.messageService.success('Profile updated successfully');
-          this.resetForm();
-          this.loadProfile();
+        const payload: EmployeeProfileUpdateModel = {
+          employeeName: raw.name,
+        }
+
+        this.employeeService.updateProfile(id, payload).subscribe({
+          next: () => {
+            this.messageService.success('Profile updated successfully');
+            this.resetForm();
+            this.loadProfile();
+          },
+          error: err => {
+            this.messageService.error(err?.error?.message || 'Update failed');
+          }
         });
       }
     });
