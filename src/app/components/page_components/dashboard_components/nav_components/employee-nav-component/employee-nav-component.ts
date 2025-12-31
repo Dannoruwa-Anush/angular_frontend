@@ -313,20 +313,4 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
       });
     });
   }
-
-  delete(employee: EmployeeReadModel): void {
-    this.confirmationHelper.confirmDelete('employee').subscribe(confirmed => {
-      if (!confirmed) return;
-
-      this.employeeService.delete(employee.employeeID!).subscribe({
-        next: () => {
-          this.messageService.success('employee deleted successfully');
-          this.loadItems();
-        },
-        error: err => {
-          this.messageService.error(err?.error?.message || 'Delete failed');
-        }
-      });
-    });
-  }
 }
