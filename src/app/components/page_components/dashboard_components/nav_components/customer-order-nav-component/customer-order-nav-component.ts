@@ -35,7 +35,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   // COMPONENT SPECIFIC THINGS
   // ======================================================
-  orderStatus = signal<OrderStatusUiModel[]>([]);
+  orderStatuses = signal<OrderStatusUiModel[]>([]);
   selectedOrderStatusId = signal<number | undefined>(undefined);
 
   selectedOrderStatusName = computed(() => {
@@ -48,10 +48,10 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       .filter(v => typeof v === 'number')
       .map(v => ({
         orderStatusID: v as number,
-        orderStatusName: OrderPaymentStatusEnum[v]
+        orderStatusName: OrderStatusEnum[v]
       }));
 
-    this.orderStatus.set(orderStatus);
+    this.orderStatuses.set(orderStatus);
   }
 
   onOrderStausSelect(id?: number) {
@@ -59,7 +59,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     this.selectedOrderStatusId.set(id);
   }
 
-  paymentStatus = signal<PaymentStatusUiModel[]>([]);
+  paymentStatuses = signal<PaymentStatusUiModel[]>([]);
   selectedPaymentStatusId = signal<number | undefined>(undefined);
 
   selectedPaymentStatusName = computed(() => {
@@ -75,10 +75,10 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         paymentStatusName: OrderPaymentStatusEnum[v]
       }));
 
-    this.paymentStatus.set(paymentStatus);
+    this.paymentStatuses.set(paymentStatus);
   }
 
-  onPaymentStausSelect(id?: number) {
+  onPaymentStatusSelect(id?: number) {
     this.pageNumber.set(1);
     this.selectedPaymentStatusId.set(id);
   }
