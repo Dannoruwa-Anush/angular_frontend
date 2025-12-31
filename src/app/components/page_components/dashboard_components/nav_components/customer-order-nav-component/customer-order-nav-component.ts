@@ -15,6 +15,8 @@ import { OrderPaymentStatusEnum } from '../../../../../config/enums/orderPayment
 import { OrderSummaryComponent } from '../../../../reusable_components/order-summary-component/order-summary-component';
 import { OrderStatusUiModel } from '../../../../../models/ui_models/orderStatusUiModel';
 import { PaymentStatusUiModel } from '../../../../../models/ui_models/paymentStatusUiModel';
+import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
+import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 
 @Component({
   selector: 'app-customer-order-nav-component',
@@ -35,6 +37,8 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   // COMPONENT SPECIFIC THINGS
   // ======================================================
+  role!: UserRoleEnum;
+
   orderStatuses = signal<OrderStatusUiModel[]>([]);
   selectedOrderStatusId = signal<number | undefined>(undefined);
 
@@ -81,6 +85,14 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   onPaymentStatusSelect(id?: number) {
     this.pageNumber.set(1);
     this.selectedPaymentStatusId.set(id);
+  }
+
+  protected override getSearchKey(): string | undefined {
+    if (this.role === UserRoleEnum.Customer) {
+      return this.auth.email() ?? undefined;
+    }
+
+    return this.searchText() || undefined;
   }
 
   override requestParams = computed(() => ({
@@ -138,15 +150,18 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   constructor(
     private customerOrderService: CustomerOrderService,
+    private auth: AuthSessionService,
     private messageService: SystemMessageService,
     private confirmationHelper: CrudOperationConfirmationUiHelper,
     //private fb: FormBuilder,
   ) {
     super();
 
+    this.role = this.auth.role()!;
+
     //this.buildForm();
     this.loading = this.customerOrderService.loading;
-    
+
     // Load static data
     this.loadOrderStatus();
     this.loadPaymentStatus();

@@ -37,10 +37,14 @@ export abstract class DashboardNavStateBase<TRead> {
   // =====================
   // REQUEST PARAMS
   // =====================
+  protected getSearchKey(): string | undefined {
+    return this.searchText() || undefined;
+  }
+
   requestParams = computed(() => ({
     pageNumber: this.pageNumber(),
     pageSize: this.pageSize(),
-    searchKey: this.searchText() || undefined
+    searchKey: this.getSearchKey()
   }));
 
   // =====================

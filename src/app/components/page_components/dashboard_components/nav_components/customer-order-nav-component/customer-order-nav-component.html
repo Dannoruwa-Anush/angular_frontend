@@ -1,7 +1,7 @@
 <div class="dashboard-container">
 
     <mat-toolbar color="primary" class="products-toolbar">
-        <!-- [Start: Order Statuses menu] -->
+        <!-- [Start: Order Status menu] -->
         <button mat-button [matMenuTriggerFor]="orderStatusMenu" class="filter-button"
             [class.active-filter]="selectedOrderStatusId() !== undefined">
             {{ selectedOrderStatusName() ?? 'Order Status' }}
@@ -22,7 +22,7 @@
         <!-- [End: Order status menu] -->
 
 
-        <!-- [Start: Payment Statuses menu] -->
+        <!-- [Start: Payment Status menu] -->
         <button mat-button [matMenuTriggerFor]="paymentStatusMenu" class="filter-button"
             [class.active-filter]="selectedPaymentStatusId() !== undefined">
             {{ selectedPaymentStatusName() ?? 'Payment Status' }}
