@@ -33,4 +33,66 @@
     <mat-divider></mat-divider>
 
     <!-- Items Table -->
+    <table mat-table [dataSource]="order.customerOrderElectronicItemResponseDto" class="mat-elevation-z1">
+
+        <!-- Index -->
+        <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let row; let i = index">
+                {{ i + 1 }}
+            </td>
+        </ng-container>
+
+        <!-- Product -->
+        <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef>Product</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.electronicItemResponseDto.electronicItemName }}
+            </td>
+        </ng-container>
+
+        <!-- Unit Price -->
+        <ng-container matColumnDef="unitPrice">
+            <th mat-header-cell *matHeaderCellDef>Unit Price (Rs.)</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.unitPrice }}
+            </td>
+        </ng-container>
+
+        <!-- Quantity -->
+        <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Qty</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.quantity }}
+            </td>
+        </ng-container>
+
+        <!-- Sub Total -->
+        <ng-container matColumnDef="subTotal">
+            <th mat-header-cell *matHeaderCellDef>Sub Total (Rs.)</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.subTotal }}
+            </td>
+        </ng-container>
+
+        <!-- Action -->
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let row">
+                <button mat-icon-button color="warn">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    </table>
+    <mat-divider></mat-divider>
+
+    <!-- Total -->
+    <div class="total">
+        <h2>Total: Rs. {{ order.totalAmount }}</h2>
+    </div>
 </mat-card>

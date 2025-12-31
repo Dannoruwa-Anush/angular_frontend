@@ -16,5 +16,5 @@ export interface CustomerOrderReadModel {
 
     //FK: Fields
     customerResponseDto?: CustomerReadModel;
-    customerOrderElectronicItemResponseDto?: CustomerOrderElectronicItemsReadModel[];
+    customerOrderElectronicItemResponseDto: CustomerOrderElectronicItemsReadModel[];
 }
