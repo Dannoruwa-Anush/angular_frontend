@@ -26,6 +26,7 @@ export class DashboardTableComponent<T> {
   // ===== SEARCH =====
   @Input() searchLabel = 'Search';
   @Input() searchValue = '';
+  @Input() disableSearch = false;   
   @Output() searchChange = new EventEmitter<string>();
 
   // ===== PAGINATION =====

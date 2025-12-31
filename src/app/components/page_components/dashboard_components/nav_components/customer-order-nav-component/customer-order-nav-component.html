@@ -1,6 +1,6 @@
 <div class="dashboard-container">
 
-    <mat-toolbar color="primary" class="products-toolbar">
+    <mat-toolbar *ngIf="role !== UserRoleEnum.Customer" color="primary" class="products-toolbar">
         <!-- [Start: Order Status menu] -->
         <button mat-button [matMenuTriggerFor]="orderStatusMenu" class="filter-button"
             [class.active-filter]="selectedOrderStatusId() !== undefined">
@@ -45,7 +45,7 @@
 
     <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
     <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Order"
-        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        [searchValue]="searchText()" [disableSearch]="role === UserRoleEnum.Customer" [totalCount]="totalCount()" [pageSize]="pageSize()"
         (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
 
         <ng-template tableActions let-row>

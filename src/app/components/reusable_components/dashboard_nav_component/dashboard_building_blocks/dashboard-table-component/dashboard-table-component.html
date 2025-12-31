@@ -1,7 +1,7 @@
 <mat-card class="dashboard-list">
 
     <!-- SEARCH -->
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field *ngIf="!disableSearch" appearance="outline" class="full-width">
         <mat-label>{{ searchLabel }}</mat-label>
         <input matInput [ngModel]="searchValue" (ngModelChange)="searchChange.emit($event)" />
     </mat-form-field>

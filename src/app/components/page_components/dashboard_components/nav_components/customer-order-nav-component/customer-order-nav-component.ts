@@ -37,6 +37,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   // COMPONENT SPECIFIC THINGS
   // ======================================================
+  UserRoleEnum = UserRoleEnum;
   role!: UserRoleEnum;
 
   orderStatuses = signal<OrderStatusUiModel[]>([]);
