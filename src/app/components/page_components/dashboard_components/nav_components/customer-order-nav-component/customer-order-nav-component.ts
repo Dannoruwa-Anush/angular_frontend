@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, signal } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { CustomerOrderReadModel } from '../../../../../models/api_models/read_models/customerOrder_read_Model';
@@ -13,6 +13,8 @@ import { DashboardTableComponent } from '../../../../reusable_components/dashboa
 import { OrderStatusEnum } from '../../../../../config/enums/orderStatusEnum';
 import { OrderPaymentStatusEnum } from '../../../../../config/enums/orderPaymentStatusEnum';
 import { OrderSummaryComponent } from '../../../../reusable_components/order-summary-component/order-summary-component';
+import { OrderStatusUiModel } from '../../../../../models/ui_models/orderStatusUiModel';
+import { PaymentStatusUiModel } from '../../../../../models/ui_models/paymentStatusUiModel';
 
 @Component({
   selector: 'app-customer-order-nav-component',
@@ -27,6 +29,68 @@ import { OrderSummaryComponent } from '../../../../reusable_components/order-sum
   styleUrl: './customer-order-nav-component.scss',
 })
 export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrderReadModel> {
+
+
+
+  // ======================================================
+  // COMPONENT SPECIFIC THINGS
+  // ======================================================
+  orderStatus = signal<OrderStatusUiModel[]>([]);
+  selectedOrderStatusId = signal<number | undefined>(undefined);
+
+  selectedOrderStatusName = computed(() => {
+    const id = this.selectedOrderStatusId();
+    return id ? OrderStatusEnum[id] : undefined;
+  });
+
+  private loadOrderStatus(): void {
+    const orderStatus = Object.values(OrderStatusEnum)
+      .filter(v => typeof v === 'number')
+      .map(v => ({
+        orderStatusID: v as number,
+        orderStatusName: OrderPaymentStatusEnum[v]
+      }));
+
+    this.orderStatus.set(orderStatus);
+  }
+
+  onOrderStausSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedOrderStatusId.set(id);
+  }
+
+  paymentStatus = signal<PaymentStatusUiModel[]>([]);
+  selectedPaymentStatusId = signal<number | undefined>(undefined);
+
+  selectedPaymentStatusName = computed(() => {
+    const id = this.selectedPaymentStatusId();
+    return id ? OrderPaymentStatusEnum[id] : undefined;
+  });
+
+  private loadPaymentStatus(): void {
+    const paymentStatus = Object.values(OrderPaymentStatusEnum)
+      .filter(v => typeof v === 'number')
+      .map(v => ({
+        paymentStatusID: v as number,
+        paymentStatusName: OrderPaymentStatusEnum[v]
+      }));
+
+    this.paymentStatus.set(paymentStatus);
+  }
+
+  onPaymentStausSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedPaymentStatusId.set(id);
+  }
+
+  override requestParams = computed(() => ({
+    pageNumber: this.pageNumber(),
+    pageSize: this.pageSize(),
+    paymentStatusId: this.selectedPaymentStatusId(),
+    orderStatusId: this.selectedOrderStatusId(),
+    searchKey: this.searchText() || undefined,
+  }));
+
 
   selectedOrder = signal<CustomerOrderReadModel | null>(null);
 
@@ -82,6 +146,10 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
     //this.buildForm();
     this.loading = this.customerOrderService.loading;
+    
+    // Load static data
+    this.loadOrderStatus();
+    this.loadPaymentStatus();
 
     // Auto reload when paging / search changes
     effect(() => {
@@ -112,8 +180,8 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       .getCustomerOrderPaged(
         params.pageNumber,
         params.pageSize,
-        1,        //paymentStatusId,
-        1,//orderStatusId,
+        params.paymentStatusId,
+        params.orderStatusId,
         params.searchKey
       )
       .subscribe(res => {
