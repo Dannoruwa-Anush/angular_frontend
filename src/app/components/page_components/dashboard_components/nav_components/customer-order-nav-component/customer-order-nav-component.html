@@ -53,7 +53,7 @@
                 <mat-icon>visibility</mat-icon>
             </button>
 
-            <button mat-icon-button color="accent" (click)="edit(row)">
+            <button mat-icon-button color="accent" *ngIf="canEdit(row)" (click)="edit(row)">
                 <mat-icon>edit</mat-icon>
             </button>
         </ng-template>

@@ -179,6 +179,94 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   //order status
 
+  canEdit(order: CustomerOrderReadModel): boolean {
+    if (this.role === UserRoleEnum.Customer) {
+      return order.orderStatus === OrderStatusEnum.Pending;
+    }
+    return true; // Employee
+  }
+
+  override edit(order: CustomerOrderReadModel): void {
+    if (this.role === UserRoleEnum.Customer) {
+      this.openCustomerCancellation(order);
+      return;
+    }
+
+    this.openEmployeeStatusUpdate(order);
+  }
+
+  private openCustomerCancellation(order: CustomerOrderReadModel): void {
+    if (order.orderStatus !== OrderStatusEnum.Pending) {
+      this.messageService.error('Only pending orders can be cancelled.');
+      return;
+    }
+    /*
+      this.confirmationHelper.confirmWithInput(
+        'Cancel Order',
+        'Please provide a cancellation reason',
+        reason => {
+          if (!reason) {
+            this.messageService.error('Cancellation reason is required.');
+            return;
+          }
+    
+          this.customerOrderService
+            .cancelOrder(order.orderID!, reason)
+            .subscribe(() => {
+              this.messageService.success('Order cancelled successfully.');
+              this.loadItems();
+            });
+        }
+      );
+      */
+  }
+
+  private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
+    switch (status) {
+      case OrderStatusEnum.Pending:
+        return [OrderStatusEnum.Shipped];
+
+      case OrderStatusEnum.Shipped:
+        return [OrderStatusEnum.Delivered];
+
+      //case OrderStatusEnum.CancellationRequested:
+        //return [OrderStatusEnum.DeliveredAfterCancellationRejected];
+
+      default:
+        return [];
+    }
+  }
+
+  private openEmployeeStatusUpdate(order: CustomerOrderReadModel): void {
+  const nextStatuses = this.getNextEmployeeStatuses(order.orderStatus);
+
+  /*
+  this.confirmationHelper.confirmWithSelect(
+    'Update Order Status',
+    nextStatuses.map(s => ({
+      value: s,
+      label: OrderStatusEnum[s]
+    })),
+    (status, reason?) => {
+
+      if (
+        status === OrderStatusEnum.DeliveredAfterCancellationRejected &&
+        !reason
+      ) {
+        this.messageService.error('Cancellation rejection reason is required.');
+        return;
+      }
+
+      this.customerOrderService
+        .updateOrderStatus(order.orderID!, status, reason)
+        .subscribe(() => {
+          this.messageService.success('Order status updated.');
+          this.loadItems();
+        });
+    }
+  );
+  */
+}
 
 
 
