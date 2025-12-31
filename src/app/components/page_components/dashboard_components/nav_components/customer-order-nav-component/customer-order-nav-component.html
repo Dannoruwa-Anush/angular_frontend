@@ -1,4 +1,5 @@
 <div class="dashboard-container">
+
     <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
     <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Order"
         [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
@@ -14,4 +15,7 @@
             </button>
         </ng-template>
     </app-dashboard-table-component>
+
+    <!-- ORDER SUMMARY -->
+    <app-order-summary-component *ngIf="isViewMode() && selectedOrder()" [order]="selectedOrder()!"></app-order-summary-component>
 </div>

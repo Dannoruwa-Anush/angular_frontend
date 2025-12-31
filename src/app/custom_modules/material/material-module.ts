@@ -18,6 +18,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatBadgeModule } from '@angular/material/badge';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
 
 // Angular Material modules array
 const materialModules = [
@@ -37,6 +39,8 @@ const materialModules = [
   MatBadgeModule,
   MatProgressSpinnerModule,
   MatProgressBarModule,
+  MatDividerModule,
+  MatChipsModule,
 ];
 
 @NgModule({

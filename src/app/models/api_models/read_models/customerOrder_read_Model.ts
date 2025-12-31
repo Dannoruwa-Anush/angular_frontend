@@ -14,5 +14,5 @@ export interface CustomerOrderReadModel {
     orderPaymentStatus: OrderPaymentStatusEnum;
 
     //FK: Fields
-    customerOrderElectronicItemResponseDto?: CustomerOrderElectronicItemsReadModel;
+    customerOrderElectronicItemResponseDto?: CustomerOrderElectronicItemsReadModel[];
 }

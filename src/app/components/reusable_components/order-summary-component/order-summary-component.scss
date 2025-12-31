@@ -1,0 +1,36 @@
+.invoice-card {
+  max-width: 900px;
+  margin: auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.status {
+  display: flex;
+  gap: 8px;
+}
+
+.customer {
+  margin-top: 16px;
+}
+
+.customer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+table {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.total {
+  text-align: right;
+  margin-top: 16px;
+}

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { CustomerOrderReadModel } from '../../../../../models/api_models/read_models/customerOrder_read_Model';
@@ -12,6 +12,7 @@ import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOper
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { OrderStatusEnum } from '../../../../../config/enums/orderStatusEnum';
 import { OrderPaymentStatusEnum } from '../../../../../config/enums/orderPaymentStatusEnum';
+import { OrderSummaryComponent } from '../../../../reusable_components/order-summary-component/order-summary-component';
 
 @Component({
   selector: 'app-customer-order-nav-component',
@@ -19,6 +20,7 @@ import { OrderPaymentStatusEnum } from '../../../../../config/enums/orderPayment
     MaterialModule,
     ReactiveFormsModule,
     CommonModule,
+    OrderSummaryComponent,
     DashboardTableComponent
   ],
   templateUrl: './customer-order-nav-component.html',
@@ -26,7 +28,7 @@ import { OrderPaymentStatusEnum } from '../../../../../config/enums/orderPayment
 })
 export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrderReadModel> {
 
-
+  selectedOrder = signal<CustomerOrderReadModel | null>(null);
 
 
   // ======================================================
@@ -100,7 +102,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
   protected override getId(item: CustomerOrderReadModel): number | null {
-    throw new Error('Method not implemented.');
+    return item.orderID ?? null;
   }
 
   protected override loadItems(): void {
@@ -120,11 +122,13 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       });
   }
 
-  protected override loadToForm(item: CustomerOrderReadModel, mode: DashboardModeEnum): void {
-    throw new Error('Method not implemented.');
+  protected loadToForm(item: CustomerOrderReadModel, mode: DashboardModeEnum): void {
+    this.selectedOrder.set(item);
+    this.formMode.set(mode);
   }
 
-  protected override resetForm(): void {
-    throw new Error('Method not implemented.');
+  protected resetForm(): void {
+    this.selectedOrder.set(null);
+    this.formMode.set(DashboardModeEnum.CREATE);
   }
 }
