@@ -4,12 +4,12 @@ import { MaterialModule } from '../../../custom_modules/material/material-module
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { environment } from '../../../config/environment';
 import { ElectronicItemService } from '../../../services/api_services/electronicItemService';
 import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
 import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
 import { ElectronicItemReadModel } from '../../../models/api_models/read_models/electronicItem_read_Model';
+import { FileService } from '../../../services/ui_service/fileService';
 
 @Component({
   selector: 'app-product-component',
@@ -26,9 +26,6 @@ export class ProductComponent {
 
 
 
-  // ---------- CONFIG ----------
-  private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
-
   // ---------- STATE ----------
   electronicItem = signal<ElectronicItemReadModel | null>(null);
   quantity = signal<number>(1);
@@ -37,6 +34,7 @@ export class ProductComponent {
   constructor(
     private electronicItemService: ElectronicItemService,
     private shoppingCartService: ShoppingCartService,
+    public fileService: FileService,
     private route: ActivatedRoute,
     private router: Router,
     private confirmService: SystemOperationConfirmService,
@@ -71,12 +69,6 @@ export class ProductComponent {
   }
 
   // ---------- HELPERS ----------
-  getImageUrl(item: ElectronicItemReadModel): string {
-    if (item.electronicItemImageUrl) return item.electronicItemImageUrl;
-    if (item.electronicItemImage) return `${this.baseUrl}/${item.electronicItemImage}`;
-    return 'assets/images/no-image.png';
-  }
-
   increaseQuantity() {
     const product = this.electronicItem();
     if (!product) return;
@@ -109,7 +101,7 @@ export class ProductComponent {
     const result = this.shoppingCartService.addToCart({
       productId: product.electronicItemID!,
       name: product.electronicItemName,
-      imageUrl: this.getImageUrl(product),
+      imageUrl: this.fileService.getElectronicItemImage(product),
       unitPrice: product.price,
       quantity: this.quantity(),
       maxStock: product.qoh,

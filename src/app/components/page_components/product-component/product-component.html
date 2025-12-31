@@ -3,7 +3,7 @@
 
     <!-- LEFT COLUMN: Image -->
     <div class="product-image-col">
-      <img [src]="getImageUrl(product)" [alt]="product.electronicItemName" />
+      <img [src]="fileService.getElectronicItemImage(product)" [alt]="product.electronicItemName" />
     </div>
 
     <!-- RIGHT COLUMN: Product Details -->

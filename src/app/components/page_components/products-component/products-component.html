@@ -67,7 +67,7 @@
 
   <mat-card class="product-card" *ngFor="let item of electronicItems()" [class.out-of-stock]="item.qoh === 0"
     (click)="item.qoh > 0 && openProduct(item.electronicItemID!)">
-    <img mat-card-image [src]="getImageUrl(item)" />
+    <img mat-card-image [src]="fileService.getElectronicItemImage(item)" />
 
     <mat-card-content>
       <h3 class="product-name">{{ item.electronicItemName }}</h3>

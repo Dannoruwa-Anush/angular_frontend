@@ -7,10 +7,10 @@ import { MaterialModule } from '../../../custom_modules/material/material-module
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { environment } from '../../../config/environment';
 import { BrandReadModel } from '../../../models/api_models/read_models/brand_read_Model';
 import { CategoryReadModel } from '../../../models/api_models/read_models/category_read_Model';
 import { ElectronicItemReadModel } from '../../../models/api_models/read_models/electronicItem_read_Model';
+import { FileService } from '../../../services/ui_service/fileService';
 
 @Component({
   selector: 'app-products-component',
@@ -25,9 +25,6 @@ import { ElectronicItemReadModel } from '../../../models/api_models/read_models/
 })
 export class ProductsComponent {
 
-
-  // ---------- CONFIG ----------
-  private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
   // ---------- STATE ----------
   brands = signal<BrandReadModel[]>([]);
@@ -67,6 +64,7 @@ export class ProductsComponent {
     private brandService: BrandService,
     private categoryService: CategoryService,
     private electronicItemService: ElectronicItemService,
+    public fileService: FileService,
     private router: Router
   ) {
 
@@ -140,15 +138,5 @@ export class ProductsComponent {
 
   openProduct(id: number) {
     this.router.navigate(['/product', id]);
-  }
-
-  getImageUrl(item: ElectronicItemReadModel): string {
-    if (item.electronicItemImageUrl) {
-      return item.electronicItemImageUrl;
-    }
-    if (item.electronicItemImage) {
-      return `${this.baseUrl}/${item.electronicItemImage}`;
-    }
-    return 'assets/images/no-image.png';
   }
 }

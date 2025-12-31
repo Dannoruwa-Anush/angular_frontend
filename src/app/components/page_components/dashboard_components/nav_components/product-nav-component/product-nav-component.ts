@@ -8,7 +8,6 @@ import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOper
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
 import { BrandService } from '../../../../../services/api_services/brandService';
 import { CategoryService } from '../../../../../services/api_services/categoryService';
-import { environment } from '../../../../../config/environment';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
@@ -17,6 +16,7 @@ import { BrandReadModel } from '../../../../../models/api_models/read_models/bra
 import { CategoryReadModel } from '../../../../../models/api_models/read_models/category_read_Model';
 import { ElectronicItemReadModel } from '../../../../../models/api_models/read_models/electronicItem_read_Model';
 import { ElectronicItemCreateUpdateModel } from '../../../../../models/api_models/create_update_models/electronicItem_create_update_Model';
+import { FileService } from '../../../../../services/ui_service/fileService';
 
 @Component({
   selector: 'app-product-nav-component',
@@ -108,18 +108,6 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemRea
     reader.readAsDataURL(file);
   }
 
-  private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
-
-  getImageUrl(item: ElectronicItemReadModel): string {
-    if (item.electronicItemImageUrl) {
-      return item.electronicItemImageUrl;
-    }
-    if (item.electronicItemImage) {
-      return `${this.baseUrl}/${item.electronicItemImage}`;
-    }
-    return 'assets/images/no-image.png';
-  }
-
   // ======================================================
   // FORM
   // ======================================================
@@ -169,6 +157,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemRea
     private brandService: BrandService,
     private categoryService: CategoryService,
     private electronicItemService: ElectronicItemService,
+    private fileService: FileService,
     private messageService: SystemMessageService,
     private confirmationHelper: CrudOperationConfirmationUiHelper,
     private fb: FormBuilder,
@@ -244,7 +233,7 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemRea
       categoryID: item.categoryResponseDto?.categoryID,
     });
 
-    this.imagePreview = this.getImageUrl(item);
+    this.imagePreview = this.fileService.getElectronicItemImage(item);
     mode === DashboardModeEnum.VIEW ? this.form.disable() : this.form.enable();
     this.formMode.set(mode);
   }

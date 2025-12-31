@@ -4,6 +4,7 @@ import { MaterialModule } from '../../../custom_modules/material/material-module
 import { CustomerOrderReadModel } from '../../../models/api_models/read_models/customerOrder_read_Model';
 import { OrderPaymentStatusEnum } from '../../../config/enums/orderPaymentStatusEnum';
 import { OrderStatusEnum } from '../../../config/enums/orderStatusEnum';
+import { FileService } from '../../../services/ui_service/fileService';
 
 @Component({
   selector: 'app-order-summary-component',
@@ -28,4 +29,8 @@ export class OrderSummaryComponent {
     'quantity',
     'subTotal'
   ];
+
+  constructor(
+    public fileService: FileService,
+  ){}
 }
