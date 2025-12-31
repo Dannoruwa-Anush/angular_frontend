@@ -1,5 +1,6 @@
 import { OrderPaymentStatusEnum } from "../../../config/enums/orderPaymentStatusEnum";
 import { OrderStatusEnum } from "../../../config/enums/orderStatusEnum";
+import { CustomerReadModel } from "./customer_read_Model";
 import { CustomerOrderElectronicItemsReadModel } from "./customerOrderElectronicItems_read_Model";
 
 export interface CustomerOrderReadModel {
@@ -14,5 +15,6 @@ export interface CustomerOrderReadModel {
     orderPaymentStatus: OrderPaymentStatusEnum;
 
     //FK: Fields
+    customerResponseDto?: CustomerReadModel;
     customerOrderElectronicItemResponseDto?: CustomerOrderElectronicItemsReadModel[];
 }

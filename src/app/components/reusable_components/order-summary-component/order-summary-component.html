@@ -4,6 +4,33 @@
     <div class="header">
         <div>
             <h2>Order Invoice</h2>
+            <p><strong>Order ID:</strong> {{ order.orderID }}</p>
+            <p><strong>Order Date:</strong> {{ order.orderDate | date:'mediumDate' }}</p>
+        </div>
+
+        <div class="status">
+            <mat-chip color="primary" selected>
+                Order Status: {{ OrderStatusEnum[order.orderStatus] }}
+            </mat-chip>
+
+            <mat-chip [color]="order.orderPaymentStatus === 1 ? 'accent' : 'warn'" selected>
+                Payment Status: {{ OrderPaymentStatusEnum[order.orderPaymentStatus] }}
+            </mat-chip>
         </div>
     </div>
+    <mat-divider></mat-divider>
+
+    <!-- Customer Details -->
+    <section class="customer">
+        <h3>Customer Details</h3>
+        <div class="customer-grid">
+            <span><strong>Name:</strong> {{ order.customerResponseDto?.customerName }}</span>
+            <span><strong>Phone:</strong> {{ order.customerResponseDto?.phoneNo }}</span>
+            <span><strong>Email:</strong> {{ order.customerResponseDto?.userResponseDto?.email }}</span>
+            <span><strong>Address:</strong> {{ order.customerResponseDto?.address }}</span>
+        </div>
+    </section>
+    <mat-divider></mat-divider>
+
+    <!-- Items Table -->
 </mat-card>
