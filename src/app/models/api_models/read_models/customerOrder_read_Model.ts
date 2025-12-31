@@ -6,11 +6,11 @@ export interface CustomerOrderReadModel {
     orderID: number;
     totalAmount: number;
     orderDate: string;
-    shippedDate: string;
-    deliveredDate: string;
-    cancelledDate: string;
+    shippedDate?: string;
+    deliveredDate?: string;
+    cancelledDate?: string;
     orderStatus: OrderStatusEnum;
-    paymentCompletedDate: string;
+    paymentCompletedDate?: string;
     orderPaymentStatus: OrderPaymentStatusEnum;
 
     //FK: Fields

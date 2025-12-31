@@ -1,1 +1,17 @@
-<p>customer-order-nav-component works!</p>
+<div class="dashboard-container">
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Order"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </ng-template>
+    </app-dashboard-table-component>
+</div>
