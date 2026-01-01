@@ -1,0 +1,7 @@
+<div class="dashboard-container">
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" [showActions]="false"
+        searchLabel="Search Customer" [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+    </app-dashboard-table-component>
+</div>
