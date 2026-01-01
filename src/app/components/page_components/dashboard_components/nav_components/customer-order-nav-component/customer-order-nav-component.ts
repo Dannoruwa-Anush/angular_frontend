@@ -17,6 +17,7 @@ import { OrderStatusUiModel } from '../../../../../models/ui_models/orderStatusU
 import { PaymentStatusUiModel } from '../../../../../models/ui_models/paymentStatusUiModel';
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
+import { CustomerOrderUpdateModel } from '../../../../../models/api_models/create_update_models/update_models/customerOrder_update_Model';
 
 @Component({
   selector: 'app-customer-order-nav-component',
@@ -154,13 +155,11 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     private auth: AuthSessionService,
     private messageService: SystemMessageService,
     private confirmationHelper: CrudOperationConfirmationUiHelper,
-    //private fb: FormBuilder,
   ) {
     super();
 
     this.role = this.auth.role()!;
 
-    //this.buildForm();
     this.loading = this.customerOrderService.loading;
 
     // Load static data
@@ -175,9 +174,8 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   }
 
   // ======================================================
-  // REACTIVE FORM SETUP
+  // PROCESS ORDER
   // ======================================================
-  //order status
 
   canEdit(order: CustomerOrderReadModel): boolean {
     if (this.role === UserRoleEnum.Customer) {
@@ -196,29 +194,44 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   }
 
   private openCustomerCancellation(order: CustomerOrderReadModel): void {
+    const id = order.orderID;
+    if (!id) return;
+
     if (order.orderStatus !== OrderStatusEnum.Pending) {
       this.messageService.error('Only pending orders can be cancelled.');
       return;
     }
-    /*
-      this.confirmationHelper.confirmWithInput(
-        'Cancel Order',
-        'Please provide a cancellation reason',
-        reason => {
-          if (!reason) {
-            this.messageService.error('Cancellation reason is required.');
-            return;
-          }
-    
-          this.customerOrderService
-            .cancelOrder(order.orderID!, reason)
-            .subscribe(() => {
-              this.messageService.success('Order cancelled successfully.');
-              this.loadItems();
-            });
+
+    this.confirmationHelper.confirmProcessWithInput(
+      'Cancel Order',
+      'Please provide a cancellation reason',
+      'Cancellation reason',
+      'Cancel Order',
+      'Back'
+    ).subscribe(result => {
+      if (!result || result === false) return;
+
+      if (!result.confirmed || !result.value?.trim()) {
+        this.messageService.error('Cancellation reason is required.');
+        return;
+      }
+
+      const payload: CustomerOrderUpdateModel = {
+        cancellationReason: result.value.trim(),
+        newOrderStatus: OrderStatusEnum.Cancel_Pending
+      };
+
+      this.customerOrderService.update(id, payload).subscribe({
+        next: () => {
+          this.messageService.success('Order cancellation requested successfully');
+          this.resetForm();
+          this.loadItems();
+        },
+        error: err => {
+          this.messageService.error(err?.error?.message || 'Update failed');
         }
-      );
-      */
+      });
+    });
   }
 
   private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
@@ -229,8 +242,8 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       case OrderStatusEnum.Shipped:
         return [OrderStatusEnum.Delivered];
 
-      //case OrderStatusEnum.CancellationRequested:
-        //return [OrderStatusEnum.DeliveredAfterCancellationRejected];
+      case OrderStatusEnum.Cancel_Pending:
+        return [OrderStatusEnum.DeliveredAfterCancellationRejected];
 
       default:
         return [];
@@ -238,37 +251,70 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   }
 
   private openEmployeeStatusUpdate(order: CustomerOrderReadModel): void {
-  const nextStatuses = this.getNextEmployeeStatuses(order.orderStatus);
+    const id = order.orderID;
+    if (!id) return;
 
-  /*
-  this.confirmationHelper.confirmWithSelect(
-    'Update Order Status',
-    nextStatuses.map(s => ({
-      value: s,
-      label: OrderStatusEnum[s]
-    })),
-    (status, reason?) => {
+    const nextStatuses = this.getNextEmployeeStatuses(order.orderStatus);
 
-      if (
-        status === OrderStatusEnum.DeliveredAfterCancellationRejected &&
-        !reason
-      ) {
+    if (!nextStatuses.length) {
+      this.messageService.error('No valid status transition available.');
+      return;
+    }
+
+    // Enforce single logical transition
+    const nextStatus = nextStatuses[0];
+
+    const requiresReason =
+      nextStatus === OrderStatusEnum.DeliveredAfterCancellationRejected;
+
+    const title = 'Update Order Status';
+    const message = `Are you sure you want to update the order status to "${OrderStatusEnum[nextStatus]}"?`;
+
+    this.confirmationHelper.confirmProcessWithInput(
+      title,
+      message,
+      requiresReason
+        ? 'Enter cancellation rejection reason'
+        : 'Enter confirmation note',
+      'Confirm',
+      'Back'
+    ).subscribe(result => {
+      if (!result || result === false) return;
+
+      if (!result.confirmed) return;
+
+      const reason = result.value?.trim();
+
+      // Even though input is required by helper, keep business validation explicit
+      if (requiresReason && !reason) {
         this.messageService.error('Cancellation rejection reason is required.');
         return;
       }
 
-      this.customerOrderService
-        .updateOrderStatus(order.orderID!, status, reason)
-        .subscribe(() => {
-          this.messageService.success('Order status updated.');
+      const payload: CustomerOrderUpdateModel = {
+        newOrderStatus: nextStatus,
+        cancellationApproved:
+          order.orderStatus === OrderStatusEnum.Cancel_Pending
+            ? nextStatus !== OrderStatusEnum.DeliveredAfterCancellationRejected
+            : undefined,
+        cancellationRejectionReason:
+          requiresReason ? reason : undefined
+      };
+
+      this.customerOrderService.update(id, payload).subscribe({
+        next: () => {
+          this.messageService.success(
+            `Order status updated to "${OrderStatusEnum[nextStatus]}".`
+          );
+          this.resetForm();
           this.loadItems();
-        });
-    }
-  );
-  */
-}
-
-
+        },
+        error: err => {
+          this.messageService.error(err?.error?.message || 'Update failed.');
+        }
+      });
+    });
+  }
 
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
@@ -295,11 +341,14 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   }
 
   protected loadToForm(item: CustomerOrderReadModel, mode: DashboardModeEnum): void {
+    this.selectedItemId.set(item.orderID ?? null);
+
     this.selectedOrder.set(item);
     this.formMode.set(mode);
   }
 
   protected resetForm(): void {
+    this.selectedItemId.set(null);
     this.selectedOrder.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
   }

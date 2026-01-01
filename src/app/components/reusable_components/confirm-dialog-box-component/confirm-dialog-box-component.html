@@ -1,14 +1,20 @@
-<h2 mat-dialog-title>{{ data.title || 'Confirm' }}</h2>
+<h2 mat-dialog-title>{{ title }}</h2>
 
 <mat-dialog-content>
   <p>{{ data.message }}</p>
+
+  <mat-form-field *ngIf="hasInput" appearance="outline" class="w-100">
+    <input matInput [(ngModel)]="inputValue" [placeholder]="inputPlaceholder" [required]="inputRequired"
+      [type]="inputType" />
+  </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancel()">
-    {{ data.cancelText || 'Cancel' }}
+    {{ cancelText }}
   </button>
-  <button mat-raised-button color="warn" (click)="confirm()">
-    {{ data.confirmText || 'Confirm' }}
+
+  <button mat-raised-button color="warn" [disabled]="isConfirmDisabled" (click)="confirm()">
+    {{ confirmText }}
   </button>
 </mat-dialog-actions>

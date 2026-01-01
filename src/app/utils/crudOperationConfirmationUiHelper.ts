@@ -28,11 +28,30 @@ export class CrudOperationConfirmationUiHelper {
   }
 
   confirmUpdate(entityName = 'item') {
-      return this.confirmService.confirm({
+    return this.confirmService.confirm({
       title: 'Update',
       message: `Update this ${entityName}?`,
       confirmText: 'Update',
       cancelText: 'Cancel'
+    });
+  }
+
+  confirmProcessWithInput(
+    title: string,
+    message: string,
+    inputPlaceholder = 'Enter value',
+    confirmText = 'Confirm',
+    cancelText = 'Cancel'
+  ) {
+    return this.confirmService.confirm({
+      title,
+      message,
+      confirmText,
+      cancelText,
+      inputConfig: {
+        placeholder: inputPlaceholder,
+        required: true
+      }
     });
   }
 }
