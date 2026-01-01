@@ -70,8 +70,6 @@ export class BnplPlanTypeNavComponent extends DashboardNavStateBase<BnplPlanType
     }
   ];
 
-  displayedColumns = ['bnpl_PlanTypeID', 'bnpl_PlanTypeName', 'bnpl_DurationDays', 'interestRate', 'latePayInterestRate', 'bnpl_Description', 'actions'];
-
   // ======================================================
   // CONSTRUCTOR
   // ======================================================

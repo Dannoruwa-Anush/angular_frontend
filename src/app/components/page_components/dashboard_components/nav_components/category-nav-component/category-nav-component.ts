@@ -55,8 +55,6 @@ export class CategoryNavComponent extends DashboardNavStateBase<CategoryReadMode
     }
   ];
 
-  displayedColumns = ['categoryName', 'createdAt', 'actions'];
-
   // ======================================================
   // CONSTRUCTOR
   // ======================================================

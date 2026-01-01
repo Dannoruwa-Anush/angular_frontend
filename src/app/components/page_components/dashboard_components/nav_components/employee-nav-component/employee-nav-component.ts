@@ -106,8 +106,6 @@ export class EmployeeNavComponent extends DashboardNavStateBase<EmployeeReadMode
     }
   ];
 
-  displayedColumns = ['employeeName', 'position', 'email', 'createdAt', 'actions'];
-
   // ======================================================
   // CONSTRUCTOR
   // ======================================================

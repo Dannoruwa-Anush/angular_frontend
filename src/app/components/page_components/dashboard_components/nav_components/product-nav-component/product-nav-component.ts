@@ -148,8 +148,6 @@ export class ProductNavComponent extends DashboardNavStateBase<ElectronicItemRea
     },
   ];
 
-  displayedColumns = ['electronicItemName', 'price', 'qoh', 'brandName', 'categoryName'];
-
   // ======================================================
   // CONSTRUCTOR
   // ======================================================

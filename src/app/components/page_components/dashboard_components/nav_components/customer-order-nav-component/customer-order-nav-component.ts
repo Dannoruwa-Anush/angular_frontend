@@ -145,8 +145,6 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     }
   ];
 
-  displayedColumns = ['orderID', 'totalAmount', 'orderDate', 'orderStatus', 'paymentCompletedDate', 'orderPaymentStatus'];
-
   // ======================================================
   // CONSTRUCTOR
   // ======================================================

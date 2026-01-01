@@ -56,8 +56,6 @@ export class BrandNavComponent extends DashboardNavStateBase<BrandReadModel> {
     }
   ];
 
-  displayedColumns = ['brandName', 'createdAt', 'actions'];
-
   // ======================================================
   // CONSTRUCTOR
   // ======================================================
