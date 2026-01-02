@@ -1,3 +1,4 @@
+import { BnplPlanNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-plan-nav-component/bnpl-plan-nav-component";
 import { BnplPlanTypeNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-plan-type-nav-component/bnpl-plan-type-nav-component";
 import { BrandNavComponent } from "../components/page_components/dashboard_components/nav_components/brand-nav-component/brand-nav-component";
 import { CategoryNavComponent } from "../components/page_components/dashboard_components/nav_components/category-nav-component/category-nav-component";
@@ -90,11 +91,21 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Customer
         ]
     },
-    //Cashflow
+    //Payment (installment)
 
     //Bnpl_plan
-
+    {
+        label: 'Bnpl Plans',
+        route: 'bnpl_plan',
+        component: BnplPlanNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ]
+    },
     //Bnpl_installmets
 
     //Bnpl_snapshots
+
+    //Cashflow
 ];
