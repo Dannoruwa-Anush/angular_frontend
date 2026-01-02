@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { BnplPlanReadModel } from '../../../../../models/api_models/read_models/bnpl_plan_read_model';
 import { DashboardNavListOnlyStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavListOnlyStateBase';
@@ -7,6 +7,8 @@ import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashb
 
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { BnplPlanService } from '../../../../../services/api_services/bnplPlanService';
+import { BnplPlanStatusUiModel } from '../../../../../models/ui_models/bnplPlanStatusUiModel';
+import { BnplStatusEnum } from '../../../../../config/enums/bnplStatusEnum';
 
 @Component({
   selector: 'app-bnpl-plan-nav-component',
@@ -22,6 +24,37 @@ export class BnplPlanNavComponent extends DashboardNavListOnlyStateBase<BnplPlan
 
 
 
+
+  bnplPlanStatuses = signal<BnplPlanStatusUiModel[]>([]);
+  selectedBnplPlanStatusId = signal<number | undefined>(undefined);
+
+  selectedBnplPlanName = computed(() => {
+    const id = this.selectedBnplPlanStatusId();
+    return id ? BnplStatusEnum[id] : undefined;
+  });
+
+  private loadBnplPlanStatus(): void {
+    const bnplPlanStatus = Object.values(BnplStatusEnum)
+      .filter(v => typeof v === 'number')
+      .map(v => ({
+        bnplPlanStatusID: v as number,
+        bnplPlanStatusName: BnplStatusEnum[v]
+      }));
+
+    this.bnplPlanStatuses.set(bnplPlanStatus);
+  }
+
+  onBnplPlanStausSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedBnplPlanStatusId.set(id);
+  }
+
+  override requestParams = computed(() => ({
+    pageNumber: this.pageNumber(),
+    pageSize: this.pageSize(),
+    planStatusId: this.selectedBnplPlanStatusId(),
+    searchKey: this.searchText() || undefined,
+  }));
 
   // ======================================================
   // TABLE CONFIG
@@ -73,6 +106,9 @@ export class BnplPlanNavComponent extends DashboardNavListOnlyStateBase<BnplPlan
     super();
     this.loading = this.bnplPlanService.loading;
 
+    // Load static data
+    this.loadBnplPlanStatus();
+    
     effect(() => {
       this.requestParams();
       this.loadItems();
@@ -89,7 +125,7 @@ export class BnplPlanNavComponent extends DashboardNavListOnlyStateBase<BnplPlan
       .getBnplPlanPaged(
         params.pageNumber,
         params.pageSize,
-        undefined,
+        params.planStatusId,
         params.searchKey
       )
       .subscribe(res => {

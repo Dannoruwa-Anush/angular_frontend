@@ -1,3 +1,26 @@
+<mat-toolbar color="primary" class="products-toolbar">
+    <!-- [Start: Bnpl Plan Status menu] -->
+    <button mat-button [matMenuTriggerFor]="bnplPlanStatusMenu" class="filter-button"
+        [class.active-filter]="selectedBnplPlanStatusId() !== undefined">
+        {{ selectedBnplPlanName() ?? 'Bnpl Plan Status' }}
+        <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #bnplPlanStatusMenu="matMenu">
+        <button mat-menu-item (click)="onBnplPlanStausSelect(undefined)"
+            [class.selected-menu-item]="selectedBnplPlanStatusId() === undefined">
+            All Order Statuses
+        </button>
+
+        <button mat-menu-item *ngFor="let planStatus of bnplPlanStatuses()"
+            (click)="onBnplPlanStausSelect(planStatus.bnplPlanStatusID)"
+            [class.selected-menu-item]="selectedBnplPlanStatusId() === planStatus.bnplPlanStatusID">
+            {{ planStatus.bnplPlanStatusName }}
+        </button>
+    </mat-menu>
+    <!-- [End: Bnpl Plan Status menu] -->
+</mat-toolbar>
+
 <div class="dashboard-container">
     <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
     <app-dashboard-table-component [data]="items()" [columns]="columns" [showActions]="false"
