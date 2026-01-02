@@ -5,6 +5,7 @@ import { CategoryNavComponent } from "../components/page_components/dashboard_co
 import { CustomerNavComponent } from "../components/page_components/dashboard_components/nav_components/customer-nav-component/customer-nav-component";
 import { CustomerOrderNavComponent } from "../components/page_components/dashboard_components/nav_components/customer-order-nav-component/customer-order-nav-component";
 import { EmployeeNavComponent } from "../components/page_components/dashboard_components/nav_components/employee-nav-component/employee-nav-component";
+import { InstallmentSnapshotNavComponent } from "../components/page_components/dashboard_components/nav_components/installment-snapshot-nav-component/installment-snapshot-nav-component";
 import { ProductNavComponent } from "../components/page_components/dashboard_components/nav_components/product-nav-component/product-nav-component";
 import { ProfileNavComponent } from "../components/page_components/dashboard_components/nav_components/profile-nav-component/profile-nav-component";
 import { DashboardNavItemPermissionDataModel } from "../models/ui_models/dashboardNavItemPermissionDataModel";
@@ -103,9 +104,15 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Employee,
         ]
     },
-    //Bnpl_installmets
-
     //Bnpl_snapshots
-
+    {
+        label: 'Installment Snapshots',
+        route: 'bnpl_installmet_snapshot',
+        component: InstallmentSnapshotNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ]
+    },
     //Cashflow
 ];
