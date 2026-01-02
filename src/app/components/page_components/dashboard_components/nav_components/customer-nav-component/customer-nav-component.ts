@@ -51,7 +51,9 @@ export class CustomerNavComponent extends DashboardNavListOnlyStateBase<Customer
   // ======================================================
   // CONSTRUCTOR
   // ======================================================
-  constructor(private customerService: CustomerService) {
+  constructor(
+    private customerService: CustomerService)
+  {
     super();
     this.loading = this.customerService.loading;
 
