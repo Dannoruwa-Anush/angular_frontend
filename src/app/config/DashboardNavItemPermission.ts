@@ -1,6 +1,7 @@
 import { BnplPlanNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-plan-nav-component/bnpl-plan-nav-component";
 import { BnplPlanTypeNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-plan-type-nav-component/bnpl-plan-type-nav-component";
 import { BrandNavComponent } from "../components/page_components/dashboard_components/nav_components/brand-nav-component/brand-nav-component";
+import { CashflowNavComponent } from "../components/page_components/dashboard_components/nav_components/cashflow-nav-component/cashflow-nav-component";
 import { CategoryNavComponent } from "../components/page_components/dashboard_components/nav_components/category-nav-component/category-nav-component";
 import { CustomerNavComponent } from "../components/page_components/dashboard_components/nav_components/customer-nav-component/customer-nav-component";
 import { CustomerOrderNavComponent } from "../components/page_components/dashboard_components/nav_components/customer-order-nav-component/customer-order-nav-component";
@@ -115,4 +116,13 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         ]
     },
     //Cashflow
+    {
+        label: 'Cash Flows',
+        route: 'cashflow',
+        component: CashflowNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ]
+    },
 ];
