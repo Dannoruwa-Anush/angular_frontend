@@ -1,1 +1,30 @@
-<p>cashflow-nav-component works!</p>
+<mat-toolbar color="primary" class="products-toolbar">
+    <!-- [Start: Cashflow Status menu] -->
+    <button mat-button [matMenuTriggerFor]="cashflowStatusMenu" class="filter-button"
+        [class.active-filter]="selectedCashflowStatusId() !== undefined">
+        {{ selectedCashflowName() ?? 'Cashflow Status' }}
+        <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #cashflowStatusMenu="matMenu">
+        <button mat-menu-item (click)="onCashflowStausSelect(undefined)"
+            [class.selected-menu-item]="selectedCashflowStatusId() === undefined">
+            All Cashflow Statuses
+        </button>
+
+        <button mat-menu-item *ngFor="let cashflowStatus of cashflowStatuses()"
+            (click)="onCashflowStausSelect(cashflowStatus.cashflowStatusID)"
+            [class.selected-menu-item]="selectedCashflowStatusId() === cashflowStatus.cashflowStatusID">
+            {{ cashflowStatus.cashflowStatusName }}
+        </button>
+    </mat-menu>
+    <!-- [End: Cashflow Status menu] -->
+</mat-toolbar>
+
+<div class="dashboard-container">
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" [showActions]="false"
+        searchLabel="Search cashflow" [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+    </app-dashboard-table-component>
+</div>
