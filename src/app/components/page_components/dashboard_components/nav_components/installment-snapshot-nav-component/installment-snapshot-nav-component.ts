@@ -29,7 +29,7 @@ export class InstallmentSnapshotNavComponent extends DashboardNavListOnlyStateBa
     {
       key: 'orderID',
       header: 'Order No',
-      cell: s => s.bNPL_PlanResponseDto!.customerOrderResponseDto!.orderID
+      cell: s => s.bnpL_PlanResponseDto!.customerOrderResponseDto!.orderID
     },
     {
       key: 'currentInstallmentNo',

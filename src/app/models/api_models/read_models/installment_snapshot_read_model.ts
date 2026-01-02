@@ -19,5 +19,5 @@ export interface InstallmetSnapshotReadModel {
     bnpl_PlanSettlementSummary_PaymentStatus: snapshotPaymentStatusEnum;
 
     // FK : Fields
-    bNPL_PlanResponseDto?: BnplPlanReadModel;
+    bnpL_PlanResponseDto?: BnplPlanReadModel;
 }
