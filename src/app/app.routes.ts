@@ -11,6 +11,7 @@ import { PlaceOrderComponent } from './components/page_components/place-order-co
 import { BnplInstallmentCalculatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
 import { OrderPlacementConfirmationComponent } from './components/page_components/order-placement-confirmation-component/order-placement-confirmation-component';
 import { BnplInstallmentPaymentSimulatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-payment-simulator-component/bnpl-installment-payment-simulator-component';
+import { PaymentComponent } from './components/reusable_components/payment-component/payment-component';
 
 export const routes: Routes = [
     {
@@ -31,6 +32,7 @@ export const routes: Routes = [
             { path: 'order_placement_confirmation', component: OrderPlacementConfirmationComponent },
             { path: 'bnpl_installment_calculator', component: BnplInstallmentCalculatorComponent },
             { path: 'bnpl_installment_payment_simulator', component: BnplInstallmentPaymentSimulatorComponent },
+            { path: 'payment', component: PaymentComponent },
 
             // Dashboard routes
             ...DASHBOARD_ROUTES,
