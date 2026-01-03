@@ -75,9 +75,9 @@
 
         <!-- ACTION -->
         <button mat-raised-button color="primary" class="pay-btn" (click)="confirmPayment()">
-            Confirm & Pay
+            {{ paymentType === 'NOW' ? 'Pay Now' : 'Continue to Installments' }}
         </button>
-
+        
     </mat-card>
 
 </div>

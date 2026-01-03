@@ -8,6 +8,7 @@ import { LoginComponent } from './components/page_components/auth_components/log
 import { RegisterComponent } from './components/page_components/auth_components/register-component/register-component';
 import { DASHBOARD_ROUTES } from './components/page_components/dashboard_components/dashboardRoutes';
 import { PlaceOrderComponent } from './components/page_components/place-order-component/place-order-component';
+import { BnplInstallmentCalculatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
 
 export const routes: Routes = [
     {
@@ -25,6 +26,7 @@ export const routes: Routes = [
 
             //TODO : add auth guard
             { path: 'place_order', component: PlaceOrderComponent },
+            { path: 'bnpl_installment_calculator', component: BnplInstallmentCalculatorComponent },
 
             // Dashboard routes
             ...DASHBOARD_ROUTES,

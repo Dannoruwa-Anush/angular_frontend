@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Signal } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../custom_modules/material/material-module';
 import { ShoppingCartItemModel } from '../../../models/ui_models/shoppingCartItemModel';
 import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
@@ -27,7 +27,10 @@ export class PlaceOrderComponent {
   paymentType: 'NOW' | 'LATER' = 'NOW';
   installmentPlan = 3;
 
-  constructor(private cartService: ShoppingCartService) {
+  constructor(
+    private cartService: ShoppingCartService,
+    private router: Router,
+  ) {
     this.cartItems = this.cartService.cartItems;
     this.total = this.cartService.cartTotal;
   }
@@ -35,10 +38,11 @@ export class PlaceOrderComponent {
   confirmPayment() {
     if (this.paymentType === 'NOW') {
       console.log('Paying full amount');
-    } else {
-      console.log(`Pay later in ${this.installmentPlan} months`);
+      // call pay-now API
     }
 
-    // call API → navigate to success page
+    if (this.paymentType === 'LATER') {
+      this.router.navigate(['/bnpl_installment_calculator']);
+    }
   }
 }

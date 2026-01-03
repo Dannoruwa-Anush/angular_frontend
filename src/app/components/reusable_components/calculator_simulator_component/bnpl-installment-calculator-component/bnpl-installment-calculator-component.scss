@@ -1,0 +1,39 @@
+.calculator-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.calc-card {
+  width: 420px;
+  padding: 24px;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.calc-actions {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.result-card {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(63, 81, 181, 0.04);
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.confirm-btn {
+  width: 100%;
+  margin-top: 16px;
+  font-size: 16px;
+}

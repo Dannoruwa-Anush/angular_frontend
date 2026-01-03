@@ -1,0 +1,67 @@
+<div class="calculator-container">
+
+  <mat-card class="calc-card mat-elevation-z3">
+    <mat-card-title>Installment Calculator</mat-card-title>
+    <mat-card-subtitle>
+      Customize your Buy Now, Pay Later plan
+    </mat-card-subtitle>
+
+    <!-- PLAN TYPE -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>BNPL Plan Type</mat-label>
+      <mat-select [(ngModel)]="planType">
+        <mat-option value="MONTHLY">Monthly</mat-option>
+        <mat-option value="QUARTERLY">Quarterly</mat-option>
+        <mat-option value="YEARLY">Yearly</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- INITIAL PAYMENT -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Initial Payment (Rs.)</mat-label>
+      <input matInput type="number" [(ngModel)]="initialPayment" min="0">
+    </mat-form-field>
+
+    <!-- INSTALLMENT COUNT -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Number of Installments</mat-label>
+      <input matInput type="number" [(ngModel)]="installmentCount" min="1">
+    </mat-form-field>
+
+    <!-- ACTIONS -->
+    <div class="calc-actions">
+      <button mat-stroked-button color="primary" (click)="calculate()">
+        Calculate
+      </button>
+    </div>
+
+    <!-- RESULT -->
+    <mat-card *ngIf="calculated" class="result-card">
+      <div class="result-row">
+        <span>Remaining Amount</span>
+        <strong>Rs. {{ remainingAmount | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="result-row">
+        <span>Per Installment</span>
+        <strong>
+          Rs. {{ installmentAmount | number:'1.2-2' }}
+        </strong>
+      </div>
+
+      <div class="result-row">
+        <span>Payment Frequency</span>
+        <strong>{{ planType }}</strong>
+      </div>
+
+      <button mat-raised-button
+              color="accent"
+              class="confirm-btn"
+              (click)="finalizePlan()">
+        Confirm & Pay
+      </button>
+    </mat-card>
+
+  </mat-card>
+
+</div>
