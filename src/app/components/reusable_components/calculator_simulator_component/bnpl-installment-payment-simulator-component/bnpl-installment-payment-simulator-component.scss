@@ -1,0 +1,42 @@
+.section-card {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.settlement-row,
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.settlement-total {
+  margin-top: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mat-sys-primary);
+}
+
+.highlight {
+  background: rgba(63, 81, 181, 0.05);
+}
+
+.preview {
+  background: rgba(0, 150, 136, 0.05);
+}
+
+.success {
+  background: rgba(76, 175, 80, 0.08);
+}
+
+.confirm-btn {
+  width: 100%;
+  font-size: 16px;
+  padding: 14px;
+}

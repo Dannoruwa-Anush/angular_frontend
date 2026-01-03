@@ -10,6 +10,7 @@ import { DASHBOARD_ROUTES } from './components/page_components/dashboard_compone
 import { PlaceOrderComponent } from './components/page_components/place-order-component/place-order-component';
 import { BnplInstallmentCalculatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
 import { OrderPlacementConfirmationComponent } from './components/page_components/order-placement-confirmation-component/order-placement-confirmation-component';
+import { BnplInstallmentPaymentSimulatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-payment-simulator-component/bnpl-installment-payment-simulator-component';
 
 export const routes: Routes = [
     {
@@ -29,6 +30,7 @@ export const routes: Routes = [
             { path: 'place_order', component: PlaceOrderComponent },
             { path: 'order_placement_confirmation', component: OrderPlacementConfirmationComponent },
             { path: 'bnpl_installment_calculator', component: BnplInstallmentCalculatorComponent },
+            { path: 'bnpl_installment_payment_simulator', component: BnplInstallmentPaymentSimulatorComponent },
 
             // Dashboard routes
             ...DASHBOARD_ROUTES,
