@@ -10,6 +10,7 @@ import { InstallmentSnapshotNavComponent } from "../components/page_components/d
 import { ProductNavComponent } from "../components/page_components/dashboard_components/nav_components/product-nav-component/product-nav-component";
 import { ProfileNavComponent } from "../components/page_components/dashboard_components/nav_components/profile-nav-component/profile-nav-component";
 import { DashboardNavItemPermissionDataModel } from "../models/ui_models/dashboardNavItemPermissionDataModel";
+import { EmployeePositionEnum } from "./enums/employeePositionEnum";
 import { UserRoleEnum } from "./enums/userRoleEnum";
 
 export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel[] = [
@@ -50,6 +51,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Categories nav

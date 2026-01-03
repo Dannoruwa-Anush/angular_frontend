@@ -3,10 +3,11 @@ import { BaseDashboardComponent } from "./base-dashboard-component/base-dashboar
 import { RoleGuard } from "../../../utils/auth_utils/roleGuard";
 import { UserRoleEnum } from "../../../config/enums/userRoleEnum";
 import { DASHBOARD_NAV_ITEM_PERMISSIONS } from "../../../config/DashboardNavItemPermission";
+import { EmployeePositionGuard } from "../../../utils/auth_utils/employeePositionGuard";
 
 export const DASHBOARD_ROUTES: Routes = [
   {
-    // root dashboard route
+    // root dashboard route: allowed for all roles
     path: 'dashboard',
     component: BaseDashboardComponent,
     canActivate: [RoleGuard],
@@ -17,13 +18,14 @@ export const DASHBOARD_ROUTES: Routes = [
         UserRoleEnum.Customer
       ]
     },
-    // Nav routes
+    // Nav routes: based on role or employee position
     children: DASHBOARD_NAV_ITEM_PERMISSIONS.map(item => ({
       path: item.route,
       component: item.component,
-      canActivate: [RoleGuard],
+      canActivate: [RoleGuard, EmployeePositionGuard],
       data: {
-        roles: item.allowedRoles
+        roles: item.allowedRoles,
+        positions: item.allowedEmployeePositions 
       }
     }))
   }

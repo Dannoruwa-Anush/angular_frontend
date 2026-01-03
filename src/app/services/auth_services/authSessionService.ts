@@ -11,6 +11,7 @@ import { Router } from "@angular/router";
 import { UserRoleEnum } from "../../config/enums/userRoleEnum";
 import { ShoppingCartService } from "../ui_service/shoppingCartService";
 import { SystemMessageService } from "../ui_service/systemMessageService";
+import { EmployeePositionEnum } from "../../config/enums/employeePositionEnum";
 
 const AUTH_KEY = 'auth_session';
 
@@ -33,6 +34,8 @@ export class AuthSessionService {
     email = computed(() => this.session()?.email ?? null);
     role = computed(() => this.session()?.role ?? null);
     userID = computed(() => this.session()?.userID ?? null);
+    customerID = computed(() => this.session()?.customerID ?? null);
+    employeePosition = computed(() => this.session()?.employeePosition ?? null);
 
     constructor(
         private http: HttpClient,
@@ -91,6 +94,10 @@ export class AuthSessionService {
                         email: res.data.email,
                         role: res.data.role,
                         userID: res.data.userID,
+
+                        // If the user is an employee or a customer
+                        employeePosition: res.data.employeePosition ?? null,
+                        customerID: res.data.customerID ?? null
                     };
 
                     this.session.set(session);
@@ -129,7 +136,7 @@ export class AuthSessionService {
                     this.messageService.success(
                         res.message || 'Registration successful'
                     );
-                    
+
                     this.router.navigate(['/login']);
                 }),
                 catchError((err: HttpErrorResponse) => {
@@ -152,8 +159,14 @@ export class AuthSessionService {
         this.router.navigate(['/login']);
     }
 
-    hasRole(allowed: UserRoleEnum[]): boolean {
+    // ---------- helper methods ----------
+    hasRole(roles: UserRoleEnum[]): boolean {
         const role = this.role();
-        return role !== null && allowed.includes(role);
+        return role !== null && roles.includes(role);
+    }
+
+    hasEmployeePosition(positions: EmployeePositionEnum[]): boolean {
+        const position = this.employeePosition();
+        return position !== null && positions.includes(position);
     }
 }
