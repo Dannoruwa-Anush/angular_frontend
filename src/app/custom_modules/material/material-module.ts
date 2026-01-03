@@ -20,6 +20,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import {MatRadioModule} from '@angular/material/radio';
 
 // Angular Material modules array
 const materialModules = [
@@ -41,6 +42,7 @@ const materialModules = [
   MatProgressBarModule,
   MatDividerModule,
   MatChipsModule,
+  MatRadioModule,
 ];
 
 @NgModule({

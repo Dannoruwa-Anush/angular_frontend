@@ -1,1 +1,83 @@
-<p>place-order-component works!</p>
+<div class="payment-container">
+
+    <!-- LEFT : ORDER SUMMARY -->
+    <mat-card class="summary-card mat-elevation-z2">
+        <mat-card-title>Order Summary</mat-card-title>
+
+        <div class="summary-row" *ngFor="let item of cartItems()">
+            <div class="product-info">
+                <img [src]="item.imageUrl" alt="{{ item.name }}" class="product-thumb" />
+
+                <div class="product-text">
+                    <span class="name">{{ item.name }}</span>
+                    <span class="qty"> x {{ item.quantity }}</span>
+                </div>
+            </div>
+
+            <strong class="price">
+                Rs. {{ item.subtotal | number:'1.2-2' }}
+            </strong>
+        </div>
+    </mat-card>
+
+    <!-- RIGHT : PAYMENT OPTIONS -->
+    <mat-card class="payment-card mat-elevation-z2">
+        <mat-card-title>Payment Method</mat-card-title>
+
+        <mat-radio-group [(ngModel)]="paymentType">
+
+            <!-- PAY NOW -->
+            <mat-card class="payment-option" [class.active]="paymentType === 'NOW'">
+                <mat-radio-button value="NOW">
+                    <div class="option-content">
+                        <mat-icon color="primary">payments</mat-icon>
+                        <div>
+                            <h3>Pay Now</h3>
+                            <p>Full payment via card / wallet</p>
+                        </div>
+                    </div>
+                </mat-radio-button>
+            </mat-card>
+
+            <!-- PAY LATER -->
+            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'">
+                <mat-radio-button value="LATER">
+                    <div class="option-content">
+                        <mat-icon color="accent">schedule</mat-icon>
+                        <div>
+                            <h3>Pay Later</h3>
+                            <p>Buy now, pay in installments</p>
+                        </div>
+                    </div>
+                </mat-radio-button>
+            </mat-card>
+
+        </mat-radio-group>
+
+        <!-- INSTALLMENTS -->
+        <div *ngIf="paymentType === 'LATER'" class="installments">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Select Installments</mat-label>
+                <mat-select [(ngModel)]="installmentPlan">
+                    <mat-option [value]="3">3 Months</mat-option>
+                    <mat-option [value]="6">6 Months</mat-option>
+                    <mat-option [value]="12">12 Months</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <p class="installment-info">
+                Monthly Payment:
+                <strong>
+                    Rs. {{ total() / installmentPlan | number:'1.2-2' }}
+                </strong>
+            </p>
+        </div>
+
+        <!-- ACTION -->
+        <button mat-raised-button color="primary" class="pay-btn" (click)="confirmPayment()">
+            Confirm & Pay
+        </button>
+
+    </mat-card>
+
+</div>
