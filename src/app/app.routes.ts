@@ -9,6 +9,7 @@ import { RegisterComponent } from './components/page_components/auth_components/
 import { DASHBOARD_ROUTES } from './components/page_components/dashboard_components/dashboardRoutes';
 import { PlaceOrderComponent } from './components/page_components/place-order-component/place-order-component';
 import { BnplInstallmentCalculatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
+import { OrderPlacementConfirmationComponent } from './components/page_components/order-placement-confirmation-component/order-placement-confirmation-component';
 
 export const routes: Routes = [
     {
@@ -26,6 +27,7 @@ export const routes: Routes = [
 
             //TODO : add auth guard
             { path: 'place_order', component: PlaceOrderComponent },
+            { path: 'order_placement_confirmation', component: OrderPlacementConfirmationComponent },
             { path: 'bnpl_installment_calculator', component: BnplInstallmentCalculatorComponent },
 
             // Dashboard routes

@@ -1,0 +1,60 @@
+.confirmation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.confirmation-card {
+  width: 420px;
+  text-align: center;
+  padding: 32px;
+}
+
+/* SUCCESS ICON */
+.success-icon {
+  margin-bottom: 12px;
+
+  mat-icon {
+    font-size: 64px;
+    color: #4caf50;
+  }
+}
+
+/* TEXT */
+h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #666;
+  margin: 8px 0 24px;
+}
+
+/* ORDER INFO */
+.order-info {
+  background: rgba(76, 175, 80, 0.06);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+/* ACTIONS */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  button {
+    width: 100%;
+  }
+}
