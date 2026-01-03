@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../custom_modules/material/material-module';
 import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shopping-cart-component',
@@ -23,6 +24,7 @@ export class ShoppingCartComponent {
   displayedColumns = ['index', 'product', 'price', 'quantity', 'subtotal', 'action'];
 
   constructor(
+    private router: Router,
     private cartService: ShoppingCartService,
     private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService
@@ -72,9 +74,9 @@ export class ShoppingCartComponent {
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-
-      this.cartService.clearCart();
-      this.messageService.success('Order placed successfully');
+      this.router.navigate(['/place_order']);
+      //this.cartService.clearCart();
+      //this.messageService.success('Order placed successfully');
     });
   }
 }

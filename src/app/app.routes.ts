@@ -7,6 +7,7 @@ import { ShoppingCartComponent } from './components/page_components/shopping-car
 import { LoginComponent } from './components/page_components/auth_components/login-component/login-component';
 import { RegisterComponent } from './components/page_components/auth_components/register-component/register-component';
 import { DASHBOARD_ROUTES } from './components/page_components/dashboard_components/dashboardRoutes';
+import { PlaceOrderComponent } from './components/page_components/place-order-component/place-order-component';
 
 export const routes: Routes = [
     {
@@ -21,6 +22,9 @@ export const routes: Routes = [
             { path: 'shoppingCart', component: ShoppingCartComponent},
             { path: 'login', component: LoginComponent },
             { path: 'register', component: RegisterComponent },
+
+            //TODO : add auth guard
+            { path: 'place_order', component: PlaceOrderComponent },
 
             // Dashboard routes
             ...DASHBOARD_ROUTES,
