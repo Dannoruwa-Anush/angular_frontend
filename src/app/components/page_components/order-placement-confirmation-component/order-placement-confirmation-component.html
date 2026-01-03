@@ -9,9 +9,20 @@
 
     <!-- TITLE -->
     <h1>Order Placed Successfully!</h1>
-    <p class="subtitle">
-      Thank you for your purchase. Your order has been confirmed.
-    </p>
+
+    <div class="thank-you-message">
+      <p><strong>Dear Customer,</strong></p>
+
+      <p class="subtitle">
+        Thank you for shopping with us. Your order has been placed successfully
+        and is now being processed.
+      </p>
+
+      <p class="signature">
+        Best regards,<br />
+        <strong>BNPL Shopmart</strong>
+      </p>
+    </div>
 
     <!-- ORDER INFO -->
     <div class="order-info">
@@ -33,13 +44,11 @@
 
     <!-- ACTIONS -->
     <div class="actions">
-      <button mat-stroked-button color="primary"
-              (click)="goToOrders()">
+      <button mat-stroked-button color="primary" (click)="goToOrders()">
         View Order Status
       </button>
 
-      <button mat-button color="accent"
-              (click)="continueShopping()">
+      <button mat-button color="accent" (click)="continueShopping()">
         Continue Shopping
       </button>
     </div>

@@ -33,6 +33,21 @@ h1 {
   margin: 8px 0 24px;
 }
 
+.thank-you-message {
+  margin: 16px 0 24px;
+  font-size: 14px;
+  color: #444;
+
+  p {
+    margin: 6px 0;
+  }
+
+  .signature {
+    margin-top: 12px;
+    color: #555;
+  }
+}
+
 /* ORDER INFO */
 .order-info {
   background: rgba(76, 175, 80, 0.06);
