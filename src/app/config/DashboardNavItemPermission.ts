@@ -64,6 +64,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Electronic Items
@@ -74,6 +77,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Bnpl_plan type
@@ -84,6 +90,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Orders
@@ -95,6 +104,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
             UserRoleEnum.Customer
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Payment (installment)
@@ -107,6 +119,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Bnpl_snapshots
@@ -117,6 +132,9 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
     //Cashflow
@@ -129,4 +147,5 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Employee,
         ]
     },
+    //Cashier
 ];
