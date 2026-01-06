@@ -51,7 +51,7 @@ export class BaseOrderSubmitWizardComponent {
 
     if (index > 0) {
       this.router.navigate(
-        ['../', this.steps[index - 1].route],
+        [this.steps[index - 1].route],
         { relativeTo: this.route }
       );
     }

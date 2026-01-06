@@ -6,15 +6,7 @@
     </div>
 
     <mat-stepper [selectedIndex]="activeStepIndex()" linear>
-
-        <mat-step *ngFor="let step of steps" [label]="step.label" [completed]="stepState.isCompleted(step.route)">
-
-            <ng-template matStepperIcon="done">
-                <mat-icon class="step-done-icon">check_circle</mat-icon>
-            </ng-template>
-
-        </mat-step>
-
+        <mat-step *ngFor="let step of steps" [label]="step.label" [completed]="stepState.isCompleted(step.route)"></mat-step>
     </mat-stepper>
 
     <mat-divider></mat-divider>

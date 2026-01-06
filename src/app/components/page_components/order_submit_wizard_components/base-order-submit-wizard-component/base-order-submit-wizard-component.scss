@@ -30,31 +30,3 @@
     justify-content: space-between;
     margin-top: 1.5rem;
 }
-
-/* ===== Animated Green Check ===== */
-.step-done-icon {
-    color: #2e7d32; // material green
-    animation: pop-in 300ms ease-out;
-}
-
-/* Animation */
-@keyframes pop-in {
-    0% {
-        transform: scale(0.4);
-        opacity: 0;
-    }
-
-    80% {
-        transform: scale(1.15);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Improve stepper visuals */
-::ng-deep .mat-step-header.mat-completed .mat-step-icon {
-    background-color: transparent;
-}
