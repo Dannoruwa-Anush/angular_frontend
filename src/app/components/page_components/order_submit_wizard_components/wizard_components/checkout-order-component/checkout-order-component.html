@@ -40,9 +40,9 @@
             </mat-card>
 
             <!-- PAY LATER -->
-            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'">
-                <mat-radio-button value="LATER">
-                    <div class="option-content">
+            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'" [class.disabled]="isCustomer()">
+                <mat-radio-button value="LATER" [disabled]="isCustomer()">
+                    <div class="option-content">pay la
                         <mat-icon color="accent">schedule</mat-icon>
                         <div>
                             <h3>Pay Later</h3>
@@ -51,6 +51,13 @@
                     </div>
                 </mat-radio-button>
             </mat-card>
+
+            <div *ngIf="isCustomer()" class="bnpl-info">
+                <mat-icon color="warn">info</mat-icon>
+                <span>
+                    Pay Later is available with staff assistance.
+                </span>
+            </div>
 
         </mat-radio-group>
 
@@ -77,7 +84,7 @@
         <button mat-raised-button color="primary" class="pay-btn" (click)="confirmPayment()">
             {{ paymentType === 'NOW' ? 'Pay Now' : 'Continue to Installments' }}
         </button>
-        
+
     </mat-card>
 
 </div>
