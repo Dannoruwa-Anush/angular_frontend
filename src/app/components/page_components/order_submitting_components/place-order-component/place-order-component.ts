@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from '../../../custom_modules/material/material-module';
-import { ShoppingCartItemModel } from '../../../models/ui_models/shoppingCartItemModel';
-import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MaterialModule } from '../../../../custom_modules/material/material-module';
 
 @Component({
   selector: 'app-place-order-component',

@@ -7,12 +7,12 @@ import { ShoppingCartComponent } from './components/page_components/shopping-car
 import { LoginComponent } from './components/page_components/auth_components/login-component/login-component';
 import { RegisterComponent } from './components/page_components/auth_components/register-component/register-component';
 import { DASHBOARD_ROUTES } from './components/page_components/dashboard_components/dashboardRoutes';
-import { PlaceOrderComponent } from './components/page_components/place-order-component/place-order-component';
 import { BnplInstallmentCalculatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
-import { OrderPlacementConfirmationComponent } from './components/page_components/order-placement-confirmation-component/order-placement-confirmation-component';
 import { BnplInstallmentPaymentSimulatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-payment-simulator-component/bnpl-installment-payment-simulator-component';
 import { PaymentComponent } from './components/reusable_components/payment-component/payment-component';
-import { CheckoutOrderComponent } from './components/page_components/checkout-order-component/checkout-order-component';
+import { CheckoutOrderComponent } from './components/page_components/order_submitting_components/checkout-order-component/checkout-order-component';
+import { OrderPlacementConfirmationComponent } from './components/page_components/order_submitting_components/order-placement-confirmation-component/order-placement-confirmation-component';
+import { PlaceOrderComponent } from './components/page_components/order_submitting_components/place-order-component/place-order-component';
 
 export const routes: Routes = [
     {
