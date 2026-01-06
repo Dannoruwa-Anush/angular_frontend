@@ -1,9 +1,9 @@
 import { CheckoutOrderComponent } from "../components/page_components/order_submit_wizard_components/wizard_components/checkout-order-component/checkout-order-component";
 import { OrderPlacementConfirmationComponent } from "../components/page_components/order_submit_wizard_components/wizard_components/order-placement-confirmation-component/order-placement-confirmation-component";
 import { PaymentComponent } from "../components/reusable_components/payment-component/payment-component";
-import { orderWizardStepConfigDataModel } from "../models/ui_models/orderWizardStepConfigDataModel";
+import { OrderWizardStepDataModel } from "../models/ui_models/orderWizardStepDataModel";
 
-export const ORDER_STEPS: orderWizardStepConfigDataModel[] = [
+export const ORDER_SUBMIT_WIZARD_STEPS: OrderWizardStepDataModel[] = [
     {
         label: 'Checkout',
         route: 'checkout_order',

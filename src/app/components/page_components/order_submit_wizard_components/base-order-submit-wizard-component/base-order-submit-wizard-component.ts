@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
-import { ORDER_STEPS } from '../../../../config/orderSubmitWizardStepConfig';
+import { ORDER_SUBMIT_WIZARD_STEPS } from '../../../../config/orderSubmitWizardSteps';
 
 @Component({
   selector: 'app-base-order-submit-wizard-component',
@@ -19,7 +19,7 @@ export class BaseOrderSubmitWizardComponent {
 
 
   
-  steps = ORDER_STEPS;
+  steps = ORDER_SUBMIT_WIZARD_STEPS;
 
   activeStepIndex = computed(() => {
     const path = this.route.firstChild?.snapshot.routeConfig?.path;

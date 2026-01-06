@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { DashboardNavItemPermissionDataModel } from '../../../../models/ui_models/dashboardNavItemPermissionDataModel';
 import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
-import { DASHBOARD_NAV_ITEM_PERMISSIONS } from '../../../../config/dashboardNavItemPermission';
+import { DASHBOARD_NAV_ITEM_PERMISSIONS } from '../../../../config/dashboardNavItemPermissions';
 import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 
 @Component({
