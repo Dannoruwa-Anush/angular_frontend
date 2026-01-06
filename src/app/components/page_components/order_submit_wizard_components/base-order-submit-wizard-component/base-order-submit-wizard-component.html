@@ -1,33 +1,29 @@
 <mat-card class="order-container">
 
-    <!-- HEADER -->
     <div class="header">
         <h2>Place Your Order</h2>
-        <p>Complete the steps below to finish your purchase</p>
+        <p>Follow the steps to complete your purchase</p>
     </div>
 
-    <!-- STEPPER (VISUAL ONLY) -->
-    <mat-stepper [selectedIndex]="activeStep()" linear>
-        <mat-step label="Checkout"></mat-step>
-        <mat-step label="Payment"></mat-step>
-        <mat-step label="Confirmation"></mat-step>
+    <!-- Dynamic Stepper -->
+    <mat-stepper [selectedIndex]="activeStepIndex()" linear>
+        <mat-step *ngFor="let step of steps" [label]="step.label">
+        </mat-step>
     </mat-stepper>
 
     <mat-divider></mat-divider>
 
-    <!-- CONTENT -->
     <div class="content">
         <router-outlet></router-outlet>
     </div>
 
-    <!-- ACTIONS -->
     <div class="actions">
-        <button mat-stroked-button color="primary" (click)="back()" [disabled]="activeStep() === 0">
+        <button mat-stroked-button color="primary" (click)="back()" [disabled]="activeStepIndex() === 0">
             <mat-icon>arrow_back</mat-icon>
             Back
         </button>
 
-        <button mat-raised-button color="primary" (click)="next()" [disabled]="activeStep() === 2">
+        <button mat-raised-button color="primary" (click)="next()" [disabled]="activeStepIndex() === steps.length - 1">
             Next
             <mat-icon>arrow_forward</mat-icon>
         </button>
