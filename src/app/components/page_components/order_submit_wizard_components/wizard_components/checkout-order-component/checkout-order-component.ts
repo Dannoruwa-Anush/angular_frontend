@@ -58,29 +58,26 @@ export class CheckoutOrderComponent {
     }
   }
 openBnplCalculator() {
-    const dialogRef = this.dialog.open(BnplInstallmentCalculatorComponent, {
-      width: '480px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      disableClose: true,
-      data: {
-        total: this.total(),
-        plan: this.bnplPlan,
-      }
-    });
+  const dialogRef = this.dialog.open(BnplInstallmentCalculatorComponent, {
+    width: '960px',
+    maxWidth: '98vw',
+    maxHeight: '90vh',
+    disableClose: true,
+    data: {
+      total: this.total(),
+      plan: this.bnplPlan,
+    }
+  });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.bnplPlan = result;
-        this.paymentType = 'LATER';
-      } else {
-        // user cancelled dialog
-        if (!this.bnplPlan) {
-          this.paymentType = 'NOW';
-        }
-      }
-    });
-  }
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.bnplPlan = result;
+      this.paymentType = 'LATER';
+    } else if (!this.bnplPlan) {
+      this.paymentType = 'NOW';
+    }
+  });
+}
 
   completeCheckout() {
     // Validate form, cart, etc...
