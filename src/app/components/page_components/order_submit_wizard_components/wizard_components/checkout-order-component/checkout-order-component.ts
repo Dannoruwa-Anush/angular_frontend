@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { MaterialModule } from '../../../../custom_modules/material/material-module';
-import { ShoppingCartItemModel } from '../../../../models/ui_models/shoppingCartItemModel';
-import { ShoppingCartService } from '../../../../services/ui_service/shoppingCartService';
+import { MaterialModule } from '../../../../../custom_modules/material/material-module';
+import { ShoppingCartItemModel } from '../../../../../models/ui_models/shoppingCartItemModel';
+import { ShoppingCartService } from '../../../../../services/ui_service/shoppingCartService';
 
 @Component({
   selector: 'app-checkout-order-component',

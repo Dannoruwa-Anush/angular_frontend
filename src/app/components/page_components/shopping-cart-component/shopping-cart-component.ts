@@ -74,7 +74,7 @@ export class ShoppingCartComponent {
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.router.navigate(['/checkout_order']);
+      this.router.navigate(['/order/checkout_order']);
       //this.cartService.clearCart();
       //this.messageService.success('Order placed successfully');
     });

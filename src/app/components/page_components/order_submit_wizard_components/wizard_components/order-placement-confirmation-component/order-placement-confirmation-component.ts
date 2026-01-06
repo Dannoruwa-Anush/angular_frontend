@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { MaterialModule } from '../../../../custom_modules/material/material-module';
-import { ShoppingCartService } from '../../../../services/ui_service/shoppingCartService';
+import { MaterialModule } from '../../../../../custom_modules/material/material-module';
+import { ShoppingCartService } from '../../../../../services/ui_service/shoppingCartService';
 
 @Component({
   selector: 'app-order-placement-confirmation-component',
