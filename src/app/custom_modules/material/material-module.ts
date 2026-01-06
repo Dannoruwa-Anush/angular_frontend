@@ -16,11 +16,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatBadgeModule } from '@angular/material/badge';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
-import {MatRadioModule} from '@angular/material/radio';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatStepperModule } from '@angular/material/stepper';
 
 // Angular Material modules array
 const materialModules = [
@@ -43,6 +44,7 @@ const materialModules = [
   MatDividerModule,
   MatChipsModule,
   MatRadioModule,
+  MatStepperModule,
 ];
 
 @NgModule({

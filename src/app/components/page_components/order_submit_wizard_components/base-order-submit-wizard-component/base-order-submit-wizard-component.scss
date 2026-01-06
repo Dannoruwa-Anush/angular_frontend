@@ -1,0 +1,32 @@
+.order-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border-radius: 16px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 1rem;
+
+    h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    p {
+        color: #666;
+        margin-top: 4px;
+    }
+}
+
+.content {
+    padding: 2rem 0;
+    min-height: 250px;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
