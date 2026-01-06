@@ -5,8 +5,20 @@
         <p>Follow the steps to complete your purchase</p>
     </div>
 
-    <mat-stepper [selectedIndex]="activeStepIndex()" linear>
-        <mat-step *ngFor="let step of steps" [label]="step.label" [completed]="stepState.isCompleted(step.route)"></mat-step>
+    <mat-stepper [selectedIndex]="activeStepIndex()" linear class="wizard-stepper">
+
+        <ng-template matStepperIcon="done">
+            <mat-icon class="step-done-icon">check_circle</mat-icon>
+        </ng-template>
+
+        <ng-template matStepperIcon="edit">
+            <mat-icon color="primary">edit</mat-icon>
+        </ng-template>
+
+        <mat-step *ngFor="let step of steps; let i = index" [label]="step.label"
+            [completed]="stepState.isCompleted(step.route)">
+        </mat-step>
+
     </mat-stepper>
 
     <mat-divider></mat-divider>
