@@ -2,18 +2,19 @@ import { Routes } from "@angular/router";
 import { BaseOrderSubmitWizardComponent } from "./base-order-submit-wizard-component/base-order-submit-wizard-component";
 import { OrderSubmitGuard } from "../../../utils/auth_utils/orderSubmitGuard";
 import { ORDER_SUBMIT_WIZARD_STEPS } from "../../../config/orderSubmitWizardSteps";
+import { OrderSubmitWizardStepGuard } from "../../../utils/auth_utils/orderSubmitWizardStepGuard";
 
 export const ORDDER_SUBMIT_ROUTES: Routes = [
     {
-        path: 'order',
+        path: 'submit_order',
         component: BaseOrderSubmitWizardComponent,
         canActivate: [OrderSubmitGuard],
         children: [
             { path: '', redirectTo: ORDER_SUBMIT_WIZARD_STEPS[0].route, pathMatch: 'full' },
-
             ...ORDER_SUBMIT_WIZARD_STEPS.map(step => ({
                 path: step.route,
-                component: step.component
+                component: step.component,
+                canActivate: [OrderSubmitWizardStepGuard]
             }))
         ]
     }

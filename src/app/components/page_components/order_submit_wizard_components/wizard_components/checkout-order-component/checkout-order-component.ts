@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { ShoppingCartItemModel } from '../../../../../models/ui_models/shoppingCartItemModel';
 import { ShoppingCartService } from '../../../../../services/ui_service/shoppingCartService';
+import { OrderSubmitWizardStepStateService } from '../../../../../services/ui_service/orderSubmitWizardStepStateService';
+
 
 @Component({
   selector: 'app-checkout-order-component',
@@ -29,6 +31,7 @@ export class CheckoutOrderComponent {
   installmentPlan = 3;
 
   constructor(
+    private stepState: OrderSubmitWizardStepStateService,
     private cartService: ShoppingCartService,
     private router: Router,
   ) {
@@ -45,5 +48,10 @@ export class CheckoutOrderComponent {
     if (this.paymentType === 'LATER') {
       this.router.navigate(['/bnpl_installment_calculator']);
     }
+  }
+
+  completeCheckout() {
+    // Validate form, cart, etc...
+    this.stepState.completeStep('checkout');
   }
 }

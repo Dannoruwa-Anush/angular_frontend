@@ -3,6 +3,7 @@ import { Component, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { ORDER_SUBMIT_WIZARD_STEPS } from '../../../../config/orderSubmitWizardSteps';
+import { OrderSubmitWizardStepStateService } from '../../../../services/ui_service/orderSubmitWizardStepStateService';
 
 @Component({
   selector: 'app-base-order-submit-wizard-component',
@@ -18,37 +19,39 @@ export class BaseOrderSubmitWizardComponent {
 
 
 
-  
   steps = ORDER_SUBMIT_WIZARD_STEPS;
 
   activeStepIndex = computed(() => {
     const path = this.route.firstChild?.snapshot.routeConfig?.path;
-    return Math.max(
-      this.steps.findIndex(s => s.route === path),
-      0
-    );
+    const index = this.steps.findIndex(s => s.route === path);
+    return index >= 0 ? index : 0;
   });
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public stepState: OrderSubmitWizardStepStateService
   ) { }
 
-  next() {
-    const i = this.activeStepIndex();
-    if (i < this.steps.length - 1) {
+  next(): void {
+    const index = this.activeStepIndex();
+
+    if (index < this.steps.length - 1) {
+      this.stepState.completeStep(this.steps[index].route);
+
       this.router.navigate(
-        ['../', this.steps[i + 1].route],
+        [this.steps[index + 1].route],
         { relativeTo: this.route }
       );
     }
   }
 
-  back() {
-    const i = this.activeStepIndex();
-    if (i > 0) {
+  back(): void {
+    const index = this.activeStepIndex();
+
+    if (index > 0) {
       this.router.navigate(
-        ['../', this.steps[i - 1].route],
+        ['../', this.steps[index - 1].route],
         { relativeTo: this.route }
       );
     }

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { ShoppingCartService } from '../../../../../services/ui_service/shoppingCartService';
+import { OrderSubmitWizardStepStateService } from '../../../../../services/ui_service/orderSubmitWizardStepStateService';
 
 @Component({
   selector: 'app-order-placement-confirmation-component',
@@ -22,6 +23,7 @@ export class OrderPlacementConfirmationComponent {
   paymentMethod = 'Buy Now Pay Later';
 
   constructor(
+    private stepState: OrderSubmitWizardStepStateService,
     private router: Router,
     private cartService: ShoppingCartService
   ) {
@@ -34,5 +36,9 @@ export class OrderPlacementConfirmationComponent {
 
   continueShopping() {
     this.router.navigate(['/products']);
+  }
+
+  finish() {
+    this.stepState.reset();
   }
 }
