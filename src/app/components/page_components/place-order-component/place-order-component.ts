@@ -19,30 +19,4 @@ import { FormsModule } from '@angular/forms';
 })
 export class PlaceOrderComponent {
 
-
-
-  cartItems!: Signal<ShoppingCartItemModel[]>;
-  total!: Signal<number>;
-
-  paymentType: 'NOW' | 'LATER' = 'NOW';
-  installmentPlan = 3;
-
-  constructor(
-    private cartService: ShoppingCartService,
-    private router: Router,
-  ) {
-    this.cartItems = this.cartService.cartItems;
-    this.total = this.cartService.cartTotal;
-  }
-
-  confirmPayment() {
-    if (this.paymentType === 'NOW') {
-      console.log('Paying full amount');
-      // call pay-now API
-    }
-
-    if (this.paymentType === 'LATER') {
-      this.router.navigate(['/bnpl_installment_calculator']);
-    }
-  }
 }

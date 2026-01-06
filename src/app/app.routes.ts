@@ -12,6 +12,7 @@ import { BnplInstallmentCalculatorComponent } from './components/reusable_compon
 import { OrderPlacementConfirmationComponent } from './components/page_components/order-placement-confirmation-component/order-placement-confirmation-component';
 import { BnplInstallmentPaymentSimulatorComponent } from './components/reusable_components/calculator_simulator_component/bnpl-installment-payment-simulator-component/bnpl-installment-payment-simulator-component';
 import { PaymentComponent } from './components/reusable_components/payment-component/payment-component';
+import { CheckoutOrderComponent } from './components/page_components/checkout-order-component/checkout-order-component';
 
 export const routes: Routes = [
     {
@@ -24,9 +25,10 @@ export const routes: Routes = [
             { path: 'products', component: ProductsComponent },
             { path: 'product/:id', component: ProductComponent },
             { path: 'shoppingCart', component: ShoppingCartComponent},
+            { path: 'checkout_order', component: CheckoutOrderComponent },
             { path: 'login', component: LoginComponent },
             { path: 'register', component: RegisterComponent },
-
+            
             //TODO : add auth guard
             { path: 'place_order', component: PlaceOrderComponent },
             { path: 'order_placement_confirmation', component: OrderPlacementConfirmationComponent },

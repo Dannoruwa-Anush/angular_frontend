@@ -66,15 +66,15 @@ export class ShoppingCartComponent {
     });
   }
 
-  placeOrder() {
+  checkoutOrder() {
     this.confirmService.confirm({
-      title: 'Place Order',
-      message: 'Do you want to place this order?',
-      confirmText: 'Place Order',
+      title: 'checkout Order',
+      message: 'Do you want to checkout this order?',
+      confirmText: 'checkout Order',
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.router.navigate(['/place_order']);
+      this.router.navigate(['/checkout_order']);
       //this.cartService.clearCart();
       //this.messageService.success('Order placed successfully');
     });
