@@ -8,6 +8,8 @@ import { ShoppingCartService } from '../../../../../services/ui_service/shopping
 import { OrderSubmitWizardStepStateService } from '../../../../../services/ui_service/orderSubmitWizardStepStateService';
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
+import { MatDialog } from '@angular/material/dialog';
+import { BnplInstallmentCalculatorComponent } from '../../../../reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
 
 
 @Component({
@@ -28,6 +30,7 @@ export class CheckoutOrderComponent {
 
   cartItems!: Signal<ShoppingCartItemModel[]>;
   total!: Signal<number>;
+  bnplPlan: any | null = null;
 
   paymentType: 'NOW' | 'LATER' = 'NOW';
   installmentPlan = 3;
@@ -41,20 +44,42 @@ export class CheckoutOrderComponent {
     private authSessionService: AuthSessionService,
     private cartService: ShoppingCartService,
     private router: Router,
+    private dialog: MatDialog
   ) {
     this.cartItems = this.cartService.cartItems;
     this.total = this.cartService.cartTotal;
   }
 
-  confirmPayment() {
-    if (this.paymentType === 'NOW') {
-      console.log('Paying full amount');
-      // call pay-now API
-    }
+  onPaymentTypeChange(type: 'NOW' | 'LATER') {
+    this.paymentType = type;
 
-    if (this.paymentType === 'LATER') {
-      this.router.navigate(['/bnpl_installment_calculator']);
+    if (type === 'LATER' && !this.isCustomer()) {
+      this.openBnplCalculator();
     }
+  }
+openBnplCalculator() {
+    const dialogRef = this.dialog.open(BnplInstallmentCalculatorComponent, {
+      width: '480px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      disableClose: true,
+      data: {
+        total: this.total(),
+        plan: this.bnplPlan,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.bnplPlan = result;
+        this.paymentType = 'LATER';
+      } else {
+        // user cancelled dialog
+        if (!this.bnplPlan) {
+          this.paymentType = 'NOW';
+        }
+      }
+    });
   }
 
   completeCheckout() {

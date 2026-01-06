@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Signal } from '@angular/core';
+import { Component, Inject, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { ShoppingCartService } from '../../../../services/ui_service/shoppingCartService';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-bnpl-installment-calculator-component',
@@ -15,8 +16,6 @@ import { ShoppingCartService } from '../../../../services/ui_service/shoppingCar
   styleUrl: './bnpl-installment-calculator-component.scss',
 })
 export class BnplInstallmentCalculatorComponent {
-  total!: Signal<number>;
-
   planType: 'MONTHLY' | 'QUARTERLY' | 'YEARLY' = 'MONTHLY';
   initialPayment = 0;
   installmentCount = 3;
@@ -25,36 +24,37 @@ export class BnplInstallmentCalculatorComponent {
   installmentAmount = 0;
   calculated = false;
 
-  constructor(private cartService: ShoppingCartService) {
-    this.total = this.cartService.cartTotal;
+  constructor(
+    private dialogRef: MatDialogRef<BnplInstallmentCalculatorComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { total: number; plan?: any }
+  ) {
+    if (data.plan) {
+      this.planType = data.plan.planType;
+      this.initialPayment = data.plan.initialPayment;
+      this.installmentCount = data.plan.installmentCount;
+      this.installmentAmount = data.plan.installmentAmount;
+      this.calculated = true;
+    }
   }
 
   calculate() {
-    const totalAmount = this.total();
-
-    if (this.initialPayment >= totalAmount) {
-      this.remainingAmount = 0;
-      this.installmentAmount = 0;
-      this.calculated = true;
-      return;
-    }
-
+    const totalAmount = this.data.total;
     this.remainingAmount = totalAmount - this.initialPayment;
     this.installmentAmount = this.remainingAmount / this.installmentCount;
     this.calculated = true;
   }
 
   finalizePlan() {
-    const plan = {
+    this.dialogRef.close({
       planType: this.planType,
       initialPayment: this.initialPayment,
       installmentCount: this.installmentCount,
       installmentAmount: this.installmentAmount,
-    };
+    });
+  }
 
-    console.log('Finalized BNPL Plan', plan);
-
-    // 🔐 send to backend
-    // 🚀 navigate to success page
+  cancel() {
+    this.dialogRef.close();
   }
 }

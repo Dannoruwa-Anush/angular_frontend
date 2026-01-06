@@ -40,7 +40,8 @@
             </mat-card>
 
             <!-- PAY LATER -->
-            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'" [class.disabled]="isCustomer()">
+            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'" [class.disabled]="isCustomer()"
+                (click)="!isCustomer() && onPaymentTypeChange('LATER')">
                 <mat-radio-button value="LATER" [disabled]="isCustomer()">
                     <div class="option-content">
                         <mat-icon color="accent">schedule</mat-icon>
@@ -58,33 +59,18 @@
                     Pay Later is available with staff assistance.
                 </span>
             </div>
-
         </mat-radio-group>
 
-        <!-- INSTALLMENTS -->
-        <div *ngIf="paymentType === 'LATER'" class="installments">
-            <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Select Installments</mat-label>
-                <mat-select [(ngModel)]="installmentPlan">
-                    <mat-option [value]="3">3 Months</mat-option>
-                    <mat-option [value]="6">6 Months</mat-option>
-                    <mat-option [value]="12">12 Months</mat-option>
-                </mat-select>
-            </mat-form-field>
-
-            <p class="installment-info">
-                Monthly Payment:
-                <strong>
-                    Rs. {{ total() / installmentPlan | number:'1.2-2' }}
-                </strong>
+        <div *ngIf="bnplPlan" class="bnpl-summary">
+            <p>
+                {{ bnplPlan.installmentCount }} x
+                Rs. {{ bnplPlan.installmentAmount | number:'1.2-2' }}
+                ({{ bnplPlan.planType }})
             </p>
+
+            <button mat-button color="primary" (click)="openBnplCalculator()">
+                Edit Installment Plan
+            </button>
         </div>
-
-        <!-- ACTION -->
-        <button mat-raised-button color="primary" class="pay-btn" (click)="confirmPayment()">
-            {{ paymentType === 'NOW' ? 'Pay Now' : 'Continue to Installments' }}
-        </button>
-
     </mat-card>
-
 </div>
