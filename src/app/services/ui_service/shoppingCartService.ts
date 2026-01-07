@@ -9,6 +9,7 @@ export class ShoppingCartService {
 
     // ---------- STATE ----------
     private cart = signal<ShoppingCartItemModel[]>(this.loadCart());
+    private locked = signal(false);
 
     // ---------- DERIVED STATE ----------
     cartItemCount = computed(() => this.cart().length);
@@ -23,6 +24,9 @@ export class ShoppingCartService {
         this.cart().reduce((sum, item) => sum + item.subtotal, 0)
     );
 
+    // After the draft invoice is created: cart -> Locked
+    isLocked = computed(() => this.locked());
+
     constructor() {
         // persist cart automatically
         effect(() => {
@@ -36,8 +40,22 @@ export class ShoppingCartService {
         return data ? JSON.parse(data) : [];
     }
 
+    // ---------- LOCK CONTROL ----------
+    lockCart(): void {
+        this.locked.set(true);
+    }
+
+    unlockCart(): void {
+        this.locked.set(false);
+    }
+
     // ---------- PUBLIC API ----------
     addToCart(item: ShoppingCartItemModel): { success: boolean; message?: string } {
+
+        if (this.locked()) {
+            return { success: false, message: 'Cart is locked' };
+        }
+
         const cart = this.cart();
 
         // duplicate check
@@ -59,6 +77,11 @@ export class ShoppingCartService {
     }
 
     updateQuantity(productId: number, qty: number): { success: boolean; message?: string } {
+        
+        if (this.locked()) {
+            return { success: false, message: 'Cart is locked' };
+        }
+
         const cart = this.cart();
         const item = cart.find(c => c.productId === productId);
 
@@ -78,6 +101,8 @@ export class ShoppingCartService {
     }
 
     removeItem(productId: number): void {
+        if (this.locked()) return;
+
         this.cart.set(this.cart().filter(c => c.productId !== productId));
     }
 
