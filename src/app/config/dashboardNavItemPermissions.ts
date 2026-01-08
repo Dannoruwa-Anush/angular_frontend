@@ -7,6 +7,7 @@ import { CustomerNavComponent } from "../components/page_components/dashboard_co
 import { CustomerOrderNavComponent } from "../components/page_components/dashboard_components/nav_components/customer-order-nav-component/customer-order-nav-component";
 import { EmployeeNavComponent } from "../components/page_components/dashboard_components/nav_components/employee-nav-component/employee-nav-component";
 import { InstallmentSnapshotNavComponent } from "../components/page_components/dashboard_components/nav_components/installment-snapshot-nav-component/installment-snapshot-nav-component";
+import { InvoiceNavComponent } from "../components/page_components/dashboard_components/nav_components/invoice-nav-component/invoice-nav-component";
 import { ProductNavComponent } from "../components/page_components/dashboard_components/nav_components/product-nav-component/product-nav-component";
 import { ProfileNavComponent } from "../components/page_components/dashboard_components/nav_components/profile-nav-component/profile-nav-component";
 import { DashboardNavItemPermissionDataModel } from "../models/ui_models/dashboardNavItemPermissionDataModel";
@@ -145,6 +146,17 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
+        ]
+    },
+    //Invoice
+    {
+        label: 'Invoices',
+        route: 'invoice',
+        component: InvoiceNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+            UserRoleEnum.Customer
         ]
     },
     //Cashier
