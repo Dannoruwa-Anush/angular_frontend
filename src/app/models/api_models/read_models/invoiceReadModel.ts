@@ -1,7 +1,7 @@
 import { InvoiceStatusEnum } from "../../../config/enums/invoiceStatusEnum";
 import { InvoiceTypeEnum } from "../../../config/enums/invoiceTypeEnum";
 
-export interface invoiceReadModel {
+export interface InvoiceReadModel {
     invoiceID: number;
     invoiceAmount: number;
     invoiceType: InvoiceTypeEnum;

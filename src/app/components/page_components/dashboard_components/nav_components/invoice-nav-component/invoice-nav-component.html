@@ -1,1 +1,61 @@
-<p>invoice-nav-component works!</p>
+<div class="dashboard-container">
+
+    <mat-toolbar color="primary" class="products-toolbar">
+        <!-- [Start: invoice type menu] -->
+        <button mat-button [matMenuTriggerFor]="invoiceTypeMenu" class="filter-button"
+            [class.active-filter]="selectedInvoiceTypeId() !== undefined">
+            {{ selectedInvoiceTypeName() ?? 'Invoice Type' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #invoiceTypeMenu="matMenu">
+            <button mat-menu-item (click)="onInvoiceTypeSelect(undefined)"
+                [class.selected-menu-item]="selectedInvoiceTypeId() === undefined">
+                All Invoice Types
+            </button>
+
+            <button mat-menu-item *ngFor="let invoiceType of invoiceTypes()" (click)="onInvoiceTypeSelect(invoiceType.invoiceTypeID)"
+                [class.selected-menu-item]="selectedInvoiceTypeId() === invoiceType.invoiceTypeID">
+                {{ invoiceType.invoiceTypeName }}
+            </button>
+        </mat-menu>
+        <!-- [End: Invoice Type menu] -->
+
+
+        <!-- [Start: Invoice Status menu] -->
+        <button mat-button [matMenuTriggerFor]="invoiceStatusMenu" class="filter-button"
+            [class.active-filter]="selectedInvoiceStatusId() !== undefined">
+            {{ selectedInvoiceStatusName() ?? 'Invoice Status' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #invoiceStatusMenu="matMenu">
+            <button mat-menu-item (click)="onInvoiceStatusSelect(undefined)"
+                [class.selected-menu-item]="selectedInvoiceStatusId() === undefined">
+                All Invoice Statuses
+            </button>
+
+            <button mat-menu-item *ngFor="let invoiceStatus of invoiceStatuses()" (click)="onInvoiceStatusSelect(invoiceStatus.invoiceStatusID)"
+                [class.selected-menu-item]="selectedInvoiceStatusId() === invoiceStatus.invoiceStatusID">
+                {{ invoiceStatus.invoiceStatusName }}
+            </button>
+        </mat-menu>
+        <!-- [End: Invoice Status menu] -->
+    </mat-toolbar>
+
+    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Invoice"
+        [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
+        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </ng-template>
+    </app-dashboard-table-component>
+</div>
