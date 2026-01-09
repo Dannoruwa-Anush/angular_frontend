@@ -37,7 +37,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // ======================================================
   // COMPONENT SPECIFIC THINGS
   // ======================================================
-  customerID = 0;
+  customerId = computed(() => this.auth.customerID());
 
   InvoiceTypeEnum = InvoiceTypeEnum;
 
@@ -96,7 +96,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     pageSize: this.pageSize(),
     invoiceTypeId: this.selectedInvoiceTypeId(),
     invoiceStatusId: this.selectedInvoiceStatusId(),
-    customerId: this.customerID || undefined,
+    customerId: this.customerId() || undefined,
     searchKey: this.searchText() || undefined,
   }));
 
@@ -111,7 +111,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       header: 'Invoice No',
       cell: i => i.invoiceID
     },
-    // cusyomer name
+    // customer name
     {
       key: 'invoiceAmount',
       header: 'Amount',
@@ -143,8 +143,6 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   ) {
     super();
 
-    this.customerID = this.auth.customerID()!;
-
     this.loading = this.invoiceService.loading;
 
     // Load static data
@@ -173,7 +171,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
         params.pageSize,
         params.invoiceTypeId,
         params.invoiceStatusId,
-        params.customerId,
+        params.customerId,   
         params.searchKey
       )
       .subscribe(res => {
