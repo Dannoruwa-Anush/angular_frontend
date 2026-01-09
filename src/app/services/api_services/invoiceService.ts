@@ -39,11 +39,11 @@ export class InvoiceService extends CrudService<InvoiceReadModel, InvoiceReadMod
     }
 
     // can add custom api methods here
-    isExistsUnpaidInvoiceByCustomerId(id: number | string): Observable<boolean> {
+    isExistsUnpaidInvoiceByCustomerId(customerId: number | string): Observable<boolean> {
         this._loading.set(true);
 
         return this.http
-            .get<ApiResponseModel<boolean>>(`${this.baseUrl}/${this.endpoint}/customer/${id}`)
+            .get<ApiResponseModel<boolean>>(`${this.baseUrl}/${this.endpoint}/customer/${customerId}`)
             .pipe(
                 map(res => {
                     this._loading.set(false);

@@ -19,6 +19,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { InvoiceViewDialogBoxComponent } from '../../../../reusable_components/invoice-view-dialog-box-component/invoice-view-dialog-box-component';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-invoice-nav-component',
@@ -136,6 +137,8 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // CONSTRUCTOR
   // ======================================================
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private dialog: MatDialog,
     private fileService: FileService,
     private invoiceService: InvoiceService,
@@ -156,6 +159,8 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       this.selectedInvoiceStatusId.set(InvoiceStatusEnum.Unpaid);
     }
 
+    this.handleRedirectReason();
+
     // Auto reload when paging / search changes
     effect(() => {
       this.requestParams();
@@ -166,6 +171,23 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // ======================================================
   // HELPERS
   // ======================================================
+  private handleRedirectReason(): void {
+    const reason = this.route.snapshot.queryParamMap.get('reason');
+
+    if (reason === 'unpaid') {
+      this.messageService.warning(
+        'You have unpaid invoices. Please settle them before placing a new order.'
+      );
+
+      // Remove query param so message shows only once
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true
+      });
+    }
+  }
+
   isCustomer(): boolean {
     return this.auth.role() === UserRoleEnum.Customer;
   }
@@ -178,7 +200,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       default: return 'row-default';
     }
   }
-  
+
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================

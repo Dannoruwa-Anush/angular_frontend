@@ -23,6 +23,10 @@ export class SystemMessageService {
     this.show(message, 'snackbar-error');
   }
 
+  warning(message: string) {
+    this.show(message, 'snackbar-warning');
+  }
+
   info(message: string) {
     this.show(message, 'snackbar-info');
   }
