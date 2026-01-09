@@ -1,36 +1,18 @@
-<h2 mat-dialog-title>
-  Invoice #{{ data.invoice.invoiceID }}
-</h2>
+<h2 mat-dialog-title>Invoice #{{ data.invoice.invoiceID }}</h2>
 
-<mat-dialog-content class="pdf-dialog-content">
-  <ngx-extended-pdf-viewer
-    *ngIf="invoiceFileUrl"
-    [src]="invoiceFileUrl"
-    height="65vh"
-    useBrowserLocale="true"
-    [showPrintButton]="true"
-    [showDownloadButton]="true"
-    [showHandToolButton]="true"
-    [showSidebarButton]="true">
-  </ngx-extended-pdf-viewer>
+<mat-dialog-content style="position: relative; height: 80vh;">
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="spinner-overlay">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <!-- PDF iframe -->
+  <iframe [src]="data.invoice.invoiceFileUrl | safeUrl" width="100%" height="100%" style="border: none;"
+    (load)="onLoad()"></iframe>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="close()">Close</button>
-
-  <button
-    mat-stroked-button
-    color="warn"
-    *ngIf="isUnpaid"
-    (click)="cancelInvoice()">
-    Cancel
-  </button>
-
-  <button
-    mat-raised-button
-    color="primary"
-    *ngIf="isUnpaid"
-    (click)="pay()">
-    Pay
-  </button>
+  <button mat-button color="primary" (click)="onPay()">Pay</button>
+  <button mat-button color="warn" (click)="onCancelInvoice()">Cancel</button>
+  <button mat-button (click)="onClose()">Close</button>
 </mat-dialog-actions>

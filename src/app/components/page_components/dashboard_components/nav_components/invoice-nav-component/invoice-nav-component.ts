@@ -14,6 +14,9 @@ import { SystemMessageService } from '../../../../../services/ui_service/systemM
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { InvoiceStatusUiModel } from '../../../../../models/ui_models/invoiceStatusUiModel';
+import { FileService } from '../../../../../services/ui_service/fileService';
+import { MatDialog } from '@angular/material/dialog';
+import { InvoiceViewDialogBoxComponent } from '../../../../reusable_components/invoice-view-dialog-box-component/invoice-view-dialog-box-component';
 
 @Component({
   selector: 'app-invoice-nav-component',
@@ -131,6 +134,8 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // CONSTRUCTOR
   // ======================================================
   constructor(
+    private dialog: MatDialog,
+    private fileService: FileService,
     private invoiceService: InvoiceService,
     private auth: AuthSessionService,
     private messageService: SystemMessageService,
@@ -185,5 +190,32 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
 
   protected override resetForm(): void {
     throw new Error('Method not implemented.');
+  }
+
+  override edit(item: InvoiceReadModel) {
+    const invoiceUrl = this.fileService.getInvoiceFileUrl(item);
+
+    const dialogRef = this.dialog.open(InvoiceViewDialogBoxComponent, {
+      width: '90%',
+      maxWidth: '1200px',
+      height: '90vh',
+      data: { invoice: { ...item, invoiceFileUrl: invoiceUrl } },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) return;
+
+      if (result.action === 'pay') {
+        console.log('Pay invoice', result.invoice.invoiceID);
+        // TODO: Call your API to pay invoice
+        this.loadItems();
+      }
+
+      if (result.action === 'cancel') {
+        console.log('Cancel invoice', result.invoice.invoiceID);
+        // TODO: Call your API to cancel invoice
+        this.loadItems();
+      }
+    });
   }
 }
