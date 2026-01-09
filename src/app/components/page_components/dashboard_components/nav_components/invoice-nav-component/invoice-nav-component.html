@@ -2,7 +2,7 @@
 
     <mat-toolbar color="primary" class="products-toolbar">
         <!-- [Start: invoice type menu] -->
-        <button mat-button [matMenuTriggerFor]="invoiceTypeMenu" class="filter-button"
+        <button mat-button *ngIf="!isCustomer()" [matMenuTriggerFor]="invoiceTypeMenu" class="filter-button"
             [class.active-filter]="selectedInvoiceTypeId() !== undefined">
             {{ selectedInvoiceTypeName() ?? 'Invoice Type' }}
             <mat-icon>arrow_drop_down</mat-icon>
@@ -44,7 +44,7 @@
     </mat-toolbar>
 
     <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
-    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Invoice"
+    <app-dashboard-table-component [data]="items()" [columns]="columns" [rowClass]="getRowClass.bind(this)" searchLabel="Search Invoice"
         [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
         (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
 

@@ -42,6 +42,9 @@ export class DashboardTableComponent<T> {
   @Input() showActions = true;
   @Input() showRowNumber = true;
 
+  // ===== ROW CLASS FUNCTION =====
+  @Input() rowClass?: (row: T) => string;
+
   get columnKeys(): string[] {
     const keys: string[] = [];
 

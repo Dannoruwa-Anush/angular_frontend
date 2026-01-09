@@ -52,3 +52,15 @@ mat-paginator {
   border-top: 1px solid #e0e0e0;
   padding-top: 8px;
 }
+
+/* Example row colors based on invoice status */
+.row-unpaid { background-color: #fff3cd; }   /* light yellow */
+.row-paid { background-color: #d4edda; }     /* light green */
+.row-voided { background-color: #f8d7da; }   /* light red */
+.row-default { background-color: #ffffff; }  /* neutral white */
+tr.mat-row:hover { background-color: #e2e3e5 !important; }
+
+/* Optional: highlight hover */
+tr.mat-row:hover {
+  background-color: #e2e3e5 !important;
+}

@@ -17,6 +17,8 @@ import { InvoiceStatusUiModel } from '../../../../../models/ui_models/invoiceSta
 import { FileService } from '../../../../../services/ui_service/fileService';
 import { MatDialog } from '@angular/material/dialog';
 import { InvoiceViewDialogBoxComponent } from '../../../../reusable_components/invoice-view-dialog-box-component/invoice-view-dialog-box-component';
+import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
+import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 
 @Component({
   selector: 'app-invoice-nav-component',
@@ -149,6 +151,11 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     this.loadInvoiceTypes();
     this.loadInvoiceStatuses();
 
+    // Set default invoice status for Customer or Cashier
+    if (this.isCustomer() || this.auth.hasEmployeePosition([EmployeePositionEnum.Cashier])) {
+      this.selectedInvoiceStatusId.set(InvoiceStatusEnum.Unpaid);
+    }
+
     // Auto reload when paging / search changes
     effect(() => {
       this.requestParams();
@@ -156,6 +163,22 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     });
   }
 
+  // ======================================================
+  // HELPERS
+  // ======================================================
+  isCustomer(): boolean {
+    return this.auth.role() === UserRoleEnum.Customer;
+  }
+
+  getRowClass(invoice: InvoiceReadModel): string {
+    switch (invoice.invoiceStatus) {
+      case InvoiceStatusEnum.Unpaid: return 'row-unpaid';
+      case InvoiceStatusEnum.Paid: return 'row-paid';
+      case InvoiceStatusEnum.Voided: return 'row-voided';
+      default: return 'row-default';
+    }
+  }
+  
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
@@ -171,7 +194,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
         params.pageSize,
         params.invoiceTypeId,
         params.invoiceStatusId,
-        params.customerId,   
+        params.customerId,
         params.searchKey
       )
       .subscribe(res => {

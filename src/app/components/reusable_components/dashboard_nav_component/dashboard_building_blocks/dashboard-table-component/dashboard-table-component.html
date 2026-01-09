@@ -38,8 +38,11 @@
             </td>
         </ng-container>
 
+        <!-- HEADER ROW -->
         <tr mat-header-row *matHeaderRowDef="columnKeys"></tr>
-        <tr mat-row *matRowDef="let row; columns: columnKeys"></tr>
+
+        <!-- DATA ROWS WITH OPTIONAL COLOR -->
+        <tr mat-row *matRowDef="let row; columns: columnKeys" [ngClass]="rowClass ? rowClass(row) : ''"></tr>
     </table>
 
     <!-- EMPTY STATE -->
