@@ -192,7 +192,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     throw new Error('Method not implemented.');
   }
 
-  override edit(item: InvoiceReadModel) {
+  override view(item: InvoiceReadModel) {
     const invoiceUrl = this.fileService.getInvoiceFileUrl(item);
 
     const dialogRef = this.dialog.open(InvoiceViewDialogBoxComponent, {
