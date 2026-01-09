@@ -9,11 +9,11 @@ import { OrderSubmitWizardStepStateService } from '../../../../../services/ui_se
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { MatDialog } from '@angular/material/dialog';
-import { BnplInstallmentCalculatorComponent } from '../../../../reusable_components/calculator_simulator_component/bnpl-installment-calculator-component/bnpl-installment-calculator-component';
 import { OrderSubmitWizardStateService } from '../../../../../services/ui_service/orderSubmitWizardStateService';
 import { CustomerOrderCreateModel } from '../../../../../models/api_models/create_update_models/create_models/customerOrder_create_Model';
 import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
 import { OrderPaymentModeEnum } from '../../../../../config/enums/orderPaymentModeEnum';
+import { BnplPlanInstallmentCalculatorDialogBoxComponent } from '../../../../reusable_components/bnpl-plan-installment-calculator-dialog-box-component/bnpl-plan-installment-calculator-dialog-box-component';
 
 
 @Component({
@@ -65,7 +65,7 @@ export class CheckoutOrderComponent {
   }
 
   openBnplCalculator() {
-    const dialogRef = this.dialog.open(BnplInstallmentCalculatorComponent, {
+    const dialogRef = this.dialog.open(BnplPlanInstallmentCalculatorDialogBoxComponent, {
       width: '960px',
       maxWidth: '98vw',
       maxHeight: '90vh',
