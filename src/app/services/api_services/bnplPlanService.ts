@@ -6,6 +6,7 @@ import { SystemMessageService } from "../ui_service/systemMessageService";
 import { BnplPlanInstallmentCalculatorCreateModel } from "../../models/api_models/create_update_models/create_models/bnplInstallmentCalculator_create_Model";
 import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
 import { catchError, map } from "rxjs";
+import { BnplPlanInstallmentCalculatorReadModel } from "../../models/api_models/read_models/bnplInstallmentCalculator_Read_Model";
 
 @Injectable({
     providedIn: 'root',
@@ -42,7 +43,7 @@ export class BnplPlanService extends CrudService<BnplPlanReadModel, BnplPlanRead
         this.messageService.clear();
 
         return this.http
-            .post<ApiResponseModel<BnplPlanReadModel>>(
+            .post<ApiResponseModel<BnplPlanInstallmentCalculatorReadModel>>(
                 `${this.baseUrl}/${this.endpoint}/calculateInstallment`,
                 data
             )

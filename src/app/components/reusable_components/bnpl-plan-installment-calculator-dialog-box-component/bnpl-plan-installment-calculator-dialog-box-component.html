@@ -1,55 +1,100 @@
-<h2 mat-dialog-title>BNPL Installment Calculator</h2>
+<h2 mat-dialog-title class="dialog-title">
+    BNPL Installment Calculator
+</h2>
 
-<mat-dialog-content>
+<mat-dialog-content class="dialog-content">
 
-  <form [formGroup]="form" class="form-grid">
+    <!-- ================= INPUT FORM ================= -->
+    <form [formGroup]="form" class="form-grid" (ngSubmit)="onSubmit()">
 
-    <mat-form-field appearance="outline">
-      <mat-label>Plan Type</mat-label>
-      <mat-select formControlName="bnpl_PlanTypeID">
-        <mat-option [value]="1">Standard</mat-option>
-        <mat-option [value]="2">Premium</mat-option>
-      </mat-select>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>BNPL Plan Type</mat-label>
+            <mat-select formControlName="bnpl_PlanTypeID">
+                <mat-option *ngFor="let type of bnplPlanTypes()" [value]="type.bnpl_PlanTypeID">
+                    {{ type.bnpl_PlanTypeName }}
+                </mat-option>
+            </mat-select>
 
-    </mat-form-field>
+            <mat-error *ngIf="form.get('bnpl_PlanTypeID')?.hasError('required')">
+                Plan type is required
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Installments</mat-label>
-      <input matInput type="number" formControlName="installmentCount">
+        <mat-form-field appearance="outline">
+            <mat-label>Installment Count</mat-label>
+            <input matInput type="number" formControlName="installmentCount">
 
-    </mat-form-field>
+            <mat-error *ngIf="form.get('installmentCount')?.hasError('min')">
+                Minimum 2 installments
+            </mat-error>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Initial Payment</mat-label>
-      <input matInput type="number" formControlName="initialPayment">
+        <mat-form-field appearance="outline">
+            <mat-label>Initial Payment</mat-label>
+            <input matInput type="number" formControlName="initialPayment">
+            <span matTextPrefix>Rs.&nbsp;</span>
 
-    </mat-form-field>
+            <mat-error *ngIf="form.get('initialPayment')?.hasError('min')">
+                Must be zero or higher
+            </mat-error>
+        </mat-form-field>
 
-  </form>
+    </form>
 
-  <mat-divider></mat-divider>
+    <!-- ================= RESULT ================= -->
+    <div *ngIf="calculationResult()" class="result-card">
 
-  <!-- RESULT -->
-  <div *ngIf="calculationResult()" class="result-box">
-    <h3>Installment Summary</h3>
-    <p>
-      {{ calculationResult().installmentCount }} ×
-      Rs. {{ calculationResult().installmentAmount | number:'1.2-2' }}
-    </p>
-    <p>
-      Initial Payment:
-      Rs. {{ calculationResult().initialPayment | number:'1.2-2' }}
-    </p>
-  </div>
+        <div class="result-header">
+            <mat-icon color="primary">calculate</mat-icon>
+            <h3>Installment Summary</h3>
+        </div>
+
+        <div class="result-grid">
+
+            <div class="result-item highlight">
+                <span>Per Installment</span>
+                <strong>
+                    Rs. {{ calculationResult()?.amountPerInstallment | number:'1.2-2' }}
+                </strong>
+            </div>
+
+            <div class="result-item">
+                <span>Total Interest</span>
+                <strong>
+                    Rs. {{ calculationResult()?.totalInterestAmount | number:'1.2-2' }}
+                </strong>
+            </div>
+
+            <div class="result-item total">
+                <span>Total Payable</span>
+                <strong>
+                    Rs. {{ calculationResult()?.totalPayable | number:'1.2-2' }}
+                </strong>
+            </div>
+
+        </div>
+
+        <!--div class="plan-info">
+            <mat-icon>info</mat-icon>
+            <span>
+                Plan:
+                {{ calculationResult()?.bnpL_PlanTypeResponseDto.bnpl_PlanTypeName }}
+                ({{ calculationResult()?.bnpL_PlanTypeResponseDto.interestRate }}% interest)
+            </span>
+        </div-->
+
+    </div>
 
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancel</button>
-  <button mat-stroked-button color="primary" (click)="calculate()" [disabled]="loading()">
-    Calculate
-  </button>
-  <button mat-raised-button color="accent" (click)="confirm()" [disabled]="!calculationResult()">
-    Use This Plan
-  </button>
+<mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="cancel()">Cancel</button>
+
+    <button mat-stroked-button color="primary" (click)="calculate()" [disabled]="form.invalid">
+        Calculate
+    </button>
+
+    <button mat-raised-button color="accent" (click)="confirm()" [disabled]="!calculationResult()">
+        Use This Plan
+    </button>
 </mat-dialog-actions>
