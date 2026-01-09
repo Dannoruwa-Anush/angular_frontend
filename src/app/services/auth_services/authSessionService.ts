@@ -51,12 +51,6 @@ export class AuthSessionService {
                 ? localStorage.setItem(AUTH_KEY, JSON.stringify(value))
                 : localStorage.removeItem(AUTH_KEY);
         });
-
-        // Navigate AFTER login/logout only
-        effect(() => {
-            if (!this.session()) return;
-            this.navigateByRole(this.session()!.role);
-        });
     }
 
     // ---------- PRIVATE ----------
@@ -77,6 +71,18 @@ export class AuthSessionService {
             default:
                 this.router.navigate(['/login']);
         }
+    }
+
+    private navigateAfterLogin(role: UserRoleEnum): void {
+        const redirect =
+            this.router.parseUrl(this.router.url).queryParams['redirect'];
+
+        if (redirect) {
+            this.router.navigateByUrl(redirect);
+            return;
+        }
+
+        this.navigateByRole(role);
     }
 
     // ---------- API ----------
@@ -105,6 +111,9 @@ export class AuthSessionService {
 
                     // SUCCESS MESSAGE FROM API
                     this.messageService.success(res.message || 'Login successful');
+
+                    // Redirect-aware navigation
+                    this.navigateAfterLogin(session.role);
 
                     return session;
                 }),
@@ -154,7 +163,10 @@ export class AuthSessionService {
 
     // LOGOUT
     logout(): void {
+        // ALWAYS unlock cart on logout
+        this.cartService.unlockCart();
         this.cartService.clearCart();
+
         this.session.set(null);
         this.router.navigate(['/login']);
     }
