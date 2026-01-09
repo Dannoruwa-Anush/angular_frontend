@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>
+  Invoice #{{ data.invoice.invoiceID }}
+</h2>
+
+<mat-dialog-content class="pdf-dialog-content">
+  <ngx-extended-pdf-viewer
+    *ngIf="invoiceFileUrl"
+    [src]="invoiceFileUrl"
+    height="65vh"
+    useBrowserLocale="true"
+    [showPrintButton]="true"
+    [showDownloadButton]="true"
+    [showHandToolButton]="true"
+    [showSidebarButton]="true">
+  </ngx-extended-pdf-viewer>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Close</button>
+
+  <button
+    mat-stroked-button
+    color="warn"
+    *ngIf="isUnpaid"
+    (click)="cancelInvoice()">
+    Cancel
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    *ngIf="isUnpaid"
+    (click)="pay()">
+    Pay
+  </button>
+</mat-dialog-actions>
