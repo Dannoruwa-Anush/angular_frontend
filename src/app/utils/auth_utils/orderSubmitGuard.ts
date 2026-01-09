@@ -5,6 +5,7 @@ import { UserRoleEnum } from "../../config/enums/userRoleEnum";
 import { EmployeePositionEnum } from "../../config/enums/employeePositionEnum";
 import { InvoiceService } from "../../services/api_services/invoiceService";
 import { catchError, map, Observable, of } from "rxjs";
+import { SystemMessageService } from "../../services/ui_service/systemMessageService";
 
 @Injectable({ providedIn: 'root' })
 export class OrderSubmitGuard implements CanActivate {
@@ -12,14 +13,22 @@ export class OrderSubmitGuard implements CanActivate {
     constructor(
         private auth: AuthSessionService,
         private invoiceService: InvoiceService,
-        private router: Router
+        private router: Router,
+        private messageService: SystemMessageService
     ) { }
 
     canActivate(): Observable<boolean | UrlTree> {
 
         // ---------- NOT LOGGED IN ----------
         if (!this.auth.isLoggedIn()) {
-            return of(this.router.createUrlTree(['/login']));
+            this.messageService.info('Please log in to proceed with checkout');
+
+            return of(
+                this.router.createUrlTree(
+                    ['/login'],
+                    { queryParams: { redirect: '/submit_order' } }
+                )
+            );
         }
 
         const role = this.auth.role();
@@ -37,6 +46,7 @@ export class OrderSubmitGuard implements CanActivate {
         if (role === UserRoleEnum.Customer) {
             const customerId = this.auth.customerID();
 
+            // Defensive fallback
             if (!customerId) {
                 return of(this.router.createUrlTree(['/']));
             }
@@ -44,13 +54,14 @@ export class OrderSubmitGuard implements CanActivate {
             return this.invoiceService
                 .isExistsUnpaidInvoiceByCustomerId(customerId)
                 .pipe(
-                    map(hasUnpaid => {
-                        if (hasUnpaid) {
+                    map(hasUnpaidInvoice => {
+                        if (hasUnpaidInvoice) {
                             return this.router.createUrlTree(
                                 ['/dashboard/invoice'],
                                 { queryParams: { reason: 'unpaid' } }
                             );
                         }
+
                         return true;
                     }),
                     catchError(() =>
@@ -64,7 +75,7 @@ export class OrderSubmitGuard implements CanActivate {
                 );
         }
 
-        // ---------- EVERYTHING ELSE ----------
+        // ---------- EVERYTHING ELSE: BLOCK----------
         return of(this.router.createUrlTree(['/']));
     }
 }

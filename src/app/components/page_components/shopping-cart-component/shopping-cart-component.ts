@@ -67,16 +67,30 @@ export class ShoppingCartComponent {
   }
 
   checkoutOrder() {
+    //this.cartService.clearCart();
+    //this.messageService.success('Order placed successfully');
+    
+    // User must be logged in
+    if (!this.cartService.cartItems().length) {
+      this.messageService.warning('Your cart is empty');
+      return;
+    }
+
     this.confirmService.confirm({
-      title: 'checkout Order',
-      message: 'Do you want to checkout this order?',
-      confirmText: 'checkout Order',
+      title: 'Checkout Order',
+      message: 'Do you want to proceed to order submission?',
+      confirmText: 'Proceed',
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.router.navigate(['/submit_order']);
-      //this.cartService.clearCart();
-      //this.messageService.success('Order placed successfully');
+
+      // Lock the cart BEFORE navigation
+      this.cartService.lockCart();
+
+      // Navigate to submit wizard
+      this.router.navigate(['/submit_order'], {
+        queryParams: { from: 'cart' }
+      });
     });
   }
 }

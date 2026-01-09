@@ -53,7 +53,7 @@ export class ShoppingCartService {
     addToCart(item: ShoppingCartItemModel): { success: boolean; message?: string } {
 
         if (this.locked()) {
-            return { success: false, message: 'Cart is locked' };
+            return { success: false, message: 'Cart is locked after checkout. Complete or cancel the current order before adding items.' };
         }
 
         const cart = this.cart();
@@ -79,7 +79,7 @@ export class ShoppingCartService {
     updateQuantity(productId: number, qty: number): { success: boolean; message?: string } {
         
         if (this.locked()) {
-            return { success: false, message: 'Cart is locked' };
+            return { success: false, message: 'Cart is locked after checkout. Quantity cannot be changed.' };
         }
 
         const cart = this.cart();
