@@ -74,15 +74,14 @@
 
         </div>
 
-        <!--div class="plan-info">
+        <div class="plan-info">
             <mat-icon>info</mat-icon>
             <span>
                 Plan:
-                {{ calculationResult()?.bnpL_PlanTypeResponseDto.bnpl_PlanTypeName }}
-                ({{ calculationResult()?.bnpL_PlanTypeResponseDto.interestRate }}% interest)
+                {{ calculationResult()?.bnplPlanTypeResponseDto!.bnpl_PlanTypeName }}
+                ({{ calculationResult()?.bnplPlanTypeResponseDto!.interestRate }}% interest)
             </span>
-        </div-->
-
+        </div>
     </div>
 
 </mat-dialog-content>

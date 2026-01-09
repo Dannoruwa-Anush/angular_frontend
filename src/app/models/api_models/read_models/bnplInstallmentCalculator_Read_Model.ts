@@ -6,5 +6,5 @@ export interface BnplPlanInstallmentCalculatorReadModel {
     totalInterestAmount: number;
 
     //Fk: fields
-    bnpL_PlanTypeResponseDto: BnplPlanTypeReadModel;
+    bnplPlanTypeResponseDto: BnplPlanTypeReadModel;
 }
