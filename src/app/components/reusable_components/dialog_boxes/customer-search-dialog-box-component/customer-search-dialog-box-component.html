@@ -1,1 +1,30 @@
-<p>customer-search-dialog-box-component works!</p>
+<h2 mat-dialog-title>Find Customer</h2>
+
+<mat-dialog-content>
+
+  <form [formGroup]="form">
+    <mat-form-field class="full-width">
+      <mat-label>Customer Email</mat-label>
+      <input matInput formControlName="email">
+    </mat-form-field>
+  </form>
+
+  <div *ngIf="result()">
+    <p><strong>{{ result()?.customerName }}</strong></p>
+    <p>{{ result()?.userResponseDto?.email }}</p>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-stroked-button color="primary" (click)="search()">Search</button>
+  <button
+    mat-raised-button
+    color="accent"
+    (click)="confirm()"
+    [disabled]="!result()"
+  >
+    Use This Customer
+  </button>
+</mat-dialog-actions>
