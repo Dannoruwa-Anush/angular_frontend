@@ -11,7 +11,7 @@ export const ORDER_SUBMIT_WIZARD_STEPS: OrderSubmitWizardStepDataModel[] = [
         component: CheckoutOrderComponent
     },
     {
-        label: 'Shipping Details Verfication',
+        label: 'Verfication',
         route: 'shipping_verification',
         component: CustomerShippingDetailVerificationComponent
     },
