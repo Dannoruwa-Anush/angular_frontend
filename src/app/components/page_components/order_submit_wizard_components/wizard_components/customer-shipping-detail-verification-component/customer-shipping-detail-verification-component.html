@@ -34,13 +34,6 @@
         <span class="label">Phone</span>
         <span class="value">{{ customerProfile()?.phoneNo }}</span>
       </div>
-
-      <div class="actions">
-        <button mat-button color="accent" (click)="editCustomer()">
-          <mat-icon>edit</mat-icon>
-          Edit Customer
-        </button>
-      </div>
     </ng-container>
 
     <ng-template #noCustomer>
@@ -50,27 +43,12 @@
 
   <!-- ================= RIGHT : SHIPPING DETAILS ================= -->
   <mat-card class="detail-card mat-elevation-z2">
-    <mat-card-title>Shipping Details</mat-card-title>
+    <mat-card-title>Shipping Details <mat-icon>local_shipping</mat-icon></mat-card-title>
 
     <ng-container *ngIf="customerProfile(); else noShipping">
       <div class="detail-row">
         <span class="label">Address</span>
         <span class="value">{{ customerProfile()?.address }}</span>
-      </div>
-
-      <!-- Future expansion -->
-      <!--
-      <div class="detail-row">
-        <span class="label">City</span>
-        <span class="value">{{ customerProfile()?.city }}</span>
-      </div>
-      -->
-
-      <div class="actions">
-        <button mat-button color="primary">
-          <mat-icon>local_shipping</mat-icon>
-          Edit Shipping
-        </button>
       </div>
     </ng-container>
 

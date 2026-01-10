@@ -108,12 +108,4 @@ export class CustomerShippingDetailVerificationComponent {
       });
     });
   }
-
-  // ============================
-  // EDIT CUSTOMER
-  // ============================
-  editCustomer(): void {
-    // Navigate or open edit dialog
-    // this.router.navigate(['/customers/edit', this.customerProfile()?.customerID]);
-  }
 }
