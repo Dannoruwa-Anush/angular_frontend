@@ -1,67 +1,81 @@
 <div class="payment-container">
 
-    <!-- LEFT : ORDER SUMMARY -->
-    <mat-card class="summary-card mat-elevation-z2">
-        <mat-card-title>Order Summary</mat-card-title>
+  <!-- ================= LEFT : ORDER SUMMARY ================= -->
+  <mat-card class="summary-card mat-elevation-z2">
+    <mat-card-title>Order Summary</mat-card-title>
 
-        <div class="summary-row" *ngFor="let item of cartItems()">
-            <div class="product-info">
-                <img [src]="item.imageUrl" alt="{{ item.name }}" class="product-thumb" />
+    <div class="summary-row" *ngFor="let item of cartItems()">
+      <div class="product-info">
+        <img
+          [src]="item.imageUrl"
+          [alt]="item.name"
+          class="product-thumb"
+        />
 
-                <div class="product-text">
-                    <span class="name">{{ item.name }}</span>
-                    <span class="qty"> x {{ item.quantity }}</span>
-                </div>
-            </div>
-
-            <strong class="price">
-                Rs. {{ item.subtotal | number:'1.2-2' }}
-            </strong>
+        <div class="product-text">
+          <span class="name">{{ item.name }}</span>
+          <span class="qty">x {{ item.quantity }}</span>
         </div>
+      </div>
+
+      <strong class="price">
+        Rs. {{ item.subtotal | number:'1.2-2' }}
+      </strong>
+    </div>
+  </mat-card>
+
+  <!-- ================= RIGHT : PAYMENT OPTIONS ================= -->
+  <mat-card class="payment-card mat-elevation-z2">
+    <mat-card-title>Payment Method</mat-card-title>
+
+    <!-- PAY NOW -->
+    <mat-card
+      class="payment-option"
+      [class.active]="paymentMode() === PaymentMode.Pay_now_full"
+      (click)="selectPayNow()"
+    >
+      <div class="option-content">
+        <mat-icon color="primary">payments</mat-icon>
+        <div>
+          <h3>Pay Now</h3>
+          <p>Full payment via card / wallet</p>
+        </div>
+      </div>
     </mat-card>
 
-    <!-- RIGHT : PAYMENT OPTIONS -->
-    <mat-card class="payment-card mat-elevation-z2">
-        <mat-card-title>Payment Method</mat-card-title>
-
-        <mat-radio-group [ngModel]="paymentType" (change)="onPaymentTypeChange($event.value)">
-            <!-- PAY NOW -->
-            <mat-card class="payment-option" [class.active]="paymentType === 'NOW'">
-                <mat-radio-button value="NOW">
-                    <div class="option-content">
-                        <mat-icon color="primary">payments</mat-icon>
-                        <div>
-                            <h3>Pay Now</h3>
-                            <p>Full payment via card / wallet</p>
-                        </div>
-                    </div>
-                </mat-radio-button>
-            </mat-card>
-
-            <!-- PAY LATER -->
-            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'" [class.disabled]="isCustomer()">
-                <mat-radio-button value="LATER" [disabled]="isCustomer()">
-                    <div class="option-content">
-                        <mat-icon color="accent">schedule</mat-icon>
-                        <div>
-                            <h3>Pay Later</h3>
-                            <p>Buy now, pay in installments</p>
-                        </div>
-                    </div>
-                </mat-radio-button>
-            </mat-card>
-        </mat-radio-group>
-
-        <div *ngIf="bnplPlan" class="bnpl-summary">
-            <p>
-                {{ bnplPlan.installmentCount }} x
-                Rs. {{ bnplPlan.installmentAmount | number:'1.2-2' }}
-                ({{ bnplPlan.planType }})
-            </p>
-
-            <button mat-button color="primary" (click)="openBnplCalculator()">
-                Edit Installment Plan
-            </button>
+    <!-- PAY LATER -->
+    <mat-card
+      class="payment-option"
+      [class.active]="paymentMode() === PaymentMode.Pay_Bnpl"
+      [class.disabled]="isCustomer()"
+      (click)="selectPayLater()"
+    >
+      <div class="option-content">
+        <mat-icon color="accent">schedule</mat-icon>
+        <div>
+          <h3>Pay Later</h3>
+          <p>Buy now, pay in installments</p>
         </div>
+      </div>
     </mat-card>
+
+    <!-- ================= BNPL SUMMARY ================= -->
+    <div *ngIf="showBnplSummary()" class="bnpl-summary">
+      <p>
+        {{ bnplPlan().installmentCount }} x
+        Rs. {{ bnplPlan().amountPerInstallment | number:'1.2-2' }}
+        ({{ bnplPlan().bnplPlanTypeResponseDto.bnpl_PlanTypeName }})
+      </p>
+
+      <button
+        mat-button
+        color="primary"
+        (click)="openBnplCalculator()"
+      >
+        Edit Installment Plan
+      </button>
+    </div>
+
+  </mat-card>
+
 </div>

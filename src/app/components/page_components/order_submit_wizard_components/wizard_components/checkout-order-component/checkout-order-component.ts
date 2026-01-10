@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, Signal } from '@angular/core';
+import { Component, computed, signal, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
@@ -32,16 +32,36 @@ export class CheckoutOrderComponent {
 
 
 
+  // =============================
+  // CART
+  // =============================
   cartItems!: Signal<ShoppingCartItemModel[]>;
   total!: Signal<number>;
 
-  bnplPlan: any | null = null;
-  paymentType: 'NOW' | 'LATER' = 'NOW';
+  // =============================
+  // STATE
+  // =============================
+  paymentMode = signal<OrderPaymentModeEnum>(
+    OrderPaymentModeEnum.Pay_now_full
+  );
+
+  bnplPlan = signal<any | null>(null);
+
+  readonly PaymentMode = OrderPaymentModeEnum;
 
   isCustomer = computed(
     () => this.auth.role() === UserRoleEnum.Customer
   );
 
+  showBnplSummary = computed(
+    () =>
+      this.paymentMode() === OrderPaymentModeEnum.Pay_Bnpl &&
+      !!this.bnplPlan()
+  );
+
+  // =============================
+  // CONSTRUCTOR
+  // =============================
   constructor(
     private stepState: OrderSubmitWizardStepStateService,
     private wizardState: OrderSubmitWizardStateService,
@@ -49,52 +69,61 @@ export class CheckoutOrderComponent {
     private cartService: ShoppingCartService,
     private dialog: MatDialog
   ) {
+
     this.cartItems = this.cartService.cartItems;
     this.total = this.cartService.cartTotal;
   }
 
-  // -------------------------
-  // PAYMENT MODE
-  // -------------------------
-  onPaymentTypeChange(type: 'NOW' | 'LATER') {
-    this.paymentType = type;
-
-    if (type === 'LATER' && !this.isCustomer()) {
-      this.openBnplCalculator();
-    }
+  // =============================
+  // PAYMENT SELECTION
+  // =============================
+  selectPayNow() {
+    this.paymentMode.set(OrderPaymentModeEnum.Pay_now_full);
+    this.bnplPlan.set(null);
   }
 
+  selectPayLater() {
+    if (this.isCustomer()) return;
+    this.openBnplCalculator();
+  }
+
+  // =============================
+  // BNPL DIALOG
+  // =============================
   openBnplCalculator() {
-    const dialogRef = this.dialog.open(BnplPlanInstallmentCalculatorDialogBoxComponent, {
-      width: '960px',
-      maxWidth: '98vw',
-      maxHeight: '90vh',
-      disableClose: true,
-      data: {
-        total: this.total(),
-        plan: this.bnplPlan,
+    const dialogRef = this.dialog.open(
+      BnplPlanInstallmentCalculatorDialogBoxComponent,
+      {
+        width: '960px',
+        maxWidth: '98vw',
+        maxHeight: '90vh',
+        disableClose: true,
+        data: {
+          total: this.total(),
+          plan: this.bnplPlan(),
+        }
       }
-    });
+    );
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.bnplPlan = result;
-        this.paymentType = 'LATER';
-      } else {
-        // user canceled -> revert selection
-        this.paymentType = 'NOW';
-      }
+      queueMicrotask(() => {
+        if (!result) {
+          this.selectPayNow();
+          return;
+        }
+
+        this.bnplPlan.set(result);
+        this.paymentMode.set(OrderPaymentModeEnum.Pay_Bnpl);
+      });
     });
   }
 
-  // -------------------------
+  // =============================
   // COMPLETE CHECKOUT
-  // -------------------------
+  // =============================
   completeCheckout() {
-
     if (!this.cartItems().length) return;
 
-    // Lock cart
     this.cartService.lockCart();
 
     const order: CustomerOrderCreateModel = {
@@ -102,10 +131,7 @@ export class CheckoutOrderComponent {
         ? OrderSourceEnum.OnlineShop
         : OrderSourceEnum.PhysicalShop,
 
-      orderPaymentMode:
-        this.paymentType === 'LATER'
-          ? OrderPaymentModeEnum.Pay_Bnpl
-          : OrderPaymentModeEnum.Pay_now_full,
+      orderPaymentMode: this.paymentMode(),
 
       customerOrderElectronicItems: this.cartItems().map(i => ({
         e_ItemID: i.productId,
@@ -113,17 +139,16 @@ export class CheckoutOrderComponent {
       }))
     };
 
-    // BNPL fields (only if applicable)
-    if (this.paymentType === 'LATER' && this.bnplPlan) {
-      order.bnpl_PlanTypeID = this.bnplPlan.planTypeId;
-      order.bnpl_InstallmentCount = this.bnplPlan.installmentCount;
-      order.bnpl_InitialPayment = this.bnplPlan.initialPayment;
+    if (
+      this.paymentMode() === OrderPaymentModeEnum.Pay_Bnpl &&
+      this.bnplPlan()
+    ) {
+      order.bnpl_PlanTypeID = this.bnplPlan().bnpl_PlanTypeID;
+      order.bnpl_InstallmentCount = this.bnplPlan().installmentCount;
+      order.bnpl_InitialPayment = this.bnplPlan().initialPayment;
     }
 
-    // Save wizard draft
     this.wizardState.init(order);
-
-    // Mark step complete
     this.stepState.completeStep('checkout');
   }
 }
