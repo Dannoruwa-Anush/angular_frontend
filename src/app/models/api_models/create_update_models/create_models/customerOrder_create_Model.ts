@@ -10,6 +10,9 @@ export interface CustomerOrderCreateModel {
     //FK: Fields 
     customerOrderElectronicItems: CustomerOrderElectronicItemsCreateModel[];
 
+    // Used ONLY when OrderSource == PhysicalShop
+    physicalShopBillToCustomerID?: number;
+
     //Bnpl fields
     bnpl_PlanTypeID?: number;
     bnpl_InstallmentCount?: number;
