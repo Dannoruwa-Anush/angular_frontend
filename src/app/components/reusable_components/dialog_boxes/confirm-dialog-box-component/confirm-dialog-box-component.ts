@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 
 import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MaterialModule } from '../../../custom_modules/material/material-module';
+import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ConfirmDialogBoxDataModel } from '../../../models/ui_models/confirmDialogBoxDataModel';
+import { ConfirmDialogBoxDataModel } from '../../../../models/ui_models/confirmDialogBoxDataModel';
 
 @Component({
   selector: 'app-confirm-dialog-box-component',

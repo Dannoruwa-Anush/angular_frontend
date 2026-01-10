@@ -16,7 +16,7 @@ import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOper
 import { InvoiceStatusUiModel } from '../../../../../models/ui_models/invoiceStatusUiModel';
 import { FileService } from '../../../../../services/ui_service/fileService';
 import { MatDialog } from '@angular/material/dialog';
-import { InvoiceViewDialogBoxComponent } from '../../../../reusable_components/invoice-view-dialog-box-component/invoice-view-dialog-box-component';
+import { InvoiceViewDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/invoice-view-dialog-box-component/invoice-view-dialog-box-component';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 import { ActivatedRoute, Router } from '@angular/router';

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MaterialModule } from '../../../custom_modules/material/material-module';
+import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { InvoiceReadModel } from '../../../models/api_models/read_models/invoiceReadModel';
-import { SafeUrlPipe } from '../../../pipes/safeUrlPipe';
+import { InvoiceReadModel } from '../../../../models/api_models/read_models/invoiceReadModel';
+import { SafeUrlPipe } from '../../../../pipes/safeUrlPipe';
 
 @Component({
   selector: 'app-invoice-view-dialog-box-component',

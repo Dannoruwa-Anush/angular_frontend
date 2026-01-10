@@ -13,7 +13,7 @@ import { OrderSubmitWizardStateService } from '../../../../../services/ui_servic
 import { CustomerOrderCreateModel } from '../../../../../models/api_models/create_update_models/create_models/customerOrder_create_Model';
 import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
 import { OrderPaymentModeEnum } from '../../../../../config/enums/orderPaymentModeEnum';
-import { BnplPlanInstallmentCalculatorDialogBoxComponent } from '../../../../reusable_components/bnpl-plan-installment-calculator-dialog-box-component/bnpl-plan-installment-calculator-dialog-box-component';
+import { BnplPlanInstallmentCalculatorDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/bnpl-plan-installment-calculator-dialog-box-component/bnpl-plan-installment-calculator-dialog-box-component';
 
 
 @Component({

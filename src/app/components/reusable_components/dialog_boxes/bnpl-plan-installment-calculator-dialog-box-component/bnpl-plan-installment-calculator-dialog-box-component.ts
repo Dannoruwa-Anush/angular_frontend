@@ -2,15 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, Inject, signal, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, Validators, FormBuilder, FormGroup, FormGroupDirective } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MaterialModule } from '../../../custom_modules/material/material-module';
-import { BnplPlanInstallmentCalculatorCreateModel } from '../../../models/api_models/create_update_models/create_models/bnplInstallmentCalculator_create_Model';
-import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
-import { BnplPlanTypeReadModel } from '../../../models/api_models/read_models/bnplPlanType_read_Model';
-import { BnplPlanTypeService } from '../../../services/api_services/bnplPlanTypeService';
-import { CrudOperationConfirmationUiHelper } from '../../../utils/crudOperationConfirmationUiHelper';
-import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
-import { BnplPlanService } from '../../../services/api_services/bnplPlanService';
-import { BnplPlanInstallmentCalculatorReadModel } from '../../../models/api_models/read_models/bnplInstallmentCalculator_Read_Model';
+import { MaterialModule } from '../../../../custom_modules/material/material-module';
+import { BnplPlanInstallmentCalculatorCreateModel } from '../../../../models/api_models/create_update_models/create_models/bnplInstallmentCalculator_create_Model';
+import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
+import { BnplPlanTypeReadModel } from '../../../../models/api_models/read_models/bnplPlanType_read_Model';
+import { BnplPlanTypeService } from '../../../../services/api_services/bnplPlanTypeService';
+import { CrudOperationConfirmationUiHelper } from '../../../../utils/crudOperationConfirmationUiHelper';
+import { SystemOperationConfirmService } from '../../../../services/ui_service/systemOperationConfirmService';
+import { BnplPlanService } from '../../../../services/api_services/bnplPlanService';
+import { BnplPlanInstallmentCalculatorReadModel } from '../../../../models/api_models/read_models/bnplInstallmentCalculator_Read_Model';
 
 @Component({
   selector: 'app-bnpl-plan-installment-calculator-dialog-box-component',
