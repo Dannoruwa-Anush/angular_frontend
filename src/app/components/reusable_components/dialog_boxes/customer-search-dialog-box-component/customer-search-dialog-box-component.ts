@@ -20,7 +20,7 @@ export class CustomerSearchDialogBoxComponent {
 
 
 
-  
+
   // ======================================================
   // DATA
   // ======================================================
@@ -77,7 +77,7 @@ export class CustomerSearchDialogBoxComponent {
     this.loading.set(true);
     this.searchResult.set(null);
 
-    this.customerService.getByUser(email).subscribe({
+    this.customerService.getByUser(undefined, email).subscribe({
       next: customer => {
         this.loading.set(false);
         this.searchResult.set(customer);
