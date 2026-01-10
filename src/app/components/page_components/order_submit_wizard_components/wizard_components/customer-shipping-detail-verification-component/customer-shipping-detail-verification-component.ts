@@ -14,6 +14,9 @@ import { CustomerReadModel } from '../../../../../models/api_models/read_models/
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 import { CustomerSearchDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/customer-search-dialog-box-component/customer-search-dialog-box-component';
 import { CustomerOrderService } from '../../../../../services/api_services/customerOrderService';
+import { SystemOperationConfirmService } from '../../../../../services/ui_service/systemOperationConfirmService';
+import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
+import { filter, finalize, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-customer-shipping-detail-verification-component',
@@ -31,27 +34,26 @@ export class CustomerShippingDetailVerificationComponent {
 
 
 
-  // ============================
+    // ============================
   // STATE
   // ============================
-  customerProfile = signal<CustomerReadModel | null>(null);
-  loading = signal(false);
+  readonly customerProfile = signal<CustomerReadModel | null>(null);
+  readonly loading = signal(false);
 
   // ============================
   // AUTH DERIVED
   // ============================
-  isCustomer = computed(
+  readonly isCustomer = computed(
     () => this.auth.role() === UserRoleEnum.Customer
   );
 
-  isManager = computed(
-    () =>
-      this.auth.employeePosition() === EmployeePositionEnum.Manager
+  readonly isManager = computed(
+    () => this.auth.employeePosition() === EmployeePositionEnum.Manager
   );
 
-  customerId = computed(() => this.auth.customerID());
+  readonly customerId = computed(() => this.auth.customerID());
 
-  canSubmit = computed(
+  readonly canSubmit = computed(
     () => !!this.customerProfile() && !this.loading()
   );
 
@@ -65,6 +67,8 @@ export class CustomerShippingDetailVerificationComponent {
     private cartService: ShoppingCartService,
     private wizardState: OrderSubmitWizardStateService,
     private stepState: OrderSubmitWizardStepStateService,
+    private confirmService: SystemOperationConfirmService,
+    private messageService: SystemMessageService,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog
@@ -76,8 +80,9 @@ export class CustomerShippingDetailVerificationComponent {
   // INIT
   // ============================
   private initCustomer(): void {
-    if (this.isCustomer() && this.customerId()) {
-      this.loadCustomerProfile(this.customerId()!);
+    const customerId = this.customerId();
+    if (this.isCustomer() && customerId) {
+      this.loadCustomerProfile(customerId);
     }
   }
 
@@ -87,32 +92,26 @@ export class CustomerShippingDetailVerificationComponent {
   private loadCustomerProfile(customerId: number): void {
     this.loading.set(true);
 
-    this.customerService.getById(customerId).subscribe({
-      next: profile => {
-        this.customerProfile.set(profile);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
+    this.customerService.getById(customerId)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: profile => this.customerProfile.set(profile),
+        error: () => this.messageService.error('Failed to load customer details')
+      });
   }
 
   // ============================
   // FIND CUSTOMER (MANAGER)
   // ============================
   openFindCustomerDialog(): void {
-    const dialogRef = this.dialog.open(CustomerSearchDialogBoxComponent, {
-      width: '600px',
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      queueMicrotask(() => {
-        if (!result) return;
-        this.customerProfile.set(result);
-      });
-    });
+    this.dialog
+      .open(CustomerSearchDialogBoxComponent, {
+        width: '600px',
+        disableClose: true
+      })
+      .afterClosed()
+      .pipe(filter(Boolean))
+      .subscribe(customer => this.customerProfile.set(customer));
   }
 
   // ============================
@@ -120,21 +119,37 @@ export class CustomerShippingDetailVerificationComponent {
   // ============================
   placeOrder(): void {
     const payload = this.wizardState.orderDraft();
-    if (!payload || !this.customerProfile()) return;
+    const customer = this.customerProfile();
+
+    if (!payload || !customer) return;
 
     // Manager flow
     if (!this.isCustomer()) {
       this.wizardState.update({
-        physicalShopBillToCustomerID: this.customerProfile()!.customerID
+        physicalShopBillToCustomerID: customer.customerID
       });
     }
 
-    this.loading.set(true);
+    this.confirmService.confirm({
+      title: 'Place Order',
+      message: 'Do you want to place this order?',
+      confirmText: 'Yes',
+      cancelText: 'No'
+    })
+    .pipe(
+      filter(Boolean),
+      switchMap(() => {
+        this.loading.set(true);
 
-    console.log(payload);
-    /*
-    this.orderService.create(payload).subscribe({
+        console.log(this.wizardState.orderDraft()!);
+
+        return this.orderService.create(this.wizardState.orderDraft()!);
+      }),
+      finalize(() => this.loading.set(false))
+    )
+    .subscribe({
       next: result => {
+        this.messageService.success('Order placed successfully');
         this.wizardState.setResult(result);
         this.stepState.completeStep('shipping_verification');
 
@@ -144,21 +159,28 @@ export class CustomerShippingDetailVerificationComponent {
         );
       },
       error: () => {
-        this.loading.set(false);
+        this.messageService.error('Failed to place order');
         this.cartService.unlockCart();
       }
     });
-    */
   }
 
   // ============================
   // CANCEL ORDER
   // ============================
   cancelOrder(): void {
-    this.cartService.unlockCart();
-    this.stepState.reset();
-    this.wizardState.reset();
-
-    this.router.navigate(['/products']);
+    this.confirmService.confirm({
+      title: 'Cancel Order',
+      message: 'Do you want to cancel this order?',
+      confirmText: 'Yes',
+      cancelText: 'No'
+    })
+    .pipe(filter(Boolean))
+    .subscribe(() => {
+      this.cartService.unlockCart();
+      this.stepState.reset();
+      this.wizardState.reset();
+      this.router.navigate(['/products']);
+    });
   }
 }
