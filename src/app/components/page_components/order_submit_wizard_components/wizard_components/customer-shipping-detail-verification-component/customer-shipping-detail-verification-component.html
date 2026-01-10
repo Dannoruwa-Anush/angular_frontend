@@ -1,44 +1,82 @@
-<mat-card class="verification-card mat-elevation-z2">
+<div class="verification-container">
 
-  <mat-card-title>
-    Customer Verification
-  </mat-card-title>
+  <!-- ================= LEFT : CUSTOMER DETAILS ================= -->
+  <mat-card class="detail-card mat-elevation-z2">
+    <div class="card-header">
+      <mat-card-title>Customer Details</mat-card-title>
 
-  <!-- MANAGER ACTION -->
-  <button
-    *ngIf="isManager() && !isCustomer()"
-    mat-stroked-button
-    color="primary"
-    (click)="openFindCustomerDialog()"
-  >
-    Select / Find Customer
-  </button>
-
-  <!-- CUSTOMER DETAILS -->
-  <ng-container *ngIf="customerProfile(); else emptyState">
-
-    <div class="customer-info">
-      <p><strong>Name:</strong> {{ customerProfile()?.customerName }}</p>
-      <p><strong>Email:</strong> {{ customerProfile()?.userResponseDto?.email }}</p>
-      <p><strong>Phone:</strong> {{ customerProfile()?.phoneNo }}</p>
-      <p><strong>Address:</strong> {{ customerProfile()?.address }}</p>
+      <!-- MANAGER ACTION -->
+      <button
+        *ngIf="isManager() && !isCustomer()"
+        mat-stroked-button
+        color="primary"
+        (click)="openFindCustomerDialog()"
+      >
+        <mat-icon>person_search</mat-icon>
+        Find Customer
+      </button>
     </div>
 
-    <button
-      mat-button
-      color="accent"
-      (click)="editCustomer()"
-    >
-      Edit Customer
-    </button>
+    <ng-container *ngIf="customerProfile(); else noCustomer">
+      <div class="detail-row">
+        <span class="label">Name</span>
+        <span class="value">{{ customerProfile()?.customerName }}</span>
+      </div>
 
-  </ng-container>
+      <div class="detail-row">
+        <span class="label">Email</span>
+        <span class="value">
+          {{ customerProfile()?.userResponseDto?.email }}
+        </span>
+      </div>
 
-  <!-- EMPTY -->
-  <ng-template #emptyState>
-    <p class="muted">
-      No customer selected.
-    </p>
-  </ng-template>
+      <div class="detail-row">
+        <span class="label">Phone</span>
+        <span class="value">{{ customerProfile()?.phoneNo }}</span>
+      </div>
 
-</mat-card>
+      <div class="actions">
+        <button mat-button color="accent" (click)="editCustomer()">
+          <mat-icon>edit</mat-icon>
+          Edit Customer
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #noCustomer>
+      <p class="muted">No customer selected.</p>
+    </ng-template>
+  </mat-card>
+
+  <!-- ================= RIGHT : SHIPPING DETAILS ================= -->
+  <mat-card class="detail-card mat-elevation-z2">
+    <mat-card-title>Shipping Details</mat-card-title>
+
+    <ng-container *ngIf="customerProfile(); else noShipping">
+      <div class="detail-row">
+        <span class="label">Address</span>
+        <span class="value">{{ customerProfile()?.address }}</span>
+      </div>
+
+      <!-- Future expansion -->
+      <!--
+      <div class="detail-row">
+        <span class="label">City</span>
+        <span class="value">{{ customerProfile()?.city }}</span>
+      </div>
+      -->
+
+      <div class="actions">
+        <button mat-button color="primary">
+          <mat-icon>local_shipping</mat-icon>
+          Edit Shipping
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #noShipping>
+      <p class="muted">Shipping details not available.</p>
+    </ng-template>
+  </mat-card>
+
+</div>
