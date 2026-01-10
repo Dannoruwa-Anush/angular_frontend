@@ -1,11 +1,13 @@
 <mat-card class="order-container">
 
+    <!-- HEADER -->
     <div class="header">
         <h2>Place Your Order</h2>
         <p>Follow the steps to complete your purchase</p>
     </div>
 
-    <mat-stepper [selectedIndex]="activeStepIndex()" linear class="wizard-stepper">
+    <!-- STEPPER -->
+    <mat-stepper linear class="wizard-stepper" [selectedIndex]="activeStepIndex()">
 
         <ng-template matStepperIcon="done">
             <mat-icon class="step-done-icon">check_circle</mat-icon>
@@ -15,28 +17,52 @@
             <mat-icon color="primary">edit</mat-icon>
         </ng-template>
 
-        <mat-step *ngFor="let step of steps; let i = index" [label]="step.label"
-            [completed]="stepState.isCompleted(step.route)">
+        <mat-step *ngFor="let step of steps" [label]="step.label" [completed]="stepState.isCompleted(step.route)">
         </mat-step>
 
     </mat-stepper>
 
     <mat-divider></mat-divider>
 
+    <!-- CONTENT -->
     <div class="content">
         <router-outlet></router-outlet>
     </div>
 
+    <!-- ACTIONS -->
     <div class="actions">
-        <button mat-stroked-button color="primary" (click)="back()" [disabled]="activeStepIndex() === 0">
-            <mat-icon>arrow_back</mat-icon>
-            Back
-        </button>
 
-        <button mat-raised-button color="primary" (click)="next()" [disabled]="activeStepIndex() === steps.length - 1">
-            Next
-            <mat-icon>arrow_forward</mat-icon>
-        </button>
+        <!-- LEFT: Back -->
+        <div class="actions-left">
+            <button mat-stroked-button color="primary" (click)="back()" [disabled]="isFirstStep()">
+                <mat-icon>arrow_back</mat-icon>
+                Back
+            </button>
+        </div>
+
+        <!-- RIGHT: Next / Cancel / Confirm -->
+        <div class="actions-right">
+
+            <!-- Middle steps -->
+            <button *ngIf="!isLastStep()" mat-raised-button color="primary" (click)="next()">
+                Next
+                <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+            <!-- Last step -->
+            <div *ngIf="isLastStep()" class="final-actions">
+                <button mat-stroked-button color="warn" (click)="cancelOrder()">
+                    <mat-icon>close</mat-icon>
+                    Cancel Order
+                </button>
+
+                <button mat-raised-button color="primary" (click)="confirmOrder()">
+                    <mat-icon>check_circle</mat-icon>
+                    Confirm Order
+                </button>
+            </div>
+        </div>
+
     </div>
 
 </mat-card>

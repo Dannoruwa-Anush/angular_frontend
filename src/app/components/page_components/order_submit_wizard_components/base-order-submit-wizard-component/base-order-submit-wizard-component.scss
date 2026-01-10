@@ -9,59 +9,36 @@
     text-align: center;
     margin-bottom: 1rem;
 
-    h2 {
-        margin: 0;
-        font-weight: 600;
-    }
-
-    p {
-        color: #666;
-        margin-top: 4px;
-    }
+    h2 { margin: 0; font-weight: 600; }
+    p { color: #666; margin-top: 4px; }
 }
 
-.content {
-    padding: 2rem 0;
-    min-height: 250px;
-}
+.content { padding: 2rem 0; min-height: 250px; }
 
 .actions {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-top: 1.5rem;
+    margin-top: 16px;
 }
 
-/* ===== Completed Step Icon ===== */
+/* Right-side buttons */
+.actions-right { display: flex; align-items: center; gap: 16px; }
+
+/* Last step tight grouping */
+.final-actions { display: flex; align-items: center; gap: 6px; }
+
 .step-done-icon {
     color: #2e7d32;
     font-size: 26px;
     animation: step-pop 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Smooth pop animation */
 @keyframes step-pop {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-
-    80% {
-        transform: scale(1.2);
-        opacity: 1;
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
 }
 
-/* Disable header clicks by default */
-::ng-deep .wizard-stepper .mat-step-header {
-    pointer-events: none;
-}
-
-/* Enable only completed steps */
-::ng-deep .wizard-stepper .mat-step-header.mat-completed {
-    pointer-events: auto;
-    cursor: pointer;
-}
+::ng-deep .wizard-stepper .mat-step-header { pointer-events: none; }
+::ng-deep .wizard-stepper .mat-step-header.mat-completed { pointer-events: auto; cursor: pointer; }

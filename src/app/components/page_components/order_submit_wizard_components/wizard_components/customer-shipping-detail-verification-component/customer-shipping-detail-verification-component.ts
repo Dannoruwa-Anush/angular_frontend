@@ -34,7 +34,7 @@ export class CustomerShippingDetailVerificationComponent {
 
 
 
-    // ============================
+  // ============================
   // STATE
   // ============================
   readonly customerProfile = signal<CustomerReadModel | null>(null);
@@ -43,19 +43,10 @@ export class CustomerShippingDetailVerificationComponent {
   // ============================
   // AUTH DERIVED
   // ============================
-  readonly isCustomer = computed(
-    () => this.auth.role() === UserRoleEnum.Customer
-  );
-
-  readonly isManager = computed(
-    () => this.auth.employeePosition() === EmployeePositionEnum.Manager
-  );
-
+  readonly isCustomer = computed(() => this.auth.role() === UserRoleEnum.Customer);
+  readonly isManager = computed(() => this.auth.employeePosition() === EmployeePositionEnum.Manager);
   readonly customerId = computed(() => this.auth.customerID());
-
-  readonly canSubmit = computed(
-    () => !!this.customerProfile() && !this.loading()
-  );
+  readonly canSubmit = computed(() => !!this.customerProfile() && !this.loading());
 
   // ============================
   // CONSTRUCTOR
@@ -117,17 +108,13 @@ export class CustomerShippingDetailVerificationComponent {
   // ============================
   // CONFIRM & PLACE ORDER
   // ============================
-  placeOrder(): void {
+  confirmOrder(): void {
     const payload = this.wizardState.orderDraft();
     const customer = this.customerProfile();
-
     if (!payload || !customer) return;
 
-    // Manager flow
     if (!this.isCustomer()) {
-      this.wizardState.update({
-        physicalShopBillToCustomerID: customer.customerID
-      });
+      this.wizardState.update({ physicalShopBillToCustomerID: customer.customerID });
     }
 
     this.confirmService.confirm({
@@ -136,33 +123,23 @@ export class CustomerShippingDetailVerificationComponent {
       confirmText: 'Yes',
       cancelText: 'No'
     })
-    .pipe(
-      filter(Boolean),
-      switchMap(() => {
-        this.loading.set(true);
-
-        console.log(this.wizardState.orderDraft()!);
-
-        return this.orderService.create(this.wizardState.orderDraft()!);
-      }),
-      finalize(() => this.loading.set(false))
-    )
-    .subscribe({
-      next: result => {
-        this.messageService.success('Order placed successfully');
-        this.wizardState.setResult(result);
-        this.stepState.completeStep('shipping_verification');
-
-        this.router.navigate(
-          ['../confirmation'],
-          { relativeTo: this.route }
-        );
-      },
-      error: () => {
-        this.messageService.error('Failed to place order');
-        this.cartService.unlockCart();
-      }
-    });
+      .pipe(
+        filter(Boolean),
+        switchMap(() => { this.loading.set(true); return this.orderService.create(payload); }),
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: result => {
+          this.messageService.success('Order placed successfully');
+          this.wizardState.setResult(result);
+          this.stepState.completeStep('shipping_verification');
+          this.router.navigate(['../confirmation'], { relativeTo: this.route });
+        },
+        error: () => {
+          this.messageService.error('Failed to place order');
+          this.cartService.unlockCart();
+        }
+      });
   }
 
   // ============================
@@ -175,12 +152,12 @@ export class CustomerShippingDetailVerificationComponent {
       confirmText: 'Yes',
       cancelText: 'No'
     })
-    .pipe(filter(Boolean))
-    .subscribe(() => {
-      this.cartService.unlockCart();
-      this.stepState.reset();
-      this.wizardState.reset();
-      this.router.navigate(['/products']);
-    });
+      .pipe(filter(Boolean))
+      .subscribe(() => {
+        this.cartService.unlockCart();
+        this.stepState.reset();
+        this.wizardState.reset();
+        this.router.navigate(['/products']);
+      });
   }
 }
