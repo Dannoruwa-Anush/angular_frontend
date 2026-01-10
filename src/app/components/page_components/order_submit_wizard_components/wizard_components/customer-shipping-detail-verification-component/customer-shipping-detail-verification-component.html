@@ -1,1 +1,44 @@
-<p>customer-shipping-detail-verification-component works!</p>
+<mat-card class="verification-card mat-elevation-z2">
+
+  <mat-card-title>
+    Customer Verification
+  </mat-card-title>
+
+  <!-- MANAGER ACTION -->
+  <button
+    *ngIf="isManager() && !isCustomer()"
+    mat-stroked-button
+    color="primary"
+    (click)="openFindCustomerDialog()"
+  >
+    Select / Find Customer
+  </button>
+
+  <!-- CUSTOMER DETAILS -->
+  <ng-container *ngIf="customerProfile(); else emptyState">
+
+    <div class="customer-info">
+      <p><strong>Name:</strong> {{ customerProfile()?.customerName }}</p>
+      <p><strong>Email:</strong> {{ customerProfile()?.userResponseDto?.email }}</p>
+      <p><strong>Phone:</strong> {{ customerProfile()?.phoneNo }}</p>
+      <p><strong>Address:</strong> {{ customerProfile()?.address }}</p>
+    </div>
+
+    <button
+      mat-button
+      color="accent"
+      (click)="editCustomer()"
+    >
+      Edit Customer
+    </button>
+
+  </ng-container>
+
+  <!-- EMPTY -->
+  <ng-template #emptyState>
+    <p class="muted">
+      No customer selected.
+    </p>
+  </ng-template>
+
+</mat-card>
