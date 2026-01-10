@@ -15,23 +15,4 @@ export const ORDER_SUBMIT_WIZARD_STEPS: OrderSubmitWizardStepDataModel[] = [
         route: 'shipping_verification',
         component: CustomerShippingDetailVerificationComponent
     },
-    //Confirm or Cancel
-    //Order Placement Result + Show inline invoice preview dialog
-    //PAyment Handle with invoice
-    {
-        label: 'Payment',
-        route: 'payment',
-        component: PaymentComponent
-    },
-    {
-        label: 'Confirmation',
-        route: 'confirmation',
-        component: OrderPlacementConfirmationComponent
-    }
-
-    /*
-    { path: 'place_order', component: PlaceOrderComponent },
-    { path: 'bnpl_installment_calculator', component: BnplInstallmentCalculatorComponent },
-    { path: 'bnpl_installment_payment_simulator', component: BnplInstallmentPaymentSimulatorComponent },
-    */
 ];
