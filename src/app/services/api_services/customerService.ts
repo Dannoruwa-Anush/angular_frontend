@@ -53,12 +53,25 @@ export class CustomerService extends CrudService<CustomerReadModel, CustomerCrea
     }
 
     // can add custom api methods here
-    getByUserId(id: number | string): Observable<CustomerReadModel> {
+    getByUser(userId?: number, email?: string): Observable<CustomerReadModel> {
         this._loading.set(true);
         this.messageService.clear();
 
+        let params: any = {};
+
+        if (userId !== undefined) {
+            params.userId = userId;
+        } else if (email) {
+            params.email = email;
+        } else {
+            throw new Error('Either userId or email must be provided');
+        }
+
         return this.http
-            .get<ApiResponseModel<CustomerReadModel>>(`${this.baseUrl}/${this.endpoint}/user/${id}`)
+            .get<ApiResponseModel<CustomerReadModel>>(
+                `${this.baseUrl}/${this.endpoint}/user`,
+                { params }
+            )
             .pipe(
                 map(res => {
                     this._loading.set(false);

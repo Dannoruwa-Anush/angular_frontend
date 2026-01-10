@@ -140,7 +140,7 @@ export class ProfileNavComponent {
     if (!userId) return;
 
     if (this.role === UserRoleEnum.Customer) {
-      this.customerService.getByUserId(userId).subscribe({
+      this.customerService.getByUser(userId).subscribe({
         next: customer => this.loadCustomer(customer),
         error: () => this.setCreateMode()
       });
