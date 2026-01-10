@@ -80,7 +80,8 @@ export class CheckoutOrderComponent {
       if (result) {
         this.bnplPlan = result;
         this.paymentType = 'LATER';
-      } else if (!this.bnplPlan) {
+      } else {
+        // user canceled -> revert selection
         this.paymentType = 'NOW';
       }
     });

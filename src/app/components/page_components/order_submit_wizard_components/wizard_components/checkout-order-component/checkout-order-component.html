@@ -24,8 +24,7 @@
     <mat-card class="payment-card mat-elevation-z2">
         <mat-card-title>Payment Method</mat-card-title>
 
-        <mat-radio-group [(ngModel)]="paymentType">
-
+        <mat-radio-group [ngModel]="paymentType" (change)="onPaymentTypeChange($event.value)">
             <!-- PAY NOW -->
             <mat-card class="payment-option" [class.active]="paymentType === 'NOW'">
                 <mat-radio-button value="NOW">
@@ -40,8 +39,7 @@
             </mat-card>
 
             <!-- PAY LATER -->
-            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'" [class.disabled]="isCustomer()"
-                (click)="!isCustomer() && onPaymentTypeChange('LATER')">
+            <mat-card class="payment-option" [class.active]="paymentType === 'LATER'" [class.disabled]="isCustomer()">
                 <mat-radio-button value="LATER" [disabled]="isCustomer()">
                     <div class="option-content">
                         <mat-icon color="accent">schedule</mat-icon>
@@ -52,13 +50,6 @@
                     </div>
                 </mat-radio-button>
             </mat-card>
-
-            <div *ngIf="isCustomer()" class="bnpl-info">
-                <mat-icon color="warn">info</mat-icon>
-                <span>
-                    Pay Later is available with staff assistance.
-                </span>
-            </div>
         </mat-radio-group>
 
         <div *ngIf="bnplPlan" class="bnpl-summary">
