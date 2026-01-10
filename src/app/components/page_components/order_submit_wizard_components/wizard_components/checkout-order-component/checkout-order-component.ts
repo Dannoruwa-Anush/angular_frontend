@@ -149,6 +149,6 @@ export class CheckoutOrderComponent {
     }
 
     this.wizardState.init(order);
-    this.stepState.completeStep('checkout');
+    this.stepState.completeStep('checkout_order');
   }
 }
