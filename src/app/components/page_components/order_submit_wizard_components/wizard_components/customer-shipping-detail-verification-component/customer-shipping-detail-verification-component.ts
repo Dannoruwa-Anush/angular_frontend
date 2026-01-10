@@ -1,23 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, Signal, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { MatDialog } from '@angular/material/dialog';
-import { OrderPaymentModeEnum } from '../../../../../config/enums/orderPaymentModeEnum';
-import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
-import { CustomerOrderCreateModel } from '../../../../../models/api_models/create_update_models/create_models/customerOrder_create_Model';
-import { ShoppingCartItemModel } from '../../../../../models/ui_models/shoppingCartItemModel';
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { OrderSubmitWizardStateService } from '../../../../../services/ui_service/orderSubmitWizardStateService';
 import { OrderSubmitWizardStepStateService } from '../../../../../services/ui_service/orderSubmitWizardStepStateService';
 import { ShoppingCartService } from '../../../../../services/ui_service/shoppingCartService';
-import { BnplPlanInstallmentCalculatorDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/bnpl-plan-installment-calculator-dialog-box-component/bnpl-plan-installment-calculator-dialog-box-component';
 import { CustomerService } from '../../../../../services/api_services/customerService';
 import { CustomerReadModel } from '../../../../../models/api_models/read_models/customer_read_Model';
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 import { CustomerSearchDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/customer-search-dialog-box-component/customer-search-dialog-box-component';
+import { CustomerOrderService } from '../../../../../services/api_services/customerOrderService';
 
 @Component({
   selector: 'app-customer-shipping-detail-verification-component',
@@ -55,12 +51,22 @@ export class CustomerShippingDetailVerificationComponent {
 
   customerId = computed(() => this.auth.customerID());
 
+  canSubmit = computed(
+    () => !!this.customerProfile() && !this.loading()
+  );
+
   // ============================
   // CONSTRUCTOR
   // ============================
   constructor(
     private auth: AuthSessionService,
     private customerService: CustomerService,
+    private orderService: CustomerOrderService,
+    private cartService: ShoppingCartService,
+    private wizardState: OrderSubmitWizardStateService,
+    private stepState: OrderSubmitWizardStepStateService,
+    private router: Router,
+    private route: ActivatedRoute,
     private dialog: MatDialog
   ) {
     this.initCustomer();
@@ -107,5 +113,52 @@ export class CustomerShippingDetailVerificationComponent {
         this.customerProfile.set(result);
       });
     });
+  }
+
+  // ============================
+  // CONFIRM & PLACE ORDER
+  // ============================
+  placeOrder(): void {
+    const payload = this.wizardState.orderDraft();
+    if (!payload || !this.customerProfile()) return;
+
+    // Manager flow
+    if (!this.isCustomer()) {
+      this.wizardState.update({
+        physicalShopBillToCustomerID: this.customerProfile()!.customerID
+      });
+    }
+
+    this.loading.set(true);
+
+    console.log(payload);
+    /*
+    this.orderService.create(payload).subscribe({
+      next: result => {
+        this.wizardState.setResult(result);
+        this.stepState.completeStep('shipping_verification');
+
+        this.router.navigate(
+          ['../confirmation'],
+          { relativeTo: this.route }
+        );
+      },
+      error: () => {
+        this.loading.set(false);
+        this.cartService.unlockCart();
+      }
+    });
+    */
+  }
+
+  // ============================
+  // CANCEL ORDER
+  // ============================
+  cancelOrder(): void {
+    this.cartService.unlockCart();
+    this.stepState.reset();
+    this.wizardState.reset();
+
+    this.router.navigate(['/products']);
   }
 }

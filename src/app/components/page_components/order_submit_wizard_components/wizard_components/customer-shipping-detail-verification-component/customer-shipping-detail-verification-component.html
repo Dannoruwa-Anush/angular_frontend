@@ -6,12 +6,8 @@
       <mat-card-title>Customer Details</mat-card-title>
 
       <!-- MANAGER ACTION -->
-      <button
-        *ngIf="isManager() && !isCustomer()"
-        mat-stroked-button
-        color="primary"
-        (click)="openFindCustomerDialog()"
-      >
+      <button *ngIf="isManager() && !isCustomer()" mat-stroked-button color="primary"
+        (click)="openFindCustomerDialog()">
         <mat-icon>person_search</mat-icon>
         Find Customer
       </button>
@@ -56,5 +52,18 @@
       <p class="muted">Shipping details not available.</p>
     </ng-template>
   </mat-card>
+
+  <!-- ================= ACTION BAR ================= -->
+  <div class="actions">
+    <button mat-stroked-button color="warn" (click)="cancelOrder()" [disabled]="loading()">
+      <mat-icon>close</mat-icon>
+      Cancel
+    </button>
+
+    <button mat-raised-button color="primary" (click)="placeOrder()" [disabled]="!canSubmit()">
+      <mat-icon>check_circle</mat-icon>
+      Confirm & Place Order
+    </button>
+  </div>
 
 </div>
