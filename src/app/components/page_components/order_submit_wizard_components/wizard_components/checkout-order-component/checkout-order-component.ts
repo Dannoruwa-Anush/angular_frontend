@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { ShoppingCartItemModel } from '../../../../../models/ui_models/shoppingCartItemModel';
 import { ShoppingCartService } from '../../../../../services/ui_service/shoppingCartService';
@@ -14,6 +14,8 @@ import { CustomerOrderCreateModel } from '../../../../../models/api_models/creat
 import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
 import { OrderPaymentModeEnum } from '../../../../../config/enums/orderPaymentModeEnum';
 import { BnplPlanInstallmentCalculatorDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/bnpl-plan-installment-calculator-dialog-box-component/bnpl-plan-installment-calculator-dialog-box-component';
+import { OrderSubmitWizardActionService } from '../../../../../services/ui_service/orderSubmitWizardActionService';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -65,6 +67,9 @@ export class CheckoutOrderComponent {
   constructor(
     private stepState: OrderSubmitWizardStepStateService,
     private wizardState: OrderSubmitWizardStateService,
+    private wizardAction: OrderSubmitWizardActionService,
+    private router: Router,
+    private route: ActivatedRoute,
     private auth: AuthSessionService,
     private cartService: ShoppingCartService,
     private dialog: MatDialog
@@ -72,8 +77,16 @@ export class CheckoutOrderComponent {
 
     this.cartItems = this.cartService.cartItems;
     this.total = this.cartService.cartTotal;
+
+    this.listenToWizardActions();
   }
 
+  // Parent -> Child communication
+  private listenToWizardActions(): void {
+    this.wizardAction.confirm$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.completeCheckout());
+  }
   // =============================
   // PAYMENT SELECTION
   // =============================
@@ -122,8 +135,11 @@ export class CheckoutOrderComponent {
   // COMPLETE CHECKOUT
   // =============================
   completeCheckout(): void {
-    if (!this.cartItems().length) return;
+    if (!this.cartItems().length) {
+      return; // cannot proceed
+    }
 
+    // Commit order data
     this.wizardState.update({
       orderSource: this.isCustomer()
         ? OrderSourceEnum.OnlineShop
@@ -137,6 +153,7 @@ export class CheckoutOrderComponent {
       }))
     });
 
+    // Optional BNPL
     if (this.paymentMode() === OrderPaymentModeEnum.Pay_Bnpl && this.bnplPlan()) {
       this.wizardState.update({
         bnpl_PlanTypeID: this.bnplPlan().bnpl_PlanTypeID,
@@ -145,6 +162,12 @@ export class CheckoutOrderComponent {
       });
     }
 
+    // Mark step complete
     this.stepState.completeStep('checkout_order');
+
+    // Navigate AFTER commit
+    this.router.navigate(['../shipping_verification'], {
+      relativeTo: this.route
+    });
   }
 }

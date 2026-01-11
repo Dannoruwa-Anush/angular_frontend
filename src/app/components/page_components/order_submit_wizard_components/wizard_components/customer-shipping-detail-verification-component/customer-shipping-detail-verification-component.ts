@@ -122,16 +122,27 @@ export class CustomerShippingDetailVerificationComponent {
     if (this.loading() || !this.canSubmit()) return;
 
     const payload = this.wizardState.orderDraft();
-    const customer = this.customerProfile();
 
-    if (!payload || !customer) return;
-
-    if (!this.isCustomer()) {
-      this.wizardState.update({
-        physicalShopBillToCustomerID: customer.customerID
-      });
+    if (!payload?.customerOrderElectronicItems?.length) {
+      this.messageService.error('Order has no items');
+      return;
     }
 
+    const customer = this.customerProfile();
+    if (!customer) return;
+
+    let finalPayload = payload;
+
+    if (!this.isCustomer()) {
+      finalPayload = {
+        ...payload,
+        physicalShopBillToCustomerID: customer.customerID
+      };
+    }
+
+    console.log(finalPayload);
+
+    /*
     this.confirmService.confirm({
       title: 'Place Order',
       message: 'Do you want to place this order?',
@@ -143,7 +154,7 @@ export class CustomerShippingDetailVerificationComponent {
         switchMap(() => {
           this.loading.set(true);
           this.cartService.lockCart();
-          return this.orderService.create(payload);
+          return this.orderService.create(finalPayload);
         }),
         finalize(() => this.loading.set(false))
       )
@@ -159,6 +170,8 @@ export class CustomerShippingDetailVerificationComponent {
           this.cartService.unlockCart();
         }
       });
+
+    */
   }
 
   // ============================

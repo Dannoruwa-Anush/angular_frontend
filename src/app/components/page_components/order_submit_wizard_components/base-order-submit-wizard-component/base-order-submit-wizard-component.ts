@@ -79,15 +79,7 @@ export class BaseOrderSubmitWizardComponent {
   // NAVIGATION
   // ============================
   next(): void {
-    if (this.isLastStep()) return;
-
-    const index = this.activeStepIndex();
-    this.stepState.completeStep(this.steps[index].route);
-
-    this.router.navigate(
-      [this.steps[index + 1].route],
-      { relativeTo: this.route }
-    );
+    this.wizardAction.confirm();
   }
 
   back(): void {
