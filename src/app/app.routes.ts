@@ -7,7 +7,7 @@ import { ShoppingCartComponent } from './components/page_components/shopping-car
 import { LoginComponent } from './components/page_components/auth_components/login-component/login-component';
 import { RegisterComponent } from './components/page_components/auth_components/register-component/register-component';
 import { DASHBOARD_ROUTES } from './components/page_components/dashboard_components/dashboardRoutes';
-import { ORDDER_SUBMIT_ROUTES } from './components/page_components/order_submit_wizard_components/orderSubmitRoutes';
+import { ORDER_SUBMIT_ROUTES } from './components/page_components/order_submit_wizard_components/orderSubmitRoutes';
 
 export const routes: Routes = [
     {
@@ -27,7 +27,7 @@ export const routes: Routes = [
             ...DASHBOARD_ROUTES,
 
             // Order Submitting routes
-            ...ORDDER_SUBMIT_ROUTES,
+            ...ORDER_SUBMIT_ROUTES,
         ]
     }
 ];

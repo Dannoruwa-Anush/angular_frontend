@@ -4,7 +4,7 @@ import { OrderSubmitGuard } from "../../../utils/auth_utils/orderSubmitGuard";
 import { ORDER_SUBMIT_WIZARD_STEPS } from "../../../config/orderSubmitWizardSteps";
 import { OrderSubmitWizardStepGuard } from "../../../utils/auth_utils/orderSubmitWizardStepGuard";
 
-export const ORDDER_SUBMIT_ROUTES: Routes = [
+export const ORDER_SUBMIT_ROUTES: Routes = [
     {
         path: 'submit_order',
         component: BaseOrderSubmitWizardComponent,
