@@ -2,6 +2,7 @@ import { OrderPaymentStatusEnum } from "../../../config/enums/orderPaymentStatus
 import { OrderStatusEnum } from "../../../config/enums/orderStatusEnum";
 import { CustomerReadModel } from "./customer_read_Model";
 import { CustomerOrderElectronicItemsReadModel } from "./customerOrderElectronicItems_read_Model";
+import { InvoiceReadModel } from "./invoiceReadModel";
 
 export interface CustomerOrderReadModel {
     orderID: number;
@@ -17,4 +18,5 @@ export interface CustomerOrderReadModel {
     //FK: Fields
     customerResponseDto?: CustomerReadModel;
     customerOrderElectronicItemResponseDto: CustomerOrderElectronicItemsReadModel[];
+    latestUnpaidInvoice?: InvoiceReadModel;
 }

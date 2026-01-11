@@ -1,0 +1,53 @@
+<div class="confirmation-container">
+
+    <mat-card class="confirmation-card mat-elevation-z4">
+
+        <!-- SUCCESS ICON -->
+        <div class="success-icon">
+            <mat-icon>receipt_long</mat-icon>
+        </div>
+
+        <!-- TITLE -->
+        <h1>Invoice Draft Created</h1>
+
+        <!-- MESSAGE -->
+        <div class="thank-you-message">
+            <p class="subtitle">
+                The draft of your invoice is ready.
+            </p>
+
+            <p>
+                Please review the invoice and complete the payment to finalize your
+                order.
+            </p>
+        </div>
+
+        <!-- OPTIONAL INFO -->
+        <div class="order-info" *ngIf="data.orderId || data.totalAmount">
+            <div class="info-row" *ngIf="data.orderId">
+                <span>Order ID</span>
+                <strong>#{{ data.orderId }}</strong>
+            </div>
+
+            <div class="info-row" *ngIf="data.totalAmount">
+                <span>Total Amount</span>
+                <strong>
+                    Rs. {{ data.totalAmount | number:'1.2-2' }}
+                </strong>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+            <button mat-raised-button color="primary" (click)="reviewInvoice()">
+                Review Invoice
+            </button>
+
+            <button mat-button color="accent" (click)="cancel()">
+                Cancel
+            </button>
+        </div>
+
+    </mat-card>
+
+</div>

@@ -19,6 +19,7 @@ import { SystemMessageService } from '../../../../../services/ui_service/systemM
 import { filter, finalize, switchMap } from 'rxjs';
 import { OrderSubmitWizardActionService } from '../../../../../services/ui_service/orderSubmitWizardActionService';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { InvoiceDraftCreatedDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/invoice-draft-created-dialog-box-component/invoice-draft-created-dialog-box-component';
 
 @Component({
   selector: 'app-customer-shipping-detail-verification-component',
@@ -36,30 +37,46 @@ export class CustomerShippingDetailVerificationComponent {
 
 
 
-  // ============================
+  
+  // ======================================================
   // STATE
-  // ============================
+  // ======================================================
   readonly customerProfile = signal<CustomerReadModel | null>(null);
   readonly loading = signal(false);
 
-  // ============================
+  // ======================================================
   // AUTH DERIVED
-  // ============================
-  readonly isCustomer = computed(() => this.auth.role() === UserRoleEnum.Customer);
-  readonly isManager = computed(() => this.auth.employeePosition() === EmployeePositionEnum.Manager);
-  readonly customerId = computed(() => this.auth.customerID());
-  readonly canSubmit = computed(() => !!this.customerProfile() && !this.loading());
+  // ======================================================
+  readonly isCustomer = computed(
+    () => this.auth.role() === UserRoleEnum.Customer
+  );
 
+  readonly isManager = computed(
+    () => this.auth.employeePosition() === EmployeePositionEnum.Manager
+  );
+
+  readonly customerId = computed(() => this.auth.customerID());
+
+  readonly canSubmit = computed(
+    () => !!this.customerProfile() && !this.loading()
+  );
+
+  // ======================================================
+  // CONSTRUCTOR
+  // ======================================================
   constructor(
     private auth: AuthSessionService,
     private customerService: CustomerService,
     private orderService: CustomerOrderService,
     private cartService: ShoppingCartService,
+
     private wizardState: OrderSubmitWizardStateService,
     private stepState: OrderSubmitWizardStepStateService,
     private wizardAction: OrderSubmitWizardActionService,
+
     private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService,
+
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog
@@ -68,16 +85,15 @@ export class CustomerShippingDetailVerificationComponent {
     this.listenToWizardActions();
   }
 
-  // ============================
+  // ======================================================
   // INIT
-  // ============================
+  // ======================================================
   private initCustomer(): void {
     if (this.isCustomer() && this.customerId()) {
       this.loadCustomerProfile(this.customerId()!);
     }
   }
 
-  // Parent -> Child communication
   private listenToWizardActions(): void {
     this.wizardAction.confirm$
       .pipe(takeUntilDestroyed())
@@ -88,9 +104,9 @@ export class CustomerShippingDetailVerificationComponent {
       .subscribe(() => this.cancelOrder());
   }
 
-  // ============================
+  // ======================================================
   // LOAD CUSTOMER
-  // ============================
+  // ======================================================
   private loadCustomerProfile(customerId: number): void {
     this.loading.set(true);
 
@@ -102,9 +118,9 @@ export class CustomerShippingDetailVerificationComponent {
       });
   }
 
-  // ============================
+  // ======================================================
   // FIND CUSTOMER (MANAGER)
-  // ============================
+  // ======================================================
   openFindCustomerDialog(): void {
     this.dialog.open(CustomerSearchDialogBoxComponent, {
       width: '600px',
@@ -115,9 +131,9 @@ export class CustomerShippingDetailVerificationComponent {
       .subscribe(customer => this.customerProfile.set(customer));
   }
 
-  // ============================
+  // ======================================================
   // CONFIRM & PLACE ORDER
-  // ============================
+  // ======================================================
   confirmOrder(): void {
     if (this.loading() || !this.canSubmit()) return;
 
@@ -129,10 +145,11 @@ export class CustomerShippingDetailVerificationComponent {
     }
 
     const customer = this.customerProfile();
-    if (!customer) return;
+    if (!payload || !customer) return;
 
     let finalPayload = payload;
 
+    // Manager / cashier placing order for customer
     if (!this.isCustomer()) {
       finalPayload = {
         ...payload,
@@ -140,9 +157,8 @@ export class CustomerShippingDetailVerificationComponent {
       };
     }
 
-    console.log(finalPayload);
-
-    /*
+    //console.log(finalPayload);
+    
     this.confirmService.confirm({
       title: 'Place Order',
       message: 'Do you want to place this order?',
@@ -161,22 +177,52 @@ export class CustomerShippingDetailVerificationComponent {
       .subscribe({
         next: result => {
           this.messageService.success('Order placed successfully');
+
           this.wizardState.setResult(result);
           this.stepState.completeStep('shipping_verification');
-          this.router.navigate(['../order_confirmation'], { relativeTo: this.route });
+
+          const invoiceId = result.latestUnpaidInvoice?.invoiceID;
+
+          if (!invoiceId) {
+            // Fallback safety
+            this.router.navigate(['../order_confirmation'], {
+              relativeTo: this.route
+            });
+            return;
+          }
+
+          const dialogRef = this.dialog.open(
+            InvoiceDraftCreatedDialogBoxComponent,
+            {
+              width: '460px',
+              disableClose: true,
+              data: {
+                invoiceId,
+                orderId: result.orderID,
+                totalAmount: result.totalAmount
+              }
+            }
+          );
+
+          dialogRef.afterClosed().subscribe(res => {
+            if (res?.action === 'review') {
+              this.router.navigate(
+                ['/dashboard/invoice'],
+                { queryParams: { invoiceId: res.invoiceId } }
+              );
+            }
+          });
         },
         error: () => {
           this.messageService.error('Failed to place order');
           this.cartService.unlockCart();
         }
       });
-
-    */
   }
 
-  // ============================
+  // ======================================================
   // CANCEL ORDER
-  // ============================
+  // ======================================================
   cancelOrder(): void {
     if (this.loading()) return;
 
