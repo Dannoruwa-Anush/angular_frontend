@@ -1,149 +1,108 @@
-<div class="payment-simulator-container">
+<div class="dashboard-container">
 
-  <!-- ===================== -->
-  <!-- SEARCH ORDER -->
-  <!-- ===================== -->
+  <!-- SEARCH / INPUT -->
   <mat-card class="section-card">
-    <mat-card-title>Payment Simulator</mat-card-title>
+    <form [formGroup]="form">
 
-    <form [formGroup]="form" class="search-form">
-      <mat-form-field appearance="outline">
-        <mat-label>Order No</mat-label>
-        <input matInput type="number" formControlName="orderId" />
-        <mat-error *ngIf="orderIdCtrl.hasError('required')">
-          Order number is required
-        </mat-error>
-      </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Order No</mat-label>
+          <input matInput type="number" formControlName="orderId" />
+        </mat-form-field>
 
-      <button mat-raised-button color="primary" type="button" (click)="loadOrder()">
-        <mat-icon>search</mat-icon>
-        Load
-      </button>
-    </form>
-  </mat-card>
-
-  <!-- ===================== -->
-  <!-- ORDER DETAILS -->
-  <!-- ===================== -->
-  <mat-card *ngIf="order() as o" class="section-card">
-    <mat-card-title>Order Details</mat-card-title>
-
-    <div class="info-grid">
-      <div>
-        <label>Customer</label>
-        <p>{{ o.customerResponseDto?.customerName }}</p>
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="loadSnapshot()">
+          Load
+        </button>
       </div>
 
-      <div>
-        <label>Phone</label>
-        <p>{{ o.customerResponseDto?.phoneNo }}</p>
-      </div>
-
-      <div>
-        <label>Total Order Amount</label>
-        <p class="highlight">{{ o.totalAmount | number:'1.2-2' }}</p>
-      </div>
-
-      <div>
-        <label>Items</label>
-        <p>{{ o.customerOrderElectronicItemResponseDto.length }}</p>
-      </div>
-    </div>
-  </mat-card>
-
-  <!-- ===================== -->
-  <!-- INSTALLMENT SNAPSHOT -->
-  <!-- ===================== -->
-  <mat-card *ngIf="snapshot() as s" class="section-card">
-    <mat-card-title>Installment Snapshot</mat-card-title>
-
-    <div class="info-grid">
-      <div>
-        <label>Installment No</label>
-        <p>{{ s.currentInstallmentNo }}</p>
-      </div>
-
-      <div>
-        <label>Installment Amount</label>
-        <p>{{ s.notYetDueCurrentInstallmentBaseAmount | number:'1.2-2' }}</p>
-      </div>
-
-      <div>
-        <label>Arrears</label>
-        <p>{{ s.total_InstallmentBaseArrears | number:'1.2-2' }}</p>
-      </div>
-
-      <div>
-        <label>Late Interest</label>
-        <p>{{ s.total_LateInterest | number:'1.2-2' }}</p>
-      </div>
-
-      <div class="total-payable">
-        <label>Total Payable</label>
-        <p>{{ s.total_PayableSettlement | number:'1.2-2' }}</p>
-      </div>
-    </div>
-  </mat-card>
-
-  <!-- ===================== -->
-  <!-- PAYMENT SIMULATION -->
-  <!-- ===================== -->
-  <mat-card *ngIf="snapshot()" class="section-card">
-    <mat-card-title>Simulate Payment</mat-card-title>
-
-    <form [formGroup]="form" class="simulation-form">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Payment Amount</mat-label>
         <input matInput type="number" formControlName="paymentAmount" />
-        <mat-error *ngIf="paymentAmountCtrl.hasError('required')">
-          Payment amount is required
-        </mat-error>
       </mat-form-field>
 
-      <button mat-raised-button color="accent" type="button" (click)="simulate()">
-        Simulate
-      </button>
+      <div class="form-actions">
+        <button
+          mat-raised-button
+          color="accent"
+          type="button"
+          (click)="simulate()">
+          Simulate Payment
+        </button>
+
+        <button
+          mat-stroked-button
+          color="warn"
+          type="button"
+          (click)="reset()">
+          Reset
+        </button>
+      </div>
     </form>
   </mat-card>
 
-  <!-- ===================== -->
-  <!-- SIMULATION RESULT -->
-  <!-- ===================== -->
-  <mat-card *ngIf="simulation() as r" class="section-card result-card">
-    <mat-card-title>Simulation Result</mat-card-title>
+  <!-- SNAPSHOT -->
+  <mat-card *ngIf="snapshot() as s" class="section-card">
 
-    <div class="result-grid">
+    <div class="snapshot-header">
       <div>
-        <label>Paid to Arrears</label>
-        <p>{{ r.paidToArrears | number:'1.2-2' }}</p>
+        <span class="label">Current Installment No</span>
+        <span class="value">{{ s.currentInstallmentNo }}</span>
       </div>
 
-      <div>
-        <label>Paid to Interest</label>
-        <p>{{ r.paidToInterest | number:'1.2-2' }}</p>
-      </div>
-
-      <div>
-        <label>Paid to Base</label>
-        <p>{{ r.paidToBase | number:'1.2-2' }}</p>
-      </div>
-
-      <div>
-        <label>Remaining Balance</label>
-        <p>{{ r.remainingBalance | number:'1.2-2' }}</p>
-      </div>
-
-      <div class="overpayment" *ngIf="r.overPaymentCarried > 0">
-        <label>Overpayment Carried</label>
-        <p>{{ r.overPaymentCarried | number:'1.2-2' }}</p>
+      <div class="total-payable-box">
+        <span class="label">Total Payable</span>
+        <span class="value">
+          {{ s.total_PayableSettlement | number:'1.2-2' }}
+        </span>
       </div>
     </div>
 
-    <!--div class="result-actions">
-      <button mat-raised-button color="primary" (click)="generateInvoice()">
-        Generate Invoice
-      </button>
-    </div-->
-  </mat-card>
+    <table mat-table
+           [dataSource]="snapshotTableData()"
+           class="snapshot-table">
 
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let r">{{ r.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Amount</th>
+        <td mat-cell *matCellDef="let r" class="text-right">
+          {{ r.amount | number:'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="paid">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Paid</th>
+        <td mat-cell *matCellDef="let r" class="text-right">
+          {{ r.paid | number:'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="result">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Simulation Result</th>
+        <td mat-cell *matCellDef="let r" class="text-right result">
+          {{ r.result | number:'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="snapshotColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: snapshotColumns" [ngClass]="getRowClass(row)"></tr>
+    </table>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="invoice-btn"
+      [disabled]="!simulation()"
+      (click)="generateInvoice()">
+      Generate Invoice
+    </button>
+
+  </mat-card>
 </div>
