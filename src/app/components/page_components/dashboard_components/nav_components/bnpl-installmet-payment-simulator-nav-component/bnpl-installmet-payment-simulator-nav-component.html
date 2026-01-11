@@ -1,29 +1,48 @@
 <div class="dashboard-container">
 
-  <!-- SEARCH / INPUT -->
-  <mat-card class="section-card">
-    <form [formGroup]="form">
+  <!-- SIMULATOR FORM -->
+  <mat-card class="section-card simulator-card">
 
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Order No</mat-label>
+    <div class="card-header">
+      <div class="header-left">
+        <mat-icon color="primary">calculate</mat-icon>
+        <div>
+          <div class="card-title">Payment Simulation</div>
+          <div class="card-subtitle">
+            Simulate how a payment will be distributed
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="form" class="simulator-form">
+
+      <!-- ORDER LOAD -->
+      <div class="form-row boxed-row">
+        <mat-form-field appearance="outline" class="order-field">
+          <mat-label>Order Number</mat-label>
           <input matInput type="number" formControlName="orderId" />
         </mat-form-field>
 
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           type="button"
           (click)="loadSnapshot()">
-          Load
+          Load Snapshot
         </button>
       </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Payment Amount</mat-label>
-        <input matInput type="number" formControlName="paymentAmount" />
-      </mat-form-field>
+      <!-- PAYMENT -->
+      <div class="payment-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Payment Amount</mat-label>
+          <input matInput type="number" formControlName="paymentAmount" />
+          <mat-hint>Enter the amount customer intends to pay</mat-hint>
+        </mat-form-field>
+      </div>
 
+      <!-- ACTIONS -->
       <div class="form-actions">
         <button
           mat-raised-button
@@ -41,26 +60,39 @@
           Reset
         </button>
       </div>
+
     </form>
   </mat-card>
 
-  <!-- SNAPSHOT -->
-  <mat-card *ngIf="snapshot() as s" class="section-card">
+  <!-- SNAPSHOT RESULT -->
+  <mat-card *ngIf="snapshot() as s" class="section-card snapshot-card">
+
+    <div class="card-header">
+      <div>
+        <div class="card-title">Installment Snapshot</div>
+        <div class="card-subtitle">
+          Current Installment #{{ s.currentInstallmentNo }}
+        </div>
+      </div>
+    </div>
 
     <div class="snapshot-header">
-      <div>
-        <span class="label">Current Installment No</span>
-        <span class="value">{{ s.currentInstallmentNo }}</span>
-      </div>
-
-      <div class="total-payable-box">
+      <div class="snapshot-metric">
         <span class="label">Total Payable</span>
         <span class="value">
           {{ s.total_PayableSettlement | number:'1.2-2' }}
         </span>
       </div>
+
+      <div class="total-payable-box">
+        <span class="label">Remaining After Simulation</span>
+        <span class="value">
+          {{ simulation()?.totalRemaining ?? s.total_PayableSettlement | number:'1.2-2' }}
+        </span>
+      </div>
     </div>
 
+    <!-- TABLE -->
     <table mat-table
            [dataSource]="snapshotTableData()"
            class="snapshot-table">
@@ -85,14 +117,20 @@
       </ng-container>
 
       <ng-container matColumnDef="result">
-        <th mat-header-cell *matHeaderCellDef class="text-right">Simulation Result</th>
-        <td mat-cell *matCellDef="let r" class="text-right result">
+        <th mat-header-cell *matHeaderCellDef class="text-right">
+          Remaining
+        </th>
+        <td mat-cell *matCellDef="let r"
+            class="text-right result">
           {{ r.result | number:'1.2-2' }}
         </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="snapshotColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: snapshotColumns" [ngClass]="getRowClass(row)"></tr>
+      <tr mat-row
+          *matRowDef="let row; columns: snapshotColumns"
+          [ngClass]="getRowClass(row)">
+      </tr>
     </table>
 
     <button

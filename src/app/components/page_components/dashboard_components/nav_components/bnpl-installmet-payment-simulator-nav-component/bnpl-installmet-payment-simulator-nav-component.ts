@@ -4,13 +4,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { CustomerOrderService } from '../../../../../services/api_services/customerOrderService';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
-import { CustomerOrderReadModel } from '../../../../../models/api_models/read_models/customerOrder_read_Model';
 import { InstallmetSnapshotService } from '../../../../../services/api_services/installmentSnapshotService';
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
-import { finalize } from 'rxjs';
-import { DashboardFormComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-form-component/dashboard-form-component';
-import { InstallmetSnapshotReadModel } from '../../../../../models/api_models/read_models/installment_snapshot_read_model';
-import { BnplSnapShotPayingSimulationReadModel } from '../../../../../models/api_models/read_models/bnplSnapShotPayingSimulation_Read_Model';
 import { BnplSnapShotPayingSimulationCreateModel } from '../../../../../models/api_models/create_update_models/create_models/bnplSnapShotPayingSimulation_create_Model';
 
 @Component({
