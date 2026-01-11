@@ -6,6 +6,9 @@ import { ORDER_SUBMIT_WIZARD_STEPS } from '../../../../config/orderSubmitWizardS
 import { OrderSubmitWizardStepStateService } from '../../../../services/ui_service/orderSubmitWizardStepStateService';
 import { filter } from 'rxjs';
 import { SystemOperationConfirmService } from '../../../../services/ui_service/systemOperationConfirmService';
+import { OrderSubmitWizardStateService } from '../../../../services/ui_service/orderSubmitWizardStateService';
+import { OrderSourceEnum } from '../../../../config/enums/orderSourceEnum';
+import { OrderPaymentModeEnum } from '../../../../config/enums/orderPaymentModeEnum';
 
 @Component({
   selector: 'app-base-order-submit-wizard-component',
@@ -36,10 +39,25 @@ export class BaseOrderSubmitWizardComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private wizardState: OrderSubmitWizardStateService,
     public stepState: OrderSubmitWizardStepStateService,
     private confirmService: SystemOperationConfirmService,
   ) {
+    this.initOrderIfNeeded();
     this.syncStepWithRoute();
+  }
+
+  // ============================
+  // INIT ORDER (Only IF)
+  // ============================  
+  private initOrderIfNeeded() {
+    if (this.wizardState.orderDraft()) return;
+
+    this.wizardState.init({
+      orderSource: OrderSourceEnum.PhysicalShop,
+      orderPaymentMode: OrderPaymentModeEnum.Pay_now_full,
+      customerOrderElectronicItems: []
+    });
   }
 
   // ============================
@@ -83,16 +101,16 @@ export class BaseOrderSubmitWizardComponent {
   // ============================
   // LAST STEP ACTIONS
   // ============================
-  cancelOrder(): void {
+  cancelOrder() {
     this.confirmService.confirm({
       title: 'Cancel Order',
       message: 'Do you want to cancel this order?',
       confirmText: 'Yes',
       cancelText: 'No'
-    })
-      .pipe(filter(Boolean))
+    }).pipe(filter(Boolean))
       .subscribe(() => {
         this.stepState.reset();
+        this.wizardState.reset();
         this.router.navigate(['/products']);
       });
   }

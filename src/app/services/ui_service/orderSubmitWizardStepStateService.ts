@@ -40,8 +40,6 @@ export class OrderSubmitWizardStepStateService {
             s => s.route === stepRoute
         );
 
-        if (index === -1) return;
-
         if (index > this.completedStepIndex()) {
             this.completedStepIndex.set(index);
         }
@@ -54,8 +52,6 @@ export class OrderSubmitWizardStepStateService {
         const index = ORDER_SUBMIT_WIZARD_STEPS.findIndex(
             s => s.route === stepRoute
         );
-
-        if (index === -1) return false;
 
         // First step always accessible
         if (index === 0) return true;
@@ -71,8 +67,6 @@ export class OrderSubmitWizardStepStateService {
         const index = ORDER_SUBMIT_WIZARD_STEPS.findIndex(
             s => s.route === stepRoute
         );
-
-        if (index === -1) return false;
 
         return this.completedStepIndex() >= index;
     }

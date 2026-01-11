@@ -121,12 +121,10 @@ export class CheckoutOrderComponent {
   // =============================
   // COMPLETE CHECKOUT
   // =============================
-  completeCheckout() {
+  completeCheckout(): void {
     if (!this.cartItems().length) return;
 
-    this.cartService.lockCart();
-
-    const order: CustomerOrderCreateModel = {
+    this.wizardState.update({
       orderSource: this.isCustomer()
         ? OrderSourceEnum.OnlineShop
         : OrderSourceEnum.PhysicalShop,
@@ -137,18 +135,16 @@ export class CheckoutOrderComponent {
         e_ItemID: i.productId,
         quantity: i.quantity
       }))
-    };
+    });
 
-    if (
-      this.paymentMode() === OrderPaymentModeEnum.Pay_Bnpl &&
-      this.bnplPlan()
-    ) {
-      order.bnpl_PlanTypeID = this.bnplPlan().bnpl_PlanTypeID;
-      order.bnpl_InstallmentCount = this.bnplPlan().installmentCount;
-      order.bnpl_InitialPayment = this.bnplPlan().initialPayment;
+    if (this.paymentMode() === OrderPaymentModeEnum.Pay_Bnpl && this.bnplPlan()) {
+      this.wizardState.update({
+        bnpl_PlanTypeID: this.bnplPlan().bnpl_PlanTypeID,
+        bnpl_InstallmentCount: this.bnplPlan().installmentCount,
+        bnpl_InitialPayment: this.bnplPlan().initialPayment
+      });
     }
 
-    this.wizardState.init(order);
     this.stepState.completeStep('checkout_order');
   }
 }

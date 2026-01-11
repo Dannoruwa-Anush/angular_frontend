@@ -111,10 +111,13 @@ export class CustomerShippingDetailVerificationComponent {
   confirmOrder(): void {
     const payload = this.wizardState.orderDraft();
     const customer = this.customerProfile();
+
     if (!payload || !customer) return;
 
     if (!this.isCustomer()) {
-      this.wizardState.update({ physicalShopBillToCustomerID: customer.customerID });
+      this.wizardState.update({
+        physicalShopBillToCustomerID: customer.customerID
+      });
     }
 
     this.confirmService.confirm({
@@ -125,7 +128,11 @@ export class CustomerShippingDetailVerificationComponent {
     })
       .pipe(
         filter(Boolean),
-        switchMap(() => { this.loading.set(true); return this.orderService.create(payload); }),
+        switchMap(() => {
+          this.loading.set(true);
+          this.cartService.lockCart();
+          return this.orderService.create(payload);
+        }),
         finalize(() => this.loading.set(false))
       )
       .subscribe({
@@ -133,7 +140,7 @@ export class CustomerShippingDetailVerificationComponent {
           this.messageService.success('Order placed successfully');
           this.wizardState.setResult(result);
           this.stepState.completeStep('shipping_verification');
-          this.router.navigate(['../confirmation'], { relativeTo: this.route });
+          this.router.navigate(['../order_confirmation'], { relativeTo: this.route });
         },
         error: () => {
           this.messageService.error('Failed to place order');
