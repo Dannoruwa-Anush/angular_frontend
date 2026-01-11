@@ -38,61 +38,34 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
 
 
   // ======================================================
-  // COMPONENT SPECIFIC THINGS
+  // STATE
   // ======================================================
   customerId = computed(() => this.auth.customerID());
 
+  redirectInvoiceId = signal<number | null>(null);
+  selectedInvoice = signal<InvoiceReadModel | null>(null);
+
   InvoiceTypeEnum = InvoiceTypeEnum;
+  InvoiceStatusEnum = InvoiceStatusEnum;
 
   invoiceTypes = signal<InvoiceTypeUiModel[]>([]);
   selectedInvoiceTypeId = signal<number | undefined>(undefined);
 
+  invoiceStatuses = signal<InvoiceStatusUiModel[]>([]);
+  selectedInvoiceStatusId = signal<number | undefined>(undefined);
+
+  // ======================================================
+  // COMPUTED
+  // ======================================================
   selectedInvoiceTypeName = computed(() => {
     const id = this.selectedInvoiceTypeId();
     return id ? InvoiceTypeEnum[id] : undefined;
   });
 
-  private loadInvoiceTypes(): void {
-    const invoiceType = Object.values(InvoiceTypeEnum)
-      .filter(v => typeof v === 'number')
-      .map(v => ({
-        invoiceTypeID: v as number,
-        invoiceTypeName: InvoiceTypeEnum[v]
-      }));
-
-    this.invoiceTypes.set(invoiceType);
-  }
-
-  onInvoiceTypeSelect(id?: number) {
-    this.pageNumber.set(1);
-    this.selectedInvoiceTypeId.set(id);
-  }
-
-  InvoiceStatusEnum = InvoiceStatusEnum;
-
-  invoiceStatuses = signal<InvoiceStatusUiModel[]>([]);
-  selectedInvoiceStatusId = signal<number | undefined>(undefined);
-
   selectedInvoiceStatusName = computed(() => {
     const id = this.selectedInvoiceStatusId();
     return id ? InvoiceStatusEnum[id] : undefined;
   });
-
-  private loadInvoiceStatuses(): void {
-    const invoiceStatus = Object.values(InvoiceStatusEnum)
-      .filter(v => typeof v === 'number')
-      .map(v => ({
-        invoiceStatusID: v as number,
-        invoiceStatusName: InvoiceStatusEnum[v]
-      }));
-
-    this.invoiceStatuses.set(invoiceStatus);
-  }
-
-  onInvoiceStatusSelect(id?: number) {
-    this.pageNumber.set(1);
-    this.selectedInvoiceStatusId.set(id);
-  }
 
   override requestParams = computed(() => ({
     pageNumber: this.pageNumber(),
@@ -103,8 +76,6 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     searchKey: this.searchText() || undefined,
   }));
 
-  selectedInvoice = signal<InvoiceReadModel | null>(null);
-
   // ======================================================
   // TABLE CONFIG
   // ======================================================
@@ -114,7 +85,6 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       header: 'Invoice No',
       cell: i => i.invoiceID
     },
-    // customer name
     {
       key: 'invoiceAmount',
       header: 'Amount',
@@ -129,8 +99,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       key: 'invoiceStatus',
       header: 'Status',
       cell: i => InvoiceStatusEnum[i.invoiceStatus]
-    },
-    //created at
+    }
   ];
 
   // ======================================================
@@ -150,18 +119,14 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
 
     this.loading = this.invoiceService.loading;
 
-    // Load static data
     this.loadInvoiceTypes();
     this.loadInvoiceStatuses();
+    this.handleRedirectParams();
 
-    // Set default invoice status for Customer or Cashier
     if (this.isCustomer() || this.auth.hasEmployeePosition([EmployeePositionEnum.Cashier])) {
       this.selectedInvoiceStatusId.set(InvoiceStatusEnum.Unpaid);
     }
 
-    this.handleRedirectReason();
-
-    // Auto reload when paging / search changes
     effect(() => {
       this.requestParams();
       this.loadItems();
@@ -169,17 +134,23 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   }
 
   // ======================================================
-  // HELPERS
+  // INIT HELPERS
   // ======================================================
-  private handleRedirectReason(): void {
+  private handleRedirectParams(): void {
+    const invoiceId = this.route.snapshot.queryParamMap.get('invoiceId');
     const reason = this.route.snapshot.queryParamMap.get('reason');
+
+    if (invoiceId) {
+      this.redirectInvoiceId.set(Number(invoiceId));
+    }
 
     if (reason === 'unpaid') {
       this.messageService.warning(
         'You have unpaid invoices. Please settle them before placing a new order.'
       );
+    }
 
-      // Remove query param so message shows only once
+    if (invoiceId || reason) {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: {},
@@ -188,27 +159,38 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     }
   }
 
-  isCustomer(): boolean {
-    return this.auth.role() === UserRoleEnum.Customer;
+  private loadInvoiceTypes(): void {
+    this.invoiceTypes.set(
+      Object.values(InvoiceTypeEnum)
+        .filter(v => typeof v === 'number')
+        .map(v => ({
+          invoiceTypeID: v as number,
+          invoiceTypeName: InvoiceTypeEnum[v]
+        }))
+    );
   }
 
-  getRowClass(invoice: InvoiceReadModel): string {
-    switch (invoice.invoiceStatus) {
-      case InvoiceStatusEnum.Unpaid: return 'row-unpaid';
-      case InvoiceStatusEnum.Paid: return 'row-paid';
-      case InvoiceStatusEnum.Voided: return 'row-voided';
-      default: return 'row-default';
-    }
+  private loadInvoiceStatuses(): void {
+    this.invoiceStatuses.set(
+      Object.values(InvoiceStatusEnum)
+        .filter(v => typeof v === 'number')
+        .map(v => ({
+          invoiceStatusID: v as number,
+          invoiceStatusName: InvoiceStatusEnum[v]
+        }))
+    );
   }
 
   // ======================================================
-  // BASE CLASS IMPLEMENTATIONS
+  // BASE IMPLEMENTATIONS
   // ======================================================
   protected override getId(item: InvoiceReadModel): number | null {
     return item.invoiceID ?? null;
   }
+
   protected override loadItems(): void {
     const params = this.requestParams();
+    const targetInvoiceId = this.redirectInvoiceId();
 
     this.invoiceService
       .getInvoicePaged(
@@ -222,43 +204,74 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       .subscribe(res => {
         this.items.set(res.items);
         this.totalCount.set(res.totalCount);
+
+        // =============================
+        // AUTO PAGINATION TO INVOICE
+        // =============================
+        if (targetInvoiceId) {
+          const found = res.items.find(i => i.invoiceID === targetInvoiceId);
+
+          if (found) {
+            this.selectedInvoice.set(found);
+            this.redirectInvoiceId.set(null);
+            return;
+          }
+
+          const maxPage = Math.ceil(res.totalCount / params.pageSize);
+
+          if (params.pageNumber < maxPage) {
+            this.pageNumber.set(params.pageNumber + 1);
+          } else {
+            this.redirectInvoiceId.set(null);
+          }
+        }
       });
   }
-  protected override loadToForm(
-    item: InvoiceReadModel,
-    mode: DashboardModeEnum
-  ): void {
-    //this.openInvoiceDialog(item);
-  }
 
-  protected override resetForm(): void {
-    throw new Error('Method not implemented.');
-  }
+  protected override loadToForm(): void { }
+  protected override resetForm(): void { }
 
+  // ======================================================
+  // VIEW
+  // ======================================================
   override view(item: InvoiceReadModel) {
     const invoiceUrl = this.fileService.getInvoiceFileUrl(item);
 
-    const dialogRef = this.dialog.open(InvoiceViewDialogBoxComponent, {
+    this.dialog.open(InvoiceViewDialogBoxComponent, {
       width: '90%',
       maxWidth: '1200px',
       height: '90vh',
       data: { invoice: { ...item, invoiceFileUrl: invoiceUrl } },
     });
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (!result) return;
+  // ======================================================
+  // UI HELPERS
+  // ======================================================
+  isCustomer(): boolean {
+    return this.auth.role() === UserRoleEnum.Customer;
+  }
 
-      if (result.action === 'pay') {
-        console.log('Pay invoice', result.invoice.invoiceID);
-        // TODO: Call your API to pay invoice
-        this.loadItems();
-      }
+  getRowClass(invoice: InvoiceReadModel): string {
+    if (this.selectedInvoice()?.invoiceID === invoice.invoiceID) {
+      return 'row-highlight';
+    }
 
-      if (result.action === 'cancel') {
-        console.log('Cancel invoice', result.invoice.invoiceID);
-        // TODO: Call your API to cancel invoice
-        this.loadItems();
-      }
-    });
+    switch (invoice.invoiceStatus) {
+      case InvoiceStatusEnum.Unpaid: return 'row-unpaid';
+      case InvoiceStatusEnum.Paid: return 'row-paid';
+      case InvoiceStatusEnum.Voided: return 'row-voided';
+      default: return 'row-default';
+    }
+  }
+
+  onInvoiceTypeSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedInvoiceTypeId.set(id);
+  }
+
+  onInvoiceStatusSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedInvoiceStatusId.set(id);
   }
 }
