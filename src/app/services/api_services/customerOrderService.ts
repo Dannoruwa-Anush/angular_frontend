@@ -6,6 +6,8 @@ import { CustomerOrderCreateModel } from "../../models/api_models/create_update_
 import { CustomerOrderUpdateModel } from "../../models/api_models/create_update_models/update_models/customerOrder_update_Model";
 import { HttpClient } from "@angular/common/http";
 import { SystemMessageService } from "../ui_service/systemMessageService";
+import { catchError, map, Observable } from "rxjs";
+import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
 
 @Injectable({
     providedIn: 'root',
@@ -34,5 +36,32 @@ export class CustomerOrderService extends CrudService<CustomerOrderReadModel, Cu
             orderStatusId,
             searchKey
         });
+    }
+
+    // can add custom api methods here
+    getByUser(id: number, customerId?: number): Observable<CustomerOrderReadModel> {
+        this._loading.set(true);
+        this.messageService.clear();
+
+        let params: any = {};
+
+        params.id = id;
+        
+        if (customerId !== undefined) {
+            params.customerId = customerId;
+        }
+
+        return this.http
+            .get<ApiResponseModel<CustomerOrderReadModel>>(
+                `${this.baseUrl}/${this.endpoint}/bnpl`,
+                { params }
+            )
+            .pipe(
+                map(res => {
+                    this._loading.set(false);
+                    return res.data;
+                }),
+                catchError(err => this.handleHttpError(err))
+            );
     }
 }
