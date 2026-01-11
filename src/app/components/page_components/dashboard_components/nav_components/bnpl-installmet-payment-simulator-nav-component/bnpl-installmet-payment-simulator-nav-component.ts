@@ -88,6 +88,7 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   constructor(
     private auth: AuthSessionService,
     private customerOrderService: CustomerOrderService,
+    private snapshotService: InstallmetSnapshotService,
     private installmentSnapshotService: InstallmetSnapshotService,
     private messageService: SystemMessageService,
     private fb: FormBuilder
@@ -112,11 +113,13 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     const orderId = this.form.value.orderId;
     if (!orderId) return;
 
-    this.customerOrderService
-      .getActiveBnplOrder(orderId, this.customerId()!)
+    this.snapshotService
+      .getByOrderId(orderId)
       .subscribe({
-        next: res => this.snapshot.set(res),
-        error: () => this.messageService.error('Failed to load BNPL snapshot')
+        next: res => {
+          this.snapshot.set(res)
+        },
+        error: () => this.messageService.error('Failed to load installment snapshot')
       });
   }
 
