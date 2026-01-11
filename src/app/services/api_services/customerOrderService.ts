@@ -39,15 +39,14 @@ export class CustomerOrderService extends CrudService<CustomerOrderReadModel, Cu
     }
 
     // can add custom api methods here
-    getByUser(id: number, customerId?: number): Observable<CustomerOrderReadModel> {
+    getActiveBnplOrder(id: number, customerId?: number): Observable<CustomerOrderReadModel> {
         this._loading.set(true);
         this.messageService.clear();
 
         let params: any = {};
-
         params.id = id;
-        
-        if (customerId !== undefined) {
+
+        if (customerId !== undefined && customerId !== null) {
             params.customerId = customerId;
         }
 
