@@ -17,6 +17,8 @@ import { CustomerOrderService } from '../../../../../services/api_services/custo
 import { SystemOperationConfirmService } from '../../../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { filter, finalize, switchMap } from 'rxjs';
+import { OrderSubmitWizardActionService } from '../../../../../services/ui_service/orderSubmitWizardActionService';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-customer-shipping-detail-verification-component',
@@ -48,9 +50,6 @@ export class CustomerShippingDetailVerificationComponent {
   readonly customerId = computed(() => this.auth.customerID());
   readonly canSubmit = computed(() => !!this.customerProfile() && !this.loading());
 
-  // ============================
-  // CONSTRUCTOR
-  // ============================
   constructor(
     private auth: AuthSessionService,
     private customerService: CustomerService,
@@ -58,6 +57,7 @@ export class CustomerShippingDetailVerificationComponent {
     private cartService: ShoppingCartService,
     private wizardState: OrderSubmitWizardStateService,
     private stepState: OrderSubmitWizardStepStateService,
+    private wizardAction: OrderSubmitWizardActionService,
     private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService,
     private router: Router,
@@ -65,16 +65,27 @@ export class CustomerShippingDetailVerificationComponent {
     private dialog: MatDialog
   ) {
     this.initCustomer();
+    this.listenToWizardActions();
   }
 
   // ============================
   // INIT
   // ============================
   private initCustomer(): void {
-    const customerId = this.customerId();
-    if (this.isCustomer() && customerId) {
-      this.loadCustomerProfile(customerId);
+    if (this.isCustomer() && this.customerId()) {
+      this.loadCustomerProfile(this.customerId()!);
     }
+  }
+
+  // Parent -> Child communication
+  private listenToWizardActions(): void {
+    this.wizardAction.confirm$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.confirmOrder());
+
+    this.wizardAction.cancel$
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.cancelOrder());
   }
 
   // ============================
@@ -95,11 +106,10 @@ export class CustomerShippingDetailVerificationComponent {
   // FIND CUSTOMER (MANAGER)
   // ============================
   openFindCustomerDialog(): void {
-    this.dialog
-      .open(CustomerSearchDialogBoxComponent, {
-        width: '600px',
-        disableClose: true
-      })
+    this.dialog.open(CustomerSearchDialogBoxComponent, {
+      width: '600px',
+      disableClose: true
+    })
       .afterClosed()
       .pipe(filter(Boolean))
       .subscribe(customer => this.customerProfile.set(customer));
@@ -109,6 +119,8 @@ export class CustomerShippingDetailVerificationComponent {
   // CONFIRM & PLACE ORDER
   // ============================
   confirmOrder(): void {
+    if (this.loading() || !this.canSubmit()) return;
+
     const payload = this.wizardState.orderDraft();
     const customer = this.customerProfile();
 
@@ -153,6 +165,8 @@ export class CustomerShippingDetailVerificationComponent {
   // CANCEL ORDER
   // ============================
   cancelOrder(): void {
+    if (this.loading()) return;
+
     this.confirmService.confirm({
       title: 'Cancel Order',
       message: 'Do you want to cancel this order?',

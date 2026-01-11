@@ -9,6 +9,7 @@ import { SystemOperationConfirmService } from '../../../../services/ui_service/s
 import { OrderSubmitWizardStateService } from '../../../../services/ui_service/orderSubmitWizardStateService';
 import { OrderSourceEnum } from '../../../../config/enums/orderSourceEnum';
 import { OrderPaymentModeEnum } from '../../../../config/enums/orderPaymentModeEnum';
+import { OrderSubmitWizardActionService } from '../../../../services/ui_service/orderSubmitWizardActionService';
 
 @Component({
   selector: 'app-base-order-submit-wizard-component',
@@ -41,6 +42,7 @@ export class BaseOrderSubmitWizardComponent {
     private router: Router,
     private wizardState: OrderSubmitWizardStateService,
     public stepState: OrderSubmitWizardStepStateService,
+    private wizardAction: OrderSubmitWizardActionService,
     private confirmService: SystemOperationConfirmService,
   ) {
     this.initOrderIfNeeded();
@@ -101,22 +103,17 @@ export class BaseOrderSubmitWizardComponent {
   // ============================
   // LAST STEP ACTIONS
   // ============================
-  cancelOrder() {
-    this.confirmService.confirm({
-      title: 'Cancel Order',
-      message: 'Do you want to cancel this order?',
-      confirmText: 'Yes',
-      cancelText: 'No'
-    }).pipe(filter(Boolean))
-      .subscribe(() => {
-        this.stepState.reset();
-        this.wizardState.reset();
-        this.router.navigate(['/products']);
-      });
-  }
-
   confirmOrder(): void {
+    this.wizardAction.confirm();
+
     // Final confirmation is handled inside the last step component
     // This button triggers the verify component's confirmOrder()
+  }
+
+  cancelOrder(): void {
+    this.wizardAction.cancel();
+
+    // Final cancellation is handled inside the last step component
+    // This button triggers the verify component's cancelOrder()
   }
 }
