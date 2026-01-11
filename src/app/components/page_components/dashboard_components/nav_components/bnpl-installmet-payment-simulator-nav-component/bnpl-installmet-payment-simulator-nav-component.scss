@@ -1,24 +1,39 @@
-.dashboard-container {
+/* =========================
+   LAYOUT
+========================= */
+.simulator-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 /* =========================
-   CARD BASE
+   CARD WRAPPER (ELEVATION)
+========================= */
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   INNER CARD
 ========================= */
 .section-card {
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
 }
 
 /* =========================
    HEADER
 ========================= */
 .card-header {
-  display: flex;
-  justify-content: space-between;
   margin-bottom: 16px;
 }
 
@@ -40,22 +55,25 @@
 }
 
 /* =========================
-   FORM STYLING
+   FORM
 ========================= */
 .simulator-form {
   background: #fafafa;
   border-radius: 10px;
   padding: 16px;
-  border: 1px solid #eee;
+  border: 1px solid #eaeaea;
 }
 
-.boxed-row {
+.form-row {
   display: flex;
   gap: 12px;
   align-items: center;
+}
+
+.boxed-row {
   padding-bottom: 12px;
-  border-bottom: 1px dashed #ddd;
   margin-bottom: 16px;
+  border-bottom: 1px dashed #ddd;
 }
 
 .order-field {
@@ -74,7 +92,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 /* =========================
@@ -108,7 +126,7 @@
    TOTAL BOX
 ========================= */
 .total-payable-box {
-  padding: 10px 16px;
+  padding: 12px 18px;
   border-radius: 8px;
   background: #f5f7fa;
   border: 1px solid #e0e0e0;
@@ -146,9 +164,10 @@
   }
 }
 
-/* =========================
-   RESULT STATES
-========================= */
+.text-right {
+  text-align: right;
+}
+
 .result {
   font-weight: 600;
 }
@@ -161,14 +180,25 @@
   background-color: rgba(33, 150, 243, 0.05);
 }
 
-.text-right {
-  text-align: right;
+/* =========================
+   SNAPSHOT ACTIONS
+========================= */
+.snapshot-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px dashed #e0e0e0;
 }
 
-/* =========================
-   ACTION
-========================= */
-.invoice-btn {
-  margin-top: 20px;
-  float: right;
+.snapshot-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  font-weight: 600;
+}
+
+.btn-icon {
+  font-size: 20px;
 }

@@ -14,7 +14,6 @@ import { BnplSnapShotPayingSimulationCreateModel } from '../../../../../models/a
     CommonModule,
     ReactiveFormsModule,
     MaterialModule,
-    //DashboardFormComponent
   ],
   templateUrl: './bnpl-installmet-payment-simulator-nav-component.html',
   styleUrl: './bnpl-installmet-payment-simulator-nav-component.scss',
