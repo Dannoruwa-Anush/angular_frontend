@@ -37,7 +37,7 @@ export class CustomerShippingDetailVerificationComponent {
 
 
 
-  
+
   // ======================================================
   // STATE
   // ======================================================
@@ -157,8 +157,6 @@ export class CustomerShippingDetailVerificationComponent {
       };
     }
 
-    //console.log(finalPayload);
-    
     this.confirmService.confirm({
       title: 'Place Order',
       message: 'Do you want to place this order?',
@@ -169,14 +167,17 @@ export class CustomerShippingDetailVerificationComponent {
         filter(Boolean),
         switchMap(() => {
           this.loading.set(true);
-          this.cartService.lockCart();
+          this.cartService.lockCart(); // lock before API
           return this.orderService.create(finalPayload);
         }),
         finalize(() => this.loading.set(false))
       )
       .subscribe({
         next: result => {
-          this.messageService.success('Order placed successfully');
+          this.cartService.clearCart();   // clear cart
+          this.cartService.unlockCart();  // unlock for next order
+
+          this.messageService.success('Invoice drafted successfully');
 
           this.wizardState.setResult(result);
           this.stepState.completeStep('shipping_verification');
@@ -184,7 +185,7 @@ export class CustomerShippingDetailVerificationComponent {
           const invoiceId = result.latestUnpaidInvoice?.invoiceID;
 
           if (!invoiceId) {
-            // Fallback safety
+            // Safety fallback
             this.router.navigate(['../order_confirmation'], {
               relativeTo: this.route
             });
@@ -215,7 +216,7 @@ export class CustomerShippingDetailVerificationComponent {
         },
         error: () => {
           this.messageService.error('Failed to place order');
-          this.cartService.unlockCart();
+          this.cartService.unlockCart(); // unlock on failure
         }
       });
   }

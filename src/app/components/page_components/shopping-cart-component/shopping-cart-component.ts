@@ -66,10 +66,7 @@ export class ShoppingCartComponent {
     });
   }
 
-  checkoutOrder() {
-    //this.cartService.clearCart();
-    //this.messageService.success('Order placed successfully');
-    
+  checkoutOrder() {    
     // User must be logged in
     if (!this.cartService.cartItems().length) {
       this.messageService.warning('Your cart is empty');
