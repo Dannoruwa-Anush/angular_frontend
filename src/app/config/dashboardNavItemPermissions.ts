@@ -1,3 +1,4 @@
+import { BnplInstallmetPaymentSimulatorNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-installmet-payment-simulator-nav-component/bnpl-installmet-payment-simulator-nav-component";
 import { BnplPlanNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-plan-nav-component/bnpl-plan-nav-component";
 import { BnplPlanTypeNavComponent } from "../components/page_components/dashboard_components/nav_components/bnpl-plan-type-nav-component/bnpl-plan-type-nav-component";
 import { BrandNavComponent } from "../components/page_components/dashboard_components/nav_components/brand-nav-component/brand-nav-component";
@@ -10,6 +11,7 @@ import { InstallmentSnapshotNavComponent } from "../components/page_components/d
 import { InvoiceNavComponent } from "../components/page_components/dashboard_components/nav_components/invoice-nav-component/invoice-nav-component";
 import { ProductNavComponent } from "../components/page_components/dashboard_components/nav_components/product-nav-component/product-nav-component";
 import { ProfileNavComponent } from "../components/page_components/dashboard_components/nav_components/profile-nav-component/profile-nav-component";
+import { BnplInstallmentPaymentSimulatorComponent } from "../components/reusable_components/calculator_simulator_component/bnpl-installment-payment-simulator-component/bnpl-installment-payment-simulator-component";
 import { DashboardNavItemPermissionDataModel } from "../models/ui_models/dashboardNavItemPermissionDataModel";
 import { EmployeePositionEnum } from "./enums/employeePositionEnum";
 import { UserRoleEnum } from "./enums/userRoleEnum";
@@ -148,6 +150,19 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Employee,
         ]
     },
+    //Bnpl installmet payment simulator
+    {
+        label: 'Bnpl Payment Simulator',
+        route: 'pay_simulator',
+        component: BnplInstallmetPaymentSimulatorNavComponent, //BnplInstallmentPaymentSimulatorComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
+        ]
+    },
     //Invoice
     {
         label: 'Invoices',
@@ -159,5 +174,4 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Customer
         ]
     },
-    //Cashier
 ];
