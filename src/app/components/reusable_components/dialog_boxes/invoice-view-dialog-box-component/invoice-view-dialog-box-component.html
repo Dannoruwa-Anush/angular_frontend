@@ -4,7 +4,7 @@
 
 <mat-dialog-content class="dialog-content">
 
-  <!-- INVOICE (ALWAYS VISIBLE) -->
+  <!-- INVOICE -->
   <div *ngIf="loading()" class="spinner-overlay">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
@@ -12,12 +12,14 @@
   <iframe class="invoice-frame" [src]="data.invoice.invoiceFileUrl | safeUrl" (load)="onLoad()">
   </iframe>
 
-  <!-- PAYMENT SECTION -->
+  <!-- PAYMENT -->
   <ng-container *ngIf="mode() === 'PAY'">
 
     <div class="payment-container">
 
-      <mat-card class="payment-option" [class.active]="paymentMethod() === 'CASH'" (click)="paymentMethod.set('CASH')">
+      <!-- CASH (ONLY CASHIER) -->
+      <mat-card *ngIf="isCashier()" class="payment-option" [class.active]="paymentMethod() === 'CASH'"
+        (click)="paymentMethod.set('CASH')">
 
         <mat-radio-button [checked]="paymentMethod() === 'CASH'">
           <div class="option-content">
@@ -30,6 +32,7 @@
         </mat-radio-button>
       </mat-card>
 
+      <!-- CARD (CUSTOMER + CASHIER) -->
       <mat-card class="payment-option" [class.active]="paymentMethod() === 'CARD'" (click)="paymentMethod.set('CARD')">
 
         <mat-radio-button [checked]="paymentMethod() === 'CARD'">
@@ -43,6 +46,7 @@
         </mat-radio-button>
       </mat-card>
 
+      <!-- CARD FORM -->
       <form *ngIf="paymentMethod() === 'CARD'" [formGroup]="form" class="card-form">
 
         <mat-form-field appearance="outline" class="full-width">

@@ -29,13 +29,17 @@ type PaymentMethod = 'CASH' | 'CARD';
 })
 export class InvoiceViewDialogBoxComponent {
 
-    // ================= STATE =================
+
+  // ======================================================
+  // FORM
+  // ======================================================
+  form!: FormGroup;
+
+  // ================= STATE =================
   mode = signal<DialogMode>('VIEW');
   loading = signal(true);
   saving = signal(false);
-  paymentMethod = signal<PaymentMethod>('CASH');
-
-  form!: FormGroup;
+  paymentMethod = signal<PaymentMethod>('CARD');
 
   // ================= ROLE CHECKS =================
   isCustomer = computed(
@@ -46,7 +50,7 @@ export class InvoiceViewDialogBoxComponent {
     () => this.auth.employeePosition() === EmployeePositionEnum.Cashier
   );
 
-  /** Pay button permission */
+  /** Only Customer or Cashier can pay */
   canShowPay = computed(
     () => this.isCustomer() || this.isCashier()
   );
@@ -76,6 +80,12 @@ export class InvoiceViewDialogBoxComponent {
   // ================= ACTIONS =================
   onPay(): void {
     if (!this.canShowPay()) return;
+
+    // Customers are forced to CARD
+    if (!this.isCashier()) {
+      this.paymentMethod.set('CARD');
+    }
+
     this.mode.set('PAY');
   }
 
