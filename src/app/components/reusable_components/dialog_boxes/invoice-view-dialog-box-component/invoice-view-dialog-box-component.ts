@@ -7,6 +7,8 @@ import { SafeUrlPipe } from '../../../../pipes/safeUrlPipe';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SystemOperationConfirmService } from '../../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
+import { PaymentService } from '../../../../services/api_services/paymentService';
+import { PaymentCreateModel } from '../../../../models/api_models/create_update_models/create_models/payment_create_Model';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -24,13 +26,15 @@ type PaymentMethod = 'CASH' | 'CARD';
 })
 export class InvoiceViewDialogBoxComponent {
 
-  mode = signal<DialogMode>('VIEW');
+   mode = signal<DialogMode>('VIEW');
   loading = signal(true);
+  saving = signal(false);
   paymentMethod = signal<PaymentMethod>('CASH');
 
   form!: FormGroup;
 
   constructor(
+    private paymentService: PaymentService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { invoice: InvoiceReadModel },
@@ -47,22 +51,6 @@ export class InvoiceViewDialogBoxComponent {
       cardExpiry: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/)]],
       cardCvv: ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]]
     });
-  }
-
-  get cardNumberCtrl() {
-    return this.form.get('cardNumber')!;
-  }
-
-  get cardHolderNameCtrl() {
-    return this.form.get('cardHolderName')!;
-  }
-
-  get cardExpiryCtrl() {
-    return this.form.get('cardExpiry')!;
-  }
-
-  get cardCvvCtrl() {
-    return this.form.get('cardCvv')!;
   }
 
   onPay(): void {
@@ -86,30 +74,36 @@ export class InvoiceViewDialogBoxComponent {
         return;
       }
 
-      const paymentPayload =
-        this.paymentMethod() === 'CASH'
-          ? { method: 'CASH' }
-          : { method: 'CARD', ...this.form.value };
+      const payload: PaymentCreateModel = {
+        invoiceId: this.data.invoice.invoiceID
+      };
 
-      this.messageService.info('Payment processed successfully');
+      this.saving.set(true);
 
-      this.dialogRef.close({
-        action: 'paid',
-        invoice: this.data.invoice,
-        payment: paymentPayload
+      this.paymentService.create(payload).subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.messageService.success('Payment saved successfully');
+
+          this.dialogRef.close({
+            action: 'paid',
+            invoice: this.data.invoice,
+            paymentMethod: this.paymentMethod()
+          });
+        },
+        error: err => {
+          this.saving.set(false);
+          this.messageService.error(err?.error?.message || 'Payment failed');
+        }
       });
 
     });
   }
 
-  onCancelInvoice(): void {
-    this.dialogRef.close({
-      action: 'cancel',
-      invoice: this.data.invoice
-    });
-  }
-
   onClose(): void {
+    if (this.saving()) {
+      return;
+    }
     this.dialogRef.close();
   }
 

@@ -16,7 +16,7 @@
     (load)="onLoad()">
   </iframe>
 
-  <!-- ================= PAYMENT SECTION (VISIBLE AFTER PAY) ================= -->
+  <!-- ================= PAYMENT SECTION ================= -->
 
   <ng-container *ngIf="mode() === 'PAY'">
 
@@ -65,23 +65,11 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Card Number</mat-label>
           <input matInput formControlName="cardNumber">
-          <mat-error *ngIf="cardNumberCtrl.hasError('required')">
-            Card number is required
-          </mat-error>
-          <mat-error *ngIf="cardNumberCtrl.hasError('pattern')">
-            Must be exactly 16 digits
-          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Cardholder Name</mat-label>
           <input matInput formControlName="cardHolderName">
-          <mat-error *ngIf="cardHolderNameCtrl.hasError('required')">
-            Card holder name is required
-          </mat-error>
-          <mat-error *ngIf="cardHolderNameCtrl.hasError('pattern')">
-            Only letters and spaces allowed
-          </mat-error>
         </mat-form-field>
 
         <div class="row">
@@ -110,6 +98,7 @@
     mat-button
     color="primary"
     *ngIf="mode() !== 'PAY'"
+    [disabled]="saving()"
     (click)="onPay()">
     Pay
   </button>
@@ -118,12 +107,16 @@
     mat-raised-button
     color="primary"
     *ngIf="mode() === 'PAY'"
-    [disabled]="paymentMethod() === 'CARD' && form.invalid"
+    [disabled]="saving() || (paymentMethod() === 'CARD' && form.invalid)"
     (click)="confirmPayment()">
     Confirm Payment
   </button>
 
-  <button mat-button color="warn" (click)="onCancelInvoice()">Cancel</button>
-  <button mat-button (click)="onClose()">Close</button>
+  <button
+    mat-button
+    [disabled]="saving()"
+    (click)="onClose()">
+    Close
+  </button>
 
 </mat-dialog-actions>
