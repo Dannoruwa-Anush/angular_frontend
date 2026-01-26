@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, signal } from '@angular/core';
+import { Component, computed, Inject, signal } from '@angular/core';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { InvoiceReadModel } from '../../../../models/api_models/read_models/invoiceReadModel';
@@ -9,6 +9,9 @@ import { SystemOperationConfirmService } from '../../../../services/ui_service/s
 import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
 import { PaymentService } from '../../../../services/api_services/paymentService';
 import { PaymentCreateModel } from '../../../../models/api_models/create_update_models/create_models/payment_create_Model';
+import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
+import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
+import { EmployeePositionEnum } from '../../../../config/enums/employeePositionEnum';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -26,15 +29,31 @@ type PaymentMethod = 'CASH' | 'CARD';
 })
 export class InvoiceViewDialogBoxComponent {
 
-   mode = signal<DialogMode>('VIEW');
+    // ================= STATE =================
+  mode = signal<DialogMode>('VIEW');
   loading = signal(true);
   saving = signal(false);
   paymentMethod = signal<PaymentMethod>('CASH');
 
   form!: FormGroup;
 
+  // ================= ROLE CHECKS =================
+  isCustomer = computed(
+    () => this.auth.role() === UserRoleEnum.Customer
+  );
+
+  isCashier = computed(
+    () => this.auth.employeePosition() === EmployeePositionEnum.Cashier
+  );
+
+  /** Pay button permission */
+  canShowPay = computed(
+    () => this.isCustomer() || this.isCashier()
+  );
+
   constructor(
     private paymentService: PaymentService,
+    private auth: AuthSessionService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { invoice: InvoiceReadModel },
@@ -44,6 +63,7 @@ export class InvoiceViewDialogBoxComponent {
     this.buildForm();
   }
 
+  // ================= FORM =================
   private buildForm(): void {
     this.form = this.fb.group({
       cardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
@@ -53,7 +73,9 @@ export class InvoiceViewDialogBoxComponent {
     });
   }
 
+  // ================= ACTIONS =================
   onPay(): void {
+    if (!this.canShowPay()) return;
     this.mode.set('PAY');
   }
 
@@ -70,9 +92,7 @@ export class InvoiceViewDialogBoxComponent {
       cancelText: 'No'
     }).subscribe(confirmed => {
 
-      if (!confirmed) {
-        return;
-      }
+      if (!confirmed) return;
 
       const payload: PaymentCreateModel = {
         invoiceId: this.data.invoice.invoiceID
@@ -93,7 +113,9 @@ export class InvoiceViewDialogBoxComponent {
         },
         error: err => {
           this.saving.set(false);
-          this.messageService.error(err?.error?.message || 'Payment failed');
+          this.messageService.error(
+            err?.error?.message || 'Payment failed'
+          );
         }
       });
 
@@ -101,9 +123,7 @@ export class InvoiceViewDialogBoxComponent {
   }
 
   onClose(): void {
-    if (this.saving()) {
-      return;
-    }
+    if (this.saving()) return;
     this.dialogRef.close();
   }
 

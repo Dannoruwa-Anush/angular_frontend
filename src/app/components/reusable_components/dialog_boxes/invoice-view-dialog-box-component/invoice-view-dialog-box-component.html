@@ -4,29 +4,20 @@
 
 <mat-dialog-content class="dialog-content">
 
-  <!-- ================= INVOICE (ALWAYS VISIBLE) ================= -->
-
+  <!-- INVOICE (ALWAYS VISIBLE) -->
   <div *ngIf="loading()" class="spinner-overlay">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
 
-  <iframe
-    class="invoice-frame"
-    [src]="data.invoice.invoiceFileUrl | safeUrl"
-    (load)="onLoad()">
+  <iframe class="invoice-frame" [src]="data.invoice.invoiceFileUrl | safeUrl" (load)="onLoad()">
   </iframe>
 
-  <!-- ================= PAYMENT SECTION ================= -->
-
+  <!-- PAYMENT SECTION -->
   <ng-container *ngIf="mode() === 'PAY'">
 
     <div class="payment-container">
 
-      <!-- CASH -->
-      <mat-card
-        class="payment-option"
-        [class.active]="paymentMethod() === 'CASH'"
-        (click)="paymentMethod.set('CASH')">
+      <mat-card class="payment-option" [class.active]="paymentMethod() === 'CASH'" (click)="paymentMethod.set('CASH')">
 
         <mat-radio-button [checked]="paymentMethod() === 'CASH'">
           <div class="option-content">
@@ -39,11 +30,7 @@
         </mat-radio-button>
       </mat-card>
 
-      <!-- CARD -->
-      <mat-card
-        class="payment-option"
-        [class.active]="paymentMethod() === 'CARD'"
-        (click)="paymentMethod.set('CARD')">
+      <mat-card class="payment-option" [class.active]="paymentMethod() === 'CARD'" (click)="paymentMethod.set('CARD')">
 
         <mat-radio-button [checked]="paymentMethod() === 'CARD'">
           <div class="option-content">
@@ -56,11 +43,7 @@
         </mat-radio-button>
       </mat-card>
 
-      <!-- CARD FORM -->
-      <form
-        *ngIf="paymentMethod() === 'CARD'"
-        [formGroup]="form"
-        class="card-form">
+      <form *ngIf="paymentMethod() === 'CARD'" [formGroup]="form" class="card-form">
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Card Number</mat-label>
@@ -94,28 +77,19 @@
 
 <mat-dialog-actions align="end">
 
-  <button
-    mat-button
-    color="primary"
-    *ngIf="mode() !== 'PAY'"
-    [disabled]="saving()"
-    (click)="onPay()">
+  <!-- PAY (ONLY CUSTOMER OR CASHIER) -->
+  <button mat-button color="primary" *ngIf="mode() !== 'PAY' && canShowPay()" [disabled]="saving()" (click)="onPay()">
     Pay
   </button>
 
-  <button
-    mat-raised-button
-    color="primary"
-    *ngIf="mode() === 'PAY'"
-    [disabled]="saving() || (paymentMethod() === 'CARD' && form.invalid)"
-    (click)="confirmPayment()">
+  <!-- CONFIRM -->
+  <button mat-raised-button color="primary" *ngIf="mode() === 'PAY'"
+    [disabled]="saving() || (paymentMethod() === 'CARD' && form.invalid)" (click)="confirmPayment()">
     Confirm Payment
   </button>
 
-  <button
-    mat-button
-    [disabled]="saving()"
-    (click)="onClose()">
+  <!-- CLOSE -->
+  <button mat-button [disabled]="saving()" (click)="onClose()">
     Close
   </button>
 
