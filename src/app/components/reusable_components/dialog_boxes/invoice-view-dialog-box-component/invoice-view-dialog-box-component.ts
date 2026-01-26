@@ -13,6 +13,7 @@ import { AuthSessionService } from '../../../../services/auth_services/authSessi
 import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../config/enums/employeePositionEnum';
 import { InvoiceStatusEnum } from '../../../../config/enums/invoiceStatusEnum';
+import { InvoiceService } from '../../../../services/api_services/invoiceService';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -31,25 +32,16 @@ type PaymentMethod = 'CASH' | 'CARD';
 export class InvoiceViewDialogBoxComponent {
 
 
-  // expose enum to template
   InvoiceStatusEnum = InvoiceStatusEnum;
 
   // ================= STATE =================
+  invoice = signal<InvoiceReadModel | null>(null);
   mode = signal<DialogMode>('VIEW');
   loading = signal(true);
   saving = signal(false);
   paymentMethod = signal<PaymentMethod>('CARD');
 
   form!: FormGroup;
-
-  // ================= DERIVED STATE =================
-  showReceipt = computed(
-    () => this.data.invoice.invoiceStatus === InvoiceStatusEnum.Paid
-  );
-
-  showInvoice = computed(
-    () => this.data.invoice.invoiceStatus !== InvoiceStatusEnum.Paid
-  );
 
   // ================= ROLE CHECKS =================
   isCustomer = computed(
@@ -64,25 +56,41 @@ export class InvoiceViewDialogBoxComponent {
     () => this.isCustomer() || this.isCashier()
   );
 
-  invoiceUrl = computed(() => {
-    const url = this.data.invoice.invoiceFileUrl;
-    return url ? url : null;
-  });
+  // ================= URLS =================
+  invoiceUrl = computed(
+    () => this.invoice()?.invoiceFileUrl ?? null
+  );
 
-  receiptUrl = computed(() => {
-    const url = this.data.invoice.receiptFileUrl;
-    return url ? url : null;
-  });
+  receiptUrl = computed(
+    () => this.invoice()?.receiptFileUrl ?? null
+  );
+
+  // ================= DISPLAY =================
+  showReceipt = computed(
+    () =>
+      this.invoice()?.invoiceStatus === InvoiceStatusEnum.Paid &&
+      !!this.receiptUrl()
+  );
+
+  showInvoice = computed(
+    () => !!this.invoice() && !this.showReceipt()
+  );
+
+  pdfUrl = computed(
+    () => this.showReceipt() ? this.receiptUrl() : this.invoiceUrl()
+  );
 
   constructor(
     private paymentService: PaymentService,
+    private invoiceService: InvoiceService,
     private auth: AuthSessionService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { invoice: InvoiceReadModel },
+    @Inject(MAT_DIALOG_DATA) data: { invoice: InvoiceReadModel },
     private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService
   ) {
+    this.invoice.set(data.invoice);
     this.buildForm();
   }
 
@@ -100,7 +108,6 @@ export class InvoiceViewDialogBoxComponent {
   onPay(): void {
     if (!this.canShowPay()) return;
 
-    // customers are forced to CARD
     if (!this.isCashier()) {
       this.paymentMethod.set('CARD');
     }
@@ -120,26 +127,18 @@ export class InvoiceViewDialogBoxComponent {
       confirmText: 'Yes',
       cancelText: 'No'
     }).subscribe(confirmed => {
-
       if (!confirmed) return;
 
+      const invoiceId = this.invoice()!.invoiceID;
+
       const payload: PaymentCreateModel = {
-        invoiceId: this.data.invoice.invoiceID
+        invoiceId
       };
 
       this.saving.set(true);
 
       this.paymentService.create(payload).subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.messageService.success('Payment completed successfully');
-
-          this.dialogRef.close({
-            action: 'paid',
-            invoiceId: this.data.invoice.invoiceID,
-            paymentMethod: this.paymentMethod()
-          });
-        },
+        next: () => this.refreshInvoice(invoiceId),
         error: err => {
           this.saving.set(false);
           this.messageService.error(
@@ -147,6 +146,27 @@ export class InvoiceViewDialogBoxComponent {
           );
         }
       });
+    });
+  }
+
+  private refreshInvoice(invoiceId: number): void {
+    this.loading.set(true);
+
+    this.invoiceService.getById(invoiceId).subscribe({
+      next: updatedInvoice => {
+        this.invoice.set(updatedInvoice);
+        this.mode.set('VIEW');
+        this.loading.set(false);
+        this.saving.set(false);
+        this.messageService.success('Payment completed successfully');
+      },
+      error: () => {
+        this.loading.set(false);
+        this.saving.set(false);
+        this.messageService.warning(
+          'Payment completed, but invoice refresh failed'
+        );
+      }
     });
   }
 

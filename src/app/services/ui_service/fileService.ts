@@ -5,7 +5,7 @@ import { InvoiceReadModel } from "../../models/api_models/read_models/invoiceRea
 
 @Injectable({ providedIn: 'root' })
 export class FileService {
-    
+
     // ---------- CONFIG ----------
     private baseUrl = environment.BASE_API_URL.replace(/\/$/, '');
 
@@ -18,5 +18,10 @@ export class FileService {
     getInvoiceFileUrl(item: InvoiceReadModel): string {
         if (!item?.invoiceFileUrl) return '';
         return `${this.baseUrl}/${item.invoiceFileUrl}`;
+    }
+
+    getReceiptFileUrl(invoice: InvoiceReadModel): string {
+        if (!invoice?.receiptFileUrl) return '';
+        return `${this.baseUrl}/${invoice.receiptFileUrl}`;
     }
 }

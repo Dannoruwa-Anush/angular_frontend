@@ -236,12 +236,13 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // ======================================================
   override view(item: InvoiceReadModel) {
     const invoiceUrl = this.fileService.getInvoiceFileUrl(item);
+    const receiptUrl = this.fileService.getReceiptFileUrl(item);
 
     this.dialog.open(InvoiceViewDialogBoxComponent, {
       width: '90%',
       maxWidth: '1200px',
       height: '90vh',
-      data: { invoice: { ...item, invoiceFileUrl: invoiceUrl } },
+      data: { invoice: { ...item, invoiceFileUrl: invoiceUrl, receiptFileUrl: receiptUrl } },
     });
   }
 
