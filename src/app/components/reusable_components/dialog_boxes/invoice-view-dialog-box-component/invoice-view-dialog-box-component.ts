@@ -5,6 +5,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { InvoiceReadModel } from '../../../../models/api_models/read_models/invoiceReadModel';
 import { SafeUrlPipe } from '../../../../pipes/safeUrlPipe';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SystemOperationConfirmService } from '../../../../services/ui_service/systemOperationConfirmService';
+import { SystemMessageService } from '../../../../services/ui_service/systemMessageService';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -31,7 +33,9 @@ export class InvoiceViewDialogBoxComponent {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { invoice: InvoiceReadModel }
+    @Inject(MAT_DIALOG_DATA) public data: { invoice: InvoiceReadModel },
+    private confirmService: SystemOperationConfirmService,
+    private messageService: SystemMessageService
   ) {
     this.buildForm();
   }
@@ -71,15 +75,30 @@ export class InvoiceViewDialogBoxComponent {
       return;
     }
 
-    const paymentPayload =
-      this.paymentMethod() === 'CASH'
-        ? { method: 'CASH' }
-        : { method: 'CARD', ...this.form.value };
+    this.confirmService.confirm({
+      title: 'Process Payment',
+      message: 'Are you sure you want to continue this payment?',
+      confirmText: 'Yes',
+      cancelText: 'No'
+    }).subscribe(confirmed => {
 
-    this.dialogRef.close({
-      action: 'paid',
-      invoice: this.data.invoice,
-      payment: paymentPayload
+      if (!confirmed) {
+        return;
+      }
+
+      const paymentPayload =
+        this.paymentMethod() === 'CASH'
+          ? { method: 'CASH' }
+          : { method: 'CARD', ...this.form.value };
+
+      this.messageService.info('Payment processed successfully');
+
+      this.dialogRef.close({
+        action: 'paid',
+        invoice: this.data.invoice,
+        payment: paymentPayload
+      });
+
     });
   }
 
