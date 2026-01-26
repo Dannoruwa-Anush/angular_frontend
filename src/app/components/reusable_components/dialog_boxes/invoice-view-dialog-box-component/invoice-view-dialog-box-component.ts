@@ -1,42 +1,100 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, signal } from '@angular/core';
 import { MaterialModule } from '../../../../custom_modules/material/material-module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { InvoiceReadModel } from '../../../../models/api_models/read_models/invoiceReadModel';
 import { SafeUrlPipe } from '../../../../pipes/safeUrlPipe';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+type DialogMode = 'VIEW' | 'PAY';
+type PaymentMethod = 'CASH' | 'CARD';
 
 @Component({
   selector: 'app-invoice-view-dialog-box-component',
   imports: [
     CommonModule,
     MaterialModule,
-    SafeUrlPipe, 
+    ReactiveFormsModule,
+    SafeUrlPipe,
   ],
   templateUrl: './invoice-view-dialog-box-component.html',
   styleUrl: './invoice-view-dialog-box-component.scss',
 })
 export class InvoiceViewDialogBoxComponent {
 
-  loading = true; // PDF loading flag
+  mode = signal<DialogMode>('VIEW');
+  loading = signal(true);
+  paymentMethod = signal<PaymentMethod>('CASH');
+
+  form!: FormGroup;
 
   constructor(
-    public dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { invoice: InvoiceReadModel }
-  ) { }
-
-  onPay() {
-    this.dialogRef.close({ action: 'pay', invoice: this.data.invoice });
+  ) {
+    this.buildForm();
   }
 
-  onCancelInvoice() {
-    this.dialogRef.close({ action: 'cancel', invoice: this.data.invoice });
+  private buildForm(): void {
+    this.form = this.fb.group({
+      cardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
+      cardHolderName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\s]+$/)]],
+      cardExpiry: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/)]],
+      cardCvv: ['', [Validators.required, Validators.pattern(/^\d{3,4}$/)]]
+    });
   }
 
-  onClose() {
+  get cardNumberCtrl() {
+    return this.form.get('cardNumber')!;
+  }
+
+  get cardHolderNameCtrl() {
+    return this.form.get('cardHolderName')!;
+  }
+
+  get cardExpiryCtrl() {
+    return this.form.get('cardExpiry')!;
+  }
+
+  get cardCvvCtrl() {
+    return this.form.get('cardCvv')!;
+  }
+
+  onPay(): void {
+    this.mode.set('PAY');
+  }
+
+  confirmPayment(): void {
+    if (this.paymentMethod() === 'CARD' && this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const paymentPayload =
+      this.paymentMethod() === 'CASH'
+        ? { method: 'CASH' }
+        : { method: 'CARD', ...this.form.value };
+
+    this.dialogRef.close({
+      action: 'paid',
+      invoice: this.data.invoice,
+      payment: paymentPayload
+    });
+  }
+
+  onCancelInvoice(): void {
+    this.dialogRef.close({
+      action: 'cancel',
+      invoice: this.data.invoice
+    });
+  }
+
+  onClose(): void {
     this.dialogRef.close();
   }
 
-  onLoad() {
-    this.loading = false; // hide spinner when iframe loads
+  onLoad(): void {
+    this.loading.set(false);
   }
 }
