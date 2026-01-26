@@ -12,6 +12,7 @@ import { PaymentCreateModel } from '../../../../models/api_models/create_update_
 import { AuthSessionService } from '../../../../services/auth_services/authSessionService';
 import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../config/enums/employeePositionEnum';
+import { InvoiceStatusEnum } from '../../../../config/enums/invoiceStatusEnum';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -30,16 +31,25 @@ type PaymentMethod = 'CASH' | 'CARD';
 export class InvoiceViewDialogBoxComponent {
 
 
-  // ======================================================
-  // FORM
-  // ======================================================
-  form!: FormGroup;
+  // expose enum to template
+  InvoiceStatusEnum = InvoiceStatusEnum;
 
   // ================= STATE =================
   mode = signal<DialogMode>('VIEW');
   loading = signal(true);
   saving = signal(false);
   paymentMethod = signal<PaymentMethod>('CARD');
+
+  form!: FormGroup;
+
+  // ================= DERIVED STATE =================
+  showReceipt = computed(
+    () => this.data.invoice.invoiceStatus === InvoiceStatusEnum.Paid
+  );
+
+  showInvoice = computed(
+    () => this.data.invoice.invoiceStatus !== InvoiceStatusEnum.Paid
+  );
 
   // ================= ROLE CHECKS =================
   isCustomer = computed(
@@ -50,10 +60,19 @@ export class InvoiceViewDialogBoxComponent {
     () => this.auth.employeePosition() === EmployeePositionEnum.Cashier
   );
 
-  /** Only Customer or Cashier can pay */
   canShowPay = computed(
     () => this.isCustomer() || this.isCashier()
   );
+
+  invoiceUrl = computed(() => {
+    const url = this.data.invoice.invoiceFileUrl;
+    return url ? url : null;
+  });
+
+  receiptUrl = computed(() => {
+    const url = this.data.invoice.receiptFileUrl;
+    return url ? url : null;
+  });
 
   constructor(
     private paymentService: PaymentService,
@@ -81,7 +100,7 @@ export class InvoiceViewDialogBoxComponent {
   onPay(): void {
     if (!this.canShowPay()) return;
 
-    // Customers are forced to CARD
+    // customers are forced to CARD
     if (!this.isCashier()) {
       this.paymentMethod.set('CARD');
     }
@@ -113,11 +132,11 @@ export class InvoiceViewDialogBoxComponent {
       this.paymentService.create(payload).subscribe({
         next: () => {
           this.saving.set(false);
-          this.messageService.success('Payment saved successfully');
+          this.messageService.success('Payment completed successfully');
 
           this.dialogRef.close({
             action: 'paid',
-            invoice: this.data.invoice,
+            invoiceId: this.data.invoice.invoiceID,
             paymentMethod: this.paymentMethod()
           });
         },
@@ -128,16 +147,15 @@ export class InvoiceViewDialogBoxComponent {
           );
         }
       });
-
     });
+  }
+
+  onLoad(): void {
+    this.loading.set(false);
   }
 
   onClose(): void {
     if (this.saving()) return;
     this.dialogRef.close();
-  }
-
-  onLoad(): void {
-    this.loading.set(false);
   }
 }

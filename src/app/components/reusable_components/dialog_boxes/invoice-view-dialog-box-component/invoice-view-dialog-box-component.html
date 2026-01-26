@@ -4,20 +4,26 @@
 
 <mat-dialog-content class="dialog-content">
 
-  <!-- INVOICE -->
+  <!-- ================= LOADING ================= -->
   <div *ngIf="loading()" class="spinner-overlay">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
 
-  <iframe class="invoice-frame" [src]="data.invoice.invoiceFileUrl | safeUrl" (load)="onLoad()">
+  <!-- ================= INVOICE PDF ================= -->
+  <iframe *ngIf="showInvoice() && invoiceUrl() as url" class="invoice-frame" [src]="url | safeUrl" (load)="onLoad()">
   </iframe>
 
-  <!-- PAYMENT -->
-  <ng-container *ngIf="mode() === 'PAY'">
+  <!-- ================= RECEIPT PDF ================= -->
+  <iframe *ngIf="showReceipt() && receiptUrl() as url" class="invoice-frame receipt" [src]="url | safeUrl"
+    (load)="onLoad()">
+  </iframe>
+
+  <!-- ================= PAYMENT ================= -->
+  <ng-container *ngIf="mode() === 'PAY' && showInvoice()">
 
     <div class="payment-container">
 
-      <!-- CASH (ONLY CASHIER) -->
+      <!-- CASH (CASHIER ONLY) -->
       <mat-card *ngIf="isCashier()" class="payment-option" [class.active]="paymentMethod() === 'CASH'"
         (click)="paymentMethod.set('CASH')">
 
@@ -30,9 +36,10 @@
             </div>
           </div>
         </mat-radio-button>
+
       </mat-card>
 
-      <!-- CARD (CUSTOMER + CASHIER) -->
+      <!-- CARD -->
       <mat-card class="payment-option" [class.active]="paymentMethod() === 'CARD'" (click)="paymentMethod.set('CARD')">
 
         <mat-radio-button [checked]="paymentMethod() === 'CARD'">
@@ -44,6 +51,7 @@
             </div>
           </div>
         </mat-radio-button>
+
       </mat-card>
 
       <!-- CARD FORM -->
@@ -79,10 +87,12 @@
 
 </mat-dialog-content>
 
+<!-- ================= ACTIONS ================= -->
 <mat-dialog-actions align="end">
 
-  <!-- PAY (ONLY CUSTOMER OR CASHIER) -->
-  <button mat-button color="primary" *ngIf="mode() !== 'PAY' && canShowPay()" [disabled]="saving()" (click)="onPay()">
+  <!-- PAY -->
+  <button mat-button color="primary" *ngIf="mode() !== 'PAY' && canShowPay() && showInvoice()" [disabled]="saving()"
+    (click)="onPay()">
     Pay
   </button>
 

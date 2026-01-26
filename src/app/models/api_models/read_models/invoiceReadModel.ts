@@ -6,5 +6,6 @@ export interface InvoiceReadModel {
     invoiceAmount: number;
     invoiceType: InvoiceTypeEnum;
     invoiceStatus: InvoiceStatusEnum;
-    invoiceFileUrl: string;
+    invoiceFileUrl?: string;
+    receiptFileUrl?: string;
 }
