@@ -1,8 +1,9 @@
 export enum OrderStatusEnum {
-    Pending = 1,
-    Shipped = 2,
-    Delivered = 3,
-    Cancel_Pending = 4,
-    Cancelled = 5,
-    DeliveredAfterCancellationRejected = 6
+    Pending = 1,    
+    Processing = 2, 
+    Shipped = 3,
+    Delivered = 4,
+    Cancel_Pending = 5, 
+    Cancelled = 6,      
+    DeliveredAfterCancellationRejected = 7, 
 }

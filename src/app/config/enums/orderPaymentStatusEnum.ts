@@ -1,7 +1,7 @@
 export enum OrderPaymentStatusEnum {
-    Partially_Paid = 0,
-    Fully_Paid = 1,
-    Overdue = 2,
-    Refunded = 3,
-    Pending = 4
+    Awaiting_Payment = 1,
+    Partially_Paid = 2,
+    Fully_Paid = 3,
+    Refunded = 4,
+    Overdue = 5,
 }
