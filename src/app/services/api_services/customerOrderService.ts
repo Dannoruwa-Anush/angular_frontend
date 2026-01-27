@@ -63,4 +63,22 @@ export class CustomerOrderService extends CrudService<CustomerOrderReadModel, Cu
                 catchError(err => this.handleHttpError(err))
             );
     }
+
+    getActiveBnplOrdersByCustomerId(customerId: number): Observable<CustomerOrderReadModel[]> {
+
+        this._loading.set(true);
+        this.messageService.clear();
+
+        return this.http
+            .get<ApiResponseModel<CustomerOrderReadModel[]>>(
+                `${this.baseUrl}/${this.endpoint}/bnpl/customer/${customerId}`
+            )
+            .pipe(
+                map(res => {
+                    this._loading.set(false);
+                    return res.data;
+                }),
+                catchError(err => this.handleHttpError(err))
+            );
+    }
 }

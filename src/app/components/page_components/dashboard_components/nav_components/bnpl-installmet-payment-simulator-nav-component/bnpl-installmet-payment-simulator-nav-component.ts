@@ -7,6 +7,8 @@ import { SystemMessageService } from '../../../../../services/ui_service/systemM
 import { InstallmetSnapshotService } from '../../../../../services/api_services/installmentSnapshotService';
 import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 import { BnplSnapShotPayingSimulationCreateModel } from '../../../../../models/api_models/create_update_models/create_models/bnplSnapShotPayingSimulation_create_Model';
+import { MatDialog } from '@angular/material/dialog';
+import { CustomerSearchDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/customer-search-dialog-box-component/customer-search-dialog-box-component';
 
 @Component({
   selector: 'app-bnpl-installmet-payment-simulator-nav-component',
@@ -27,6 +29,14 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   readonly customerId = computed(() => this.auth.customerID());
 
   // ===============================
+  // CUSTOMER & ORDERS
+  // ===============================
+  customer = signal<any | null>(null);
+  orders = signal<any[]>([]);
+  ordersLoading = signal(false);
+  selectedOrder = signal<any | null>(null);
+
+  // ===============================
   // STATE
   // ===============================
   snapshot = signal<any | null>(null);
@@ -40,6 +50,7 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // ===============================
   // TABLE
   // ===============================
+  orderColumns = ['orderId', 'date', 'total', 'status', 'action'];
   snapshotColumns = ['description', 'amount', 'paid', 'result'];
 
   snapshotTableData = computed(() => {
@@ -85,9 +96,11 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     private snapshotService: InstallmetSnapshotService,
     private installmentSnapshotService: InstallmetSnapshotService,
     private messageService: SystemMessageService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialog: MatDialog
   ) {
     this.buildForm();
+    this.initOrders();
   }
 
   // ======================================================
@@ -98,6 +111,62 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
       orderId: [null, Validators.required],
       paymentAmount: [null, [Validators.required, Validators.min(1)]]
     });
+  }
+
+
+  // ===============================
+  // INIT
+  // ===============================
+  private initOrders(): void {
+    const cid = this.customerId();
+    if (cid) {
+      this.loadOrders(cid);
+    }
+  }
+
+  // ===============================
+  // CUSTOMER SEARCH
+  // ===============================
+  openCustomerSearch(): void {
+    this.dialog
+      .open(CustomerSearchDialogBoxComponent, {
+        width: '600px',
+        disableClose: true
+      })
+      .afterClosed()
+      .subscribe(customer => {
+        if (!customer) return;
+        this.customer.set(customer);
+        this.loadOrders(customer.customerID);
+      });
+  }
+
+   // ===============================
+  // LOAD ORDERS
+  // ===============================
+  private loadOrders(customerId: number): void {
+    this.ordersLoading.set(true);
+
+    this.customerOrderService.getActiveBnplOrdersByCustomerId(customerId)
+      .subscribe({
+        next: orders => this.orders.set(orders),
+        error: () => this.messageService.error('Failed to load orders'),
+        complete: () => this.ordersLoading.set(false)
+      });
+  }
+
+  // ===============================
+  // SELECT ORDER
+  // ===============================
+  selectOrder(order: any): void {
+    this.selectedOrder.set(order);
+
+    this.form.patchValue({
+      orderId: order.orderID
+    });
+
+    this.snapshot.set(null);
+    this.simulation.set(null);
   }
 
   // ===============================
