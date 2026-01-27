@@ -20,6 +20,7 @@ import { InvoiceViewDialogBoxComponent } from '../../../../reusable_components/d
 import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 import { ActivatedRoute, Router } from '@angular/router';
+import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
 
 @Component({
   selector: 'app-invoice-nav-component',
@@ -73,6 +74,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
     invoiceTypeId: this.selectedInvoiceTypeId(),
     invoiceStatusId: this.selectedInvoiceStatusId(),
     customerId: this.customerId() || undefined,
+    orderSourceId: this.orderSourceId(),
     searchKey: this.searchText() || undefined,
   }));
 
@@ -199,6 +201,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
         params.invoiceTypeId,
         params.invoiceStatusId,
         params.customerId,
+        params.orderSourceId,
         params.searchKey
       )
       .subscribe(res => {
@@ -252,6 +255,22 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   isCustomer(): boolean {
     return this.auth.role() === UserRoleEnum.Customer;
   }
+
+  isCashier = computed(
+    () => this.auth.employeePosition() === EmployeePositionEnum.Cashier
+  );
+
+  orderSourceId = computed<number | undefined>(() => {
+    if (this.customerId()) {
+      return OrderSourceEnum.OnlineShop;
+    }
+
+    if (this.isCashier()) {
+      return OrderSourceEnum.PhysicalShop;
+    }
+
+    return undefined;
+  });
 
   getRowClass(invoice: InvoiceReadModel): string {
     if (this.selectedInvoice()?.invoiceID === invoice.invoiceID) {

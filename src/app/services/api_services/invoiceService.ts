@@ -28,12 +28,14 @@ export class InvoiceService extends CrudService<InvoiceReadModel, InvoiceReadMod
         invoiceTypeId?: number,
         invoiceStatusId?: number,
         customerId?: number,
+        orderSourceId?: number,
         searchKey?: string
     ) {
         return this.getPaged(pageNumber, pageSize, {
             invoiceTypeId,
             invoiceStatusId,
             customerId,
+            orderSourceId,
             searchKey
         });
     }
