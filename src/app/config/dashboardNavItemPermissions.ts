@@ -153,10 +153,11 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Bnpl Payment Simulator',
         route: 'pay_simulator',
-        component: BnplInstallmetPaymentSimulatorNavComponent, //BnplInstallmentPaymentSimulatorComponent,
+        component: BnplInstallmetPaymentSimulatorNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
+            UserRoleEnum.Customer
         ],
         allowedEmployeePositions: [
             EmployeePositionEnum.Manager
