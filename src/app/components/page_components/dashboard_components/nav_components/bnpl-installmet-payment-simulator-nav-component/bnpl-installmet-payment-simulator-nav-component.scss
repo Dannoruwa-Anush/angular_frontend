@@ -55,88 +55,18 @@
 }
 
 /* =========================
-   FORM
+   GENERIC UTIL
 ========================= */
-.simulator-form {
-  background: #fafafa;
-  border-radius: 10px;
-  padding: 16px;
-  border: 1px solid #eaeaea;
-}
-
-.form-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.boxed-row {
-  padding-bottom: 12px;
-  margin-bottom: 16px;
-  border-bottom: 1px dashed #ddd;
-}
-
-.order-field {
-  flex: 1;
-}
-
-.payment-section {
-  margin-bottom: 12px;
-}
-
 .full-width {
   width: 100%;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-/* =========================
-   SNAPSHOT HEADER
-========================= */
-.snapshot-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.snapshot-metric {
-  display: flex;
-  flex-direction: column;
-}
-
-.label {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.54);
-}
-
-.value {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* =========================
-   TOTAL BOX
-========================= */
-.total-payable-box {
-  padding: 12px 18px;
-  border-radius: 8px;
-  background: #f5f7fa;
-  border: 1px solid #e0e0e0;
+.text-right {
   text-align: right;
+}
 
-  .value {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a237e;
-  }
+.result {
+  font-weight: 600;
 }
 
 /* =========================
@@ -164,20 +94,43 @@
   }
 }
 
-.text-right {
-  text-align: right;
+/* =========================
+   ORDER SELECTION HIGHLIGHT
+========================= */
+.selected-row {
+  background-color: rgba(63, 81, 181, 0.08) !important;
+  border-left: 4px solid #3f51b5;
 }
 
-.result {
-  font-weight: 600;
-}
-
+/* =========================
+   SNAPSHOT ROW STATES
+========================= */
 .row-paid {
   background-color: rgba(76, 175, 80, 0.05);
 }
 
 .row-overpaid {
   background-color: rgba(33, 150, 243, 0.05);
+}
+
+/* =========================
+   PAYMENT SIMULATION (INLINE)
+========================= */
+.payment-simulation {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed #e0e0e0;
+
+  mat-form-field {
+    margin-top: 12px;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+  }
 }
 
 /* =========================

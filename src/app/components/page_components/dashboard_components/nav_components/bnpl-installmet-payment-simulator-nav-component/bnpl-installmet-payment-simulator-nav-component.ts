@@ -33,7 +33,6 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // ===============================
   customer = signal<any | null>(null);
   orders = signal<any[]>([]);
-  ordersLoading = signal(false);
   selectedOrder = signal<any | null>(null);
 
   // ===============================
@@ -56,7 +55,6 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   snapshotTableData = computed(() => {
     const s = this.snapshot();
     const r = this.simulation();
-
     if (!s) return [];
 
     return [
@@ -64,19 +62,19 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
         description: 'Arrears',
         amount: s.total_InstallmentBaseArrears,
         paid: r?.paidToArrears ?? 0,
-        result: (s.total_InstallmentBaseArrears ?? 0) - (r?.paidToArrears ?? 0)
+        result: s.total_InstallmentBaseArrears - (r?.paidToArrears ?? 0)
       },
       {
         description: 'Late Interest',
         amount: s.total_LateInterest,
         paid: r?.paidToInterest ?? 0,
-        result: (s.total_LateInterest ?? 0) - (r?.paidToInterest ?? 0)
+        result: s.total_LateInterest - (r?.paidToInterest ?? 0)
       },
       {
-        description: 'Due Current Base Amount',
+        description: 'Current Base Amount',
         amount: s.notYetDueCurrentInstallmentBaseAmount,
         paid: r?.paidToBase ?? 0,
-        result: (s.notYetDueCurrentInstallmentBaseAmount ?? 0) - (r?.paidToBase ?? 0)
+        result: s.notYetDueCurrentInstallmentBaseAmount - (r?.paidToBase ?? 0)
       },
       {
         description: 'Overpayment',
@@ -94,33 +92,16 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     private auth: AuthSessionService,
     private customerOrderService: CustomerOrderService,
     private snapshotService: InstallmetSnapshotService,
-    private installmentSnapshotService: InstallmetSnapshotService,
     private messageService: SystemMessageService,
     private fb: FormBuilder,
     private dialog: MatDialog
   ) {
-    this.buildForm();
-    this.initOrders();
-  }
-
-  // ======================================================
-  // REACTIVE FORM SETUP
-  // ======================================================
-  private buildForm(): void {
     this.form = this.fb.group({
-      orderId: [null, Validators.required],
       paymentAmount: [null, [Validators.required, Validators.min(1)]]
     });
-  }
 
-
-  // ===============================
-  // INIT
-  // ===============================
-  private initOrders(): void {
-    const cid = this.customerId();
-    if (cid) {
-      this.loadOrders(cid);
+    if (this.customerId()) {
+      this.loadOrders(this.customerId()!);
     }
   }
 
@@ -128,30 +109,25 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // CUSTOMER SEARCH
   // ===============================
   openCustomerSearch(): void {
-    this.dialog
-      .open(CustomerSearchDialogBoxComponent, {
-        width: '600px',
-        disableClose: true
-      })
-      .afterClosed()
-      .subscribe(customer => {
-        if (!customer) return;
-        this.customer.set(customer);
-        this.loadOrders(customer.customerID);
-      });
+    this.dialog.open(CustomerSearchDialogBoxComponent, {
+      width: '600px',
+      disableClose: true
+    }).afterClosed().subscribe(customer => {
+      if (!customer) return;
+      this.customer.set(customer);
+      this.loadOrders(customer.customerID);
+    });
   }
 
-   // ===============================
+  // ===============================
   // LOAD ORDERS
   // ===============================
   private loadOrders(customerId: number): void {
-    this.ordersLoading.set(true);
-
-    this.customerOrderService.getActiveBnplOrdersByCustomerId(customerId)
+    this.customerOrderService
+      .getActiveBnplOrdersByCustomerId(customerId)
       .subscribe({
         next: orders => this.orders.set(orders),
-        error: () => this.messageService.error('Failed to load orders'),
-        complete: () => this.ordersLoading.set(false)
+        error: () => this.messageService.error('Failed to load orders')
       });
   }
 
@@ -160,13 +136,13 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // ===============================
   selectOrder(order: any): void {
     this.selectedOrder.set(order);
-
-    this.form.patchValue({
-      orderId: order.orderID
-    });
-
-    this.snapshot.set(null);
     this.simulation.set(null);
+    this.form.reset();
+
+    this.snapshotService.getByOrderId(order.orderID).subscribe({
+      next: res => this.snapshot.set(res),
+      error: () => this.messageService.error('Failed to load snapshot')
+    });
   }
 
   // ===============================
@@ -190,29 +166,17 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // SIMULATE PAYMENT
   // ===============================
   simulate(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    if (this.form.invalid || !this.selectedOrder()) return;
 
     const payload: BnplSnapShotPayingSimulationCreateModel = {
-      orderId: this.form.value.orderId!,
-      paymentAmount: this.form.value.paymentAmount!
+      orderId: this.selectedOrder()!.orderID,
+      paymentAmount: this.form.value.paymentAmount
     };
 
-    this.installmentSnapshotService
-      .SimulateSnapShoptPaying(payload)
-      .subscribe({
-        next: res => this.simulation.set(res),
-        error: () => this.messageService.error('Simulation failed')
-      });
-  }
-
-  // ===============================
-  // GENERATE INVOICE
-  // ===============================
-  generateInvoice(): void {
-    this.messageService.success('Invoice generation triggered');
+    this.snapshotService.SimulateSnapShoptPaying(payload).subscribe({
+      next: res => this.simulation.set(res),
+      error: () => this.messageService.error('Simulation failed')
+    });
   }
 
   // ===============================
@@ -222,6 +186,13 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     this.form.reset();
     this.snapshot.set(null);
     this.simulation.set(null);
+  }
+
+  // ===============================
+  // GENERATE INVOICE
+  // ===============================
+  generateInvoice(): void {
+    this.messageService.success('Invoice generation triggered');
   }
 
   // ===============================
