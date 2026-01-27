@@ -6,6 +6,7 @@ import { SystemMessageService } from "../ui_service/systemMessageService";
 import { InvoiceReadModel } from "../../models/api_models/read_models/invoiceReadModel";
 import { catchError, map, Observable } from "rxjs";
 import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
+import { BnplSnapShotPayingSimulationCreateModel } from "../../models/api_models/create_update_models/create_models/bnplSnapShotPayingSimulation_create_Model";
 
 @Injectable({
     providedIn: 'root',
@@ -49,6 +50,28 @@ export class InvoiceService extends CrudService<InvoiceReadModel, InvoiceReadMod
             .pipe(
                 map(res => {
                     this._loading.set(false);
+                    return res.data;
+                }),
+                catchError(err => this.handleHttpError(err))
+            );
+    }
+
+    generateSettlementInvoice(data: BnplSnapShotPayingSimulationCreateModel): Observable<InvoiceReadModel> {
+
+        this._loading.set(true);
+        this.messageService.clear();
+
+        return this.http
+            .post<ApiResponseModel<InvoiceReadModel>>(
+                `${this.baseUrl}/${this.endpoint}/generate/settlement`,
+                data
+            )
+            .pipe(
+                map(res => {
+                    this._loading.set(false);
+                    this.messageService.success(
+                        res.message || 'Settlement invoice generated'
+                    );
                     return res.data;
                 }),
                 catchError(err => this.handleHttpError(err))

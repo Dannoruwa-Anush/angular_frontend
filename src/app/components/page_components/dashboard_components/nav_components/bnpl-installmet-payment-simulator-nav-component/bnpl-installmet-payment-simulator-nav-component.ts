@@ -9,6 +9,11 @@ import { AuthSessionService } from '../../../../../services/auth_services/authSe
 import { BnplSnapShotPayingSimulationCreateModel } from '../../../../../models/api_models/create_update_models/create_models/bnplSnapShotPayingSimulation_create_Model';
 import { MatDialog } from '@angular/material/dialog';
 import { CustomerSearchDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/customer-search-dialog-box-component/customer-search-dialog-box-component';
+import { InvoiceService } from '../../../../../services/api_services/invoiceService';
+import { SystemOperationConfirmService } from '../../../../../services/ui_service/systemOperationConfirmService';
+import { Router } from '@angular/router';
+import { EMPTY, filter, finalize, switchMap } from 'rxjs';
+import { InvoiceDraftCreatedDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/invoice-draft-created-dialog-box-component/invoice-draft-created-dialog-box-component';
 
 @Component({
   selector: 'app-bnpl-installmet-payment-simulator-nav-component',
@@ -40,6 +45,7 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // ===============================
   snapshot = signal<any | null>(null);
   simulation = signal<any | null>(null);
+  readonly loading = signal(false);
 
   // ===============================
   // FORM
@@ -92,7 +98,10 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     private auth: AuthSessionService,
     private customerOrderService: CustomerOrderService,
     private snapshotService: InstallmetSnapshotService,
+    private invoiceService: InvoiceService,
+    private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService,
+    private router: Router,
     private fb: FormBuilder,
     private dialog: MatDialog
   ) {
@@ -192,7 +201,59 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // GENERATE INVOICE
   // ===============================
   generateInvoice(): void {
-    this.messageService.success('Invoice generation triggered');
+    this.confirmService.confirm({
+      title: 'Generate Invoice',
+      message: 'Are you sure you want to generate an invoice?',
+      confirmText: 'Yes',
+      cancelText: 'No'
+    })
+      .pipe(
+        filter(Boolean), // proceed only if user confirms
+        switchMap(() => {
+          if (!this.selectedOrder() || !this.simulation()) {
+            this.messageService.error('Please run the simulation first');
+            return EMPTY;
+          }
+
+          const payload: BnplSnapShotPayingSimulationCreateModel = {
+            orderId: this.selectedOrder()!.orderID,
+            paymentAmount: this.form.value.paymentAmount
+          };
+
+          this.loading.set(true); // optional local loading signal
+          return this.invoiceService.generateSettlementInvoice(payload);
+        }),
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: invoice => {
+          // Success message
+          this.messageService.success('Invoice drafted successfully');
+
+          // Open dialog with invoice info
+          const dialogRef = this.dialog.open(InvoiceDraftCreatedDialogBoxComponent, {
+            width: '460px',
+            disableClose: true,
+            data: {
+              invoiceId: invoice.invoiceID,
+              orderId: this.selectedOrder()!.orderID,
+              totalAmount: invoice.invoiceAmount,
+              invoiceFileUrl: invoice.invoiceFileUrl,
+              receiptFileUrl: invoice.receiptFileUrl
+            }
+          });
+
+          // Handle dialog result
+          dialogRef.afterClosed().subscribe(res => {
+            if (res?.action === 'review') {
+              this.router.navigate(['/dashboard/invoice'], {
+                queryParams: { invoiceId: res.invoiceId }
+              });
+            }
+          });
+        },
+        error: () => this.messageService.error('Failed to generate invoice')
+      });
   }
 
   // ===============================
