@@ -11,7 +11,6 @@ import { InstallmentSnapshotNavComponent } from "../components/page_components/d
 import { InvoiceNavComponent } from "../components/page_components/dashboard_components/nav_components/invoice-nav-component/invoice-nav-component";
 import { ProductNavComponent } from "../components/page_components/dashboard_components/nav_components/product-nav-component/product-nav-component";
 import { ProfileNavComponent } from "../components/page_components/dashboard_components/nav_components/profile-nav-component/profile-nav-component";
-import { BnplInstallmentPaymentSimulatorComponent } from "../components/reusable_components/calculator_simulator_component/bnpl-installment-payment-simulator-component/bnpl-installment-payment-simulator-component";
 import { DashboardNavItemPermissionDataModel } from "../models/ui_models/dashboardNavItemPermissionDataModel";
 import { EmployeePositionEnum } from "./enums/employeePositionEnum";
 import { UserRoleEnum } from "./enums/userRoleEnum";
