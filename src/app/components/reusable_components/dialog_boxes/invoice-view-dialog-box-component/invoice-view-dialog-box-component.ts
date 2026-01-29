@@ -14,6 +14,7 @@ import { UserRoleEnum } from '../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../config/enums/employeePositionEnum';
 import { InvoiceStatusEnum } from '../../../../config/enums/invoiceStatusEnum';
 import { InvoiceService } from '../../../../services/api_services/invoiceService';
+import { InvoiceTypeEnum } from '../../../../config/enums/invoiceTypeEnum';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -31,8 +32,9 @@ type PaymentMethod = 'CASH' | 'CARD';
 })
 export class InvoiceViewDialogBoxComponent {
 
-
+  // ================= Expose enum to template ===========
   InvoiceStatusEnum = InvoiceStatusEnum;
+  InvoiceTypeEnum = InvoiceTypeEnum;
 
   // ================= STATE =================
   invoice = signal<InvoiceReadModel | null>(null);
@@ -52,8 +54,18 @@ export class InvoiceViewDialogBoxComponent {
     () => this.auth.employeePosition() === EmployeePositionEnum.Cashier
   );
 
+  isManger = computed(
+    () => this.auth.employeePosition() === EmployeePositionEnum.Manager
+  );
+
   canShowPay = computed(
     () => this.isCustomer() || this.isCashier()
+  );
+
+  canShowCancel = computed(
+    () => this.isManger() && 
+          this.invoice()?.invoiceType === InvoiceTypeEnum.Bnpl_Installment_Pay &&
+          this.invoice()?.invoiceStatus === InvoiceStatusEnum.Unpaid
   );
 
   // ================= URLS =================
@@ -167,6 +179,32 @@ export class InvoiceViewDialogBoxComponent {
           'Payment completed, but invoice refresh failed'
         );
       }
+    });
+  }
+
+  onCancelInvoice(): void {
+    const invoiceId = this.invoice()!.invoiceID;
+
+    this.confirmService.confirm({
+      title: 'Cancel Invoice',
+      message: 'Are you sure you want to cancel this invoice?',
+      confirmText: 'Yes',
+      cancelText: 'No'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.saving.set(true);
+
+      this.invoiceService.cancelInvoice(invoiceId).subscribe({
+        next: updatedInvoice => {
+          this.invoice.set(updatedInvoice);
+          this.saving.set(false);
+          this.mode.set('VIEW');
+        },
+        error: () => {
+          this.saving.set(false);
+        }
+      });
     });
   }
 

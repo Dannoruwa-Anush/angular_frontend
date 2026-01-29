@@ -95,6 +95,11 @@
     Confirm Payment
   </button>
 
+  <!-- CANCEL -->
+  <button mat-button color="warn" *ngIf="canShowCancel()" [disabled]="saving()" (click)="onCancelInvoice()">
+    Cancel
+  </button>
+
   <!-- CLOSE -->
   <button mat-button [disabled]="saving()" (click)="onClose()">
     Close

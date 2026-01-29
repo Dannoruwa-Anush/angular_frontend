@@ -77,4 +77,25 @@ export class InvoiceService extends CrudService<InvoiceReadModel, InvoiceReadMod
                 catchError(err => this.handleHttpError(err))
             );
     }
+
+    cancelInvoice(id: number | string): Observable<InvoiceReadModel> {
+        this._loading.set(true);
+        this.messageService.clear();
+
+        return this.http
+            .put<ApiResponseModel<InvoiceReadModel>>(
+                `${this.baseUrl}/${this.endpoint}/${id}`,
+                null
+            )
+            .pipe(
+                map(res => {
+                    this._loading.set(false);
+                    this.messageService.success(
+                        res.message || 'Invoice cancelled successfully'
+                    );
+                    return res.data;
+                }),
+                catchError(err => this.handleHttpError(err))
+            );
+    }
 }
