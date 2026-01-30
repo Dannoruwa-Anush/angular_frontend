@@ -1,1 +1,37 @@
-<p>physical-shop-session-nav-component works!</p>
+<div class="session-card" [class.active]="isActive()" [class.inactive]="!isActive()">
+  <div class="header">
+    <mat-icon class="status-icon">
+      {{ isActive() ? 'play_circle' : 'pause_circle' }}
+    </mat-icon>
+    <div class="title">
+      <h2>Business Session</h2>
+      <p class="subtitle">
+        {{ isActive() ? 'Session is active for today' : 'No active session today' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="status-chip">
+    <span>{{ isActive() ? 'ACTIVE' : 'INACTIVE' }}</span>
+  </div>
+
+  <div class="actions">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="activateSession()"
+      [disabled]="isActive()">
+      <mat-icon>power</mat-icon>
+      Activate Session
+    </button>
+
+    <button
+      mat-stroked-button
+      color="warn"
+      (click)="deactivateSession()"
+      [disabled]="!isActive()">
+      <mat-icon>stop</mat-icon>
+      Inactivate Session
+    </button>
+  </div>
+</div>

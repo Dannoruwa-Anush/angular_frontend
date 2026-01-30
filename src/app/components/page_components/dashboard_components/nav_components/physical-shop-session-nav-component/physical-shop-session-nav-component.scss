@@ -1,0 +1,73 @@
+.session-card {
+    max-width: 520px;
+    margin: 40px auto;
+    padding: 24px 28px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f5f7fa, #ffffff);
+
+    &.active {
+        border-left: 8px solid #4caf50;
+    }
+
+    &.inactive {
+        border-left: 8px solid #f44336;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.status-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+}
+
+.title h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.subtitle {
+    margin: 4px 0 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.status-chip {
+    margin: 20px 0;
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: white;
+
+    background-color: #9e9e9e;
+
+    .active & {
+        background-color: #4caf50;
+    }
+
+    .inactive & {
+        background-color: #f44336;
+    }
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.actions button {
+    flex: 1;
+    min-width: 200px;
+}
