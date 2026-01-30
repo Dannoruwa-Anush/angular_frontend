@@ -1,4 +1,6 @@
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
 .app-header {
   background-color: #ffffff;
   color: #000;
@@ -8,13 +10,17 @@
   padding: 0 16px;
 }
 
-/* LOGO */
+/* =========================
+   LOGO
+========================= */
 .logo {
   height: 40px;
   margin-right: 16px;
 }
 
-/* NAVIGATION */
+/* =========================
+   NAVIGATION
+========================= */
 .desktop-links {
   display: flex;
   gap: 10px;
@@ -25,7 +31,9 @@
   display: none;
 }
 
-/* RIGHT TOOLBAR */
+/* =========================
+   RIGHT TOOLBAR
+========================= */
 .toolbar-right {
   margin-left: auto;
   display: flex;
@@ -40,7 +48,64 @@
   }
 }
 
-/* CART */
+/* =========================
+   BUSINESS SESSION INDICATOR
+========================= */
+.session-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
+  transition: background-color 0.25s ease, color 0.25s ease;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &.active {
+    background-color: rgba(76, 175, 80, 0.12);
+    color: #2e7d32;
+
+    .dot {
+      background-color: #4caf50;
+      animation: pulse 1.6s infinite;
+    }
+  }
+
+  &.inactive {
+    background-color: rgba(244, 67, 54, 0.12);
+    color: #c62828;
+
+    .dot {
+      background-color: #f44336;
+    }
+  }
+}
+
+/* Pulse animation for active session */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* =========================
+   CART
+========================= */
 .cart-btn {
   position: relative;
 }
@@ -61,7 +126,9 @@
   }
 }
 
-/* ACCOUNT */
+/* =========================
+   ACCOUNT
+========================= */
 .account-wrapper {
   display: flex;
   align-items: center;
@@ -79,7 +146,9 @@
   opacity: 0.8;
 }
 
-/* MATERIAL MENU */
+/* =========================
+   MATERIAL MENU
+========================= */
 ::ng-deep .mat-menu-panel {
   min-width: 200px;
 
@@ -105,7 +174,9 @@
   cursor: default;
 }
 
-/* MOBILE RESPONSIVE*/
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
 @media (max-width: 768px) {
 
   .desktop-links {
@@ -122,5 +193,10 @@
 
   .toolbar-right {
     gap: 4px;
+  }
+
+  .session-indicator {
+    padding: 3px 8px;
+    font-size: 11px;
   }
 }

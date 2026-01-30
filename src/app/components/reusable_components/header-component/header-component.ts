@@ -7,6 +7,7 @@ import { AuthSessionService } from '../../../services/auth_services/authSessionS
 import { CommonModule } from '@angular/common';
 import { SystemOperationConfirmService } from '../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../services/ui_service/systemMessageService';
+import { UserRoleEnum } from '../../../config/enums/userRoleEnum';
 
 @Component({
   selector: 'app-header-component',
@@ -20,7 +21,9 @@ import { SystemMessageService } from '../../../services/ui_service/systemMessage
 })
 export class HeaderComponent {
 
-
+  //expose enum
+  UserRoleEnum = UserRoleEnum;
+  
   image_company_logo = 'assets/images/logo/logo.png';
 
   cartItemCount!: Signal<number>;

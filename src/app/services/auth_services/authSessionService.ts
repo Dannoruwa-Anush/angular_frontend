@@ -12,6 +12,7 @@ import { UserRoleEnum } from "../../config/enums/userRoleEnum";
 import { ShoppingCartService } from "../ui_service/shoppingCartService";
 import { SystemMessageService } from "../ui_service/systemMessageService";
 import { EmployeePositionEnum } from "../../config/enums/employeePositionEnum";
+import { PhysicalShopSessionService } from "../api_services/physicalShopSessionService";
 
 const AUTH_KEY = 'auth_session';
 
@@ -37,10 +38,16 @@ export class AuthSessionService {
     customerID = computed(() => this.session()?.customerID ?? null);
     employeePosition = computed(() => this.session()?.employeePosition ?? null);
 
+    // ---------- PHYSICAL SHOP SESSION STATE ----------
+    shopSessionId = signal<number | null>(null);
+    shopSessionOpenedAt = signal<string | null>(null);
+    shopSessionIsActive = signal<boolean>(false);
+
     constructor(
         private http: HttpClient,
         private router: Router,
         private cartService: ShoppingCartService,
+        private physicalShopSessionService: PhysicalShopSessionService,
         private messageService: SystemMessageService
     ) {
 
@@ -50,6 +57,15 @@ export class AuthSessionService {
             value
                 ? localStorage.setItem(AUTH_KEY, JSON.stringify(value))
                 : localStorage.removeItem(AUTH_KEY);
+        });
+
+        // Reload shop session on page refresh (Admin / Employee only)
+        effect(() => {
+            const session = this.session();
+
+            if (session && (session.role === UserRoleEnum.Admin || session.role === UserRoleEnum.Employee)) {
+                this.loadActivePhysicalShopSession();
+            }
         });
     }
 
@@ -85,6 +101,19 @@ export class AuthSessionService {
         this.navigateByRole(role);
     }
 
+    // --------- SHOP SESSION MUTATORS -----------------------
+    setActiveShopSession(sessionId: number, openedAt: string) {
+        this.shopSessionId.set(sessionId);
+        this.shopSessionOpenedAt.set(openedAt);
+        this.shopSessionIsActive.set(true);
+    }
+
+    clearShopSession() {
+        this.shopSessionId.set(null);
+        this.shopSessionOpenedAt.set(null);
+        this.shopSessionIsActive.set(false);
+    }
+
     // ---------- API ----------
     // LOGIN
     login(payload: LoginRequestModel): Observable<AuthSessionModel> {
@@ -108,6 +137,12 @@ export class AuthSessionService {
 
                     this.session.set(session);
                     this.loading.set(false);
+
+                    //Get physical shop active session
+                    if (session.role === UserRoleEnum.Admin || session.role === UserRoleEnum.Employee
+                    ) {
+                        this.loadActivePhysicalShopSession();
+                    }
 
                     // SUCCESS MESSAGE FROM API
                     this.messageService.success(res.message || 'Login successful');
@@ -167,6 +202,9 @@ export class AuthSessionService {
         this.cartService.unlockCart();
         this.cartService.clearCart();
 
+        // Clear shop session state
+        this.clearShopSession();
+
         this.session.set(null);
         this.router.navigate(['/login']);
     }
@@ -180,5 +218,22 @@ export class AuthSessionService {
     hasEmployeePosition(positions: EmployeePositionEnum[]): boolean {
         const position = this.employeePosition();
         return position !== null && positions.includes(position);
+    }
+
+    hasActiveShopSession = computed(() => this.shopSessionIsActive());
+
+    private loadActivePhysicalShopSession(): void {
+        if (this.shopSessionIsActive()) return;
+
+        this.physicalShopSessionService.getActiveForToday()
+            .subscribe({
+                next: session => {
+                    this.setActiveShopSession(
+                        session.physicalShopSessionID!,
+                        session.openedAt ?? ''
+                    );
+                },
+                error: () => this.clearShopSession()
+            });
     }
 }

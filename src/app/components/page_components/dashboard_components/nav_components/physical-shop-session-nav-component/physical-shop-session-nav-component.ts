@@ -6,6 +6,7 @@ import { PhysicalShopSessionReadModel } from '../../../../../models/api_models/r
 import { PhysicalShopSessionService } from '../../../../../services/api_services/physicalShopSessionService';
 import { SystemOperationConfirmService } from '../../../../../services/ui_service/systemOperationConfirmService';
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
+import { AuthSessionService } from '../../../../../services/auth_services/authSessionService';
 
 @Component({
   selector: 'app-physical-shop-session-nav-component',
@@ -24,9 +25,10 @@ export class PhysicalShopSessionNavComponent {
 
   constructor(
     private sessionService: PhysicalShopSessionService,
+    public authSessionService: AuthSessionService,
     private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService
-  ) { 
+  ) {
     this.loading = this.sessionService.loading;
   }
 
@@ -71,6 +73,50 @@ export class PhysicalShopSessionNavComponent {
       this.sessionService.update(session.physicalShopSessionID).subscribe({
         next: () => {
           this.activeSession.set(null);
+          this.messageService.info('Business session closed');
+        }
+      });
+    });
+  }// OPEN
+  openSession(): void {
+    if (this.authSessionService.hasActiveShopSession()) return;
+
+    this.confirmService.confirm({
+      title: 'Open Business Session',
+      message: 'Do you want to open the business session for today?',
+      confirmText: 'Open Session',
+      cancelText: 'Cancel'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.sessionService.create().subscribe({
+        next: session => {
+          this.authSessionService.setActiveShopSession(
+            session.physicalShopSessionID!,
+            session.openedAt ?? new Date().toISOString()
+          );
+          this.messageService.success('Business session opened');
+        }
+      });
+    });
+  }
+
+  // CLOSE
+  closeSession(): void {
+    const sessionId = this.authSessionService.shopSessionId();
+    if (!sessionId) return;
+
+    this.confirmService.confirm({
+      title: 'Close Business Session',
+      message: 'Are you sure you want to close today’s business session?',
+      confirmText: 'Close Session',
+      cancelText: 'Cancel'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.sessionService.update(sessionId).subscribe({
+        next: () => {
+          this.authSessionService.clearShopSession();
           this.messageService.info('Business session closed');
         }
       });

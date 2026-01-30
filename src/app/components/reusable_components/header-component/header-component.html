@@ -24,6 +24,20 @@
   <!-- [Start- Right Icons] -->
   <div class="toolbar-right">
 
+    <!-- BUSINESS SESSION INDICATOR -->
+    <div *ngIf="authSessionService.hasRole([UserRoleEnum.Admin, UserRoleEnum.Employee])" class="session-indicator"
+      [class.active]="authSessionService.hasActiveShopSession()"
+      [class.inactive]="!authSessionService.hasActiveShopSession()" matTooltipPosition="below" 
+      [matTooltip]="authSessionService.hasActiveShopSession()
+      ? ('Opened at: ' + (authSessionService.shopSessionOpenedAt() | date:'medium'))
+      : 'No active business session'">
+
+      <span class="dot"></span>
+      <span class="label">
+        {{ authSessionService.hasActiveShopSession() ? 'Business Session Active' : 'Business Session Inactive' }}
+      </span>
+    </div>
+
     <!-- Cart -->
     <button mat-icon-button class="cart-btn" [matBadge]="cartItemCount()" matBadgeColor="warn"
       [matBadgeHidden]="cartItemCount() === 0" routerLink="/shoppingCart">

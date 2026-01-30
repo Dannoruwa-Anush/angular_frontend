@@ -22,6 +22,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatStepperModule } from '@angular/material/stepper';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 // Angular Material modules array
 const materialModules = [
@@ -45,6 +46,7 @@ const materialModules = [
   MatChipsModule,
   MatRadioModule,
   MatStepperModule,
+  MatTooltipModule,
 ];
 
 @NgModule({

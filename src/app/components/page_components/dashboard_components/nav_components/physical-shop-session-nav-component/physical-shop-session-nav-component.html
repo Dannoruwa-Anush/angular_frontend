@@ -1,37 +1,47 @@
-<div class="session-card" [class.active]="isActive()" [class.inactive]="!isActive()">
+<div class="session-card"
+     [class.active]="authSessionService.hasActiveShopSession()"
+     [class.inactive]="!authSessionService.hasActiveShopSession()">
+
   <div class="header">
     <mat-icon class="status-icon">
-      {{ isActive() ? 'play_circle' : 'pause_circle' }}
+      {{ authSessionService.hasActiveShopSession() ? 'store' : 'storefront' }}
     </mat-icon>
+
     <div class="title">
       <h2>Business Session</h2>
-      <p class="subtitle">
-        {{ isActive() ? 'Session is active for today' : 'No active session today' }}
+
+      <p class="subtitle" *ngIf="authSessionService.hasActiveShopSession()">
+        Opened at:
+        <strong>{{ authSessionService.shopSessionOpenedAt() | date:'medium' }}</strong>
+      </p>
+
+      <p class="subtitle" *ngIf="!authSessionService.hasActiveShopSession()">
+        No active business session today
       </p>
     </div>
   </div>
 
   <div class="status-chip">
-    <span>{{ isActive() ? 'ACTIVE' : 'INACTIVE' }}</span>
+    {{ authSessionService.hasActiveShopSession() ? 'ACTIVE' : 'INACTIVE' }}
   </div>
 
   <div class="actions">
     <button
       mat-raised-button
       color="primary"
-      (click)="activateSession()"
-      [disabled]="isActive()">
-      <mat-icon>power</mat-icon>
-      Activate Session
+      (click)="openSession()"
+      [disabled]="authSessionService.hasActiveShopSession() || loading()">
+      <mat-icon>play_arrow</mat-icon>
+      Open Session
     </button>
 
     <button
       mat-stroked-button
       color="warn"
-      (click)="deactivateSession()"
-      [disabled]="!isActive()">
+      (click)="closeSession()"
+      [disabled]="!authSessionService.hasActiveShopSession() || loading()">
       <mat-icon>stop</mat-icon>
-      Inactivate Session
+      Close Session
     </button>
   </div>
 </div>
