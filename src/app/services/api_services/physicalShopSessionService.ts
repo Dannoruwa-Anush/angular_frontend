@@ -60,6 +60,22 @@ export class PhysicalShopSessionService extends CrudService<PhysicalShopSessionR
         catchError(err => this.handleHttpError(err))
       );
   }
-  
+
   // can add custom api methods here
+  getActiveForToday(): Observable<PhysicalShopSessionReadModel> {
+    this._loading.set(true);
+    this.messageService.clear();
+
+    return this.http
+      .get<ApiResponseModel<PhysicalShopSessionReadModel>>(
+        `${this.baseUrl}/${this.endpoint}/active`
+      )
+      .pipe(
+        map(res => {
+          this._loading.set(false);
+          return res.data;
+        }),
+        catchError(err => this.handleHttpError(err))
+      );
+  }
 }
