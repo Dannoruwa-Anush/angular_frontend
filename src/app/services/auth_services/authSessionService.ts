@@ -225,7 +225,7 @@ export class AuthSessionService {
     private loadActivePhysicalShopSession(): void {
         if (this.shopSessionIsActive()) return;
 
-        this.physicalShopSessionService.getActiveForToday()
+        this.physicalShopSessionService.getLatestActive()
             .subscribe({
                 next: session => {
                     this.setActiveShopSession(

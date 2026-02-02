@@ -62,13 +62,13 @@ export class PhysicalShopSessionService extends CrudService<PhysicalShopSessionR
   }
 
   // can add custom api methods here
-  getActiveForToday(): Observable<PhysicalShopSessionReadModel> {
+  getLatestActive(): Observable<PhysicalShopSessionReadModel> {
     this._loading.set(true);
     this.messageService.clear();
 
     return this.http
       .get<ApiResponseModel<PhysicalShopSessionReadModel>>(
-        `${this.baseUrl}/${this.endpoint}/active`
+        `${this.baseUrl}/${this.endpoint}/latest-active`
       )
       .pipe(
         map(res => {
