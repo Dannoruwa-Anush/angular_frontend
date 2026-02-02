@@ -1,5 +1,6 @@
 import { InvoiceStatusEnum } from "../../../config/enums/invoiceStatusEnum";
 import { InvoiceTypeEnum } from "../../../config/enums/invoiceTypeEnum";
+import { CashflowReadModel } from "./cashflow_read_model";
 
 export interface InvoiceReadModel {
     invoiceID: number;
@@ -7,5 +8,7 @@ export interface InvoiceReadModel {
     invoiceType: InvoiceTypeEnum;
     invoiceStatus: InvoiceStatusEnum;
     invoiceFileUrl?: string;
-    receiptFileUrl?: string;
+
+    //FK fields
+    cashflowResponseDtos?: CashflowReadModel[];
 }

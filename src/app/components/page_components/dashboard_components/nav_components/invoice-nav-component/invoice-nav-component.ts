@@ -5,7 +5,6 @@ import { DashboardTableComponent } from '../../../../reusable_components/dashboa
 import { InvoiceStatusEnum } from '../../../../../config/enums/invoiceStatusEnum';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
 import { InvoiceReadModel } from '../../../../../models/api_models/read_models/invoiceReadModel';
-import { DashboardModeEnum } from '../../../../../config/enums/dashboardModeEnum';
 import { InvoiceTypeUiModel } from '../../../../../models/ui_models/invoiceTypeStatusUiModel';
 import { InvoiceTypeEnum } from '../../../../../config/enums/invoiceTypeEnum';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
@@ -238,14 +237,13 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // VIEW
   // ======================================================
   override view(item: InvoiceReadModel) {
-    const invoiceUrl = this.fileService.getInvoiceFileUrl(item);
-    const receiptUrl = this.fileService.getReceiptFileUrl(item);
+    const fileUrl = this.fileService.getInvoiceFileUrl(item);
 
     this.dialog.open(InvoiceViewDialogBoxComponent, {
       width: '90%',
       maxWidth: '1200px',
       height: '90vh',
-      data: { invoice: { ...item, invoiceFileUrl: invoiceUrl, receiptFileUrl: receiptUrl } },
+      data: { invoice: { ...item, invoiceFileUrl: fileUrl } },
     });
   }
 

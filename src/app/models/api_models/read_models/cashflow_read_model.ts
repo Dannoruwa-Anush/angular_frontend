@@ -1,4 +1,4 @@
-import { CashflowStatusEnum } from "../../../config/enums/cashflowStatusEnum";
+import { CashflowPaymentNatureEnum } from "../../../config/enums/cashflowPaymentNatureEnum";
 import { CustomerOrderReadModel } from "./customerOrder_read_Model";
 
 export interface CashflowReadModel {
@@ -6,8 +6,11 @@ export interface CashflowReadModel {
     amountPaid: string;
     cashflowRef: string;
     cashflowDate: string;
+    cashflowPaymentNature: CashflowPaymentNatureEnum;
+    paymentReceiptFileUrl?: string;
+    refundReceiptFileUrl?: string;
+
     refundDate?: string;
-    cashflowStatus: CashflowStatusEnum;
 
     // Fk : fields
     customerOrderResponseDto?: CustomerOrderReadModel;

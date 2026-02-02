@@ -15,6 +15,7 @@ import { EmployeePositionEnum } from '../../../../config/enums/employeePositionE
 import { InvoiceStatusEnum } from '../../../../config/enums/invoiceStatusEnum';
 import { InvoiceService } from '../../../../services/api_services/invoiceService';
 import { InvoiceTypeEnum } from '../../../../config/enums/invoiceTypeEnum';
+import { FileService } from '../../../../services/ui_service/fileService';
 
 type DialogMode = 'VIEW' | 'PAY';
 type PaymentMethod = 'CASH' | 'CARD';
@@ -32,7 +33,7 @@ type PaymentMethod = 'CASH' | 'CARD';
 })
 export class InvoiceViewDialogBoxComponent {
 
-  // ================= Expose enum to template ===========
+  // ================= ENUMS =================
   InvoiceStatusEnum = InvoiceStatusEnum;
   InvoiceTypeEnum = InvoiceTypeEnum;
 
@@ -46,51 +47,36 @@ export class InvoiceViewDialogBoxComponent {
   form!: FormGroup;
 
   // ================= ROLE CHECKS =================
-  isCustomer = computed(
-    () => this.auth.role() === UserRoleEnum.Customer
+  isCustomer = computed(() =>
+    this.auth.role() === UserRoleEnum.Customer
   );
 
-  isCashier = computed(
-    () => this.auth.employeePosition() === EmployeePositionEnum.Cashier
+  isCashier = computed(() =>
+    this.auth.employeePosition() === EmployeePositionEnum.Cashier
   );
 
-  isManger = computed(
-    () => this.auth.employeePosition() === EmployeePositionEnum.Manager
+  isManger = computed(() =>
+    this.auth.employeePosition() === EmployeePositionEnum.Manager
   );
 
-  canShowPay = computed(
-    () => this.isCustomer() || this.isCashier()
+  canShowPay = computed(() =>
+    (this.isCustomer() || this.isCashier()) &&
+    this.invoice()?.invoiceStatus === InvoiceStatusEnum.Unpaid
   );
 
-  canShowCancel = computed(
-    () => this.isManger() && 
-          this.invoice()?.invoiceType === InvoiceTypeEnum.Bnpl_Installment_Pay &&
-          this.invoice()?.invoiceStatus === InvoiceStatusEnum.Unpaid
+  canShowCancel = computed(() =>
+    this.isManger() &&
+    this.invoice()?.invoiceType === InvoiceTypeEnum.Bnpl_Installment_Pay &&
+    this.invoice()?.invoiceStatus === InvoiceStatusEnum.Unpaid
   );
 
-  // ================= URLS =================
-  invoiceUrl = computed(
-    () => this.invoice()?.invoiceFileUrl ?? null
-  );
+  // ================= PDF =================
+  pdfUrl = computed(() => {
+    const inv = this.invoice();
+    return inv ? this.fileService.getInvoiceFileUrl(inv) : null;
+  });
 
-  receiptUrl = computed(
-    () => this.invoice()?.receiptFileUrl ?? null
-  );
-
-  // ================= DISPLAY =================
-  showReceipt = computed(
-    () =>
-      this.invoice()?.invoiceStatus === InvoiceStatusEnum.Paid &&
-      !!this.receiptUrl()
-  );
-
-  showInvoice = computed(
-    () => !!this.invoice() && !this.showReceipt()
-  );
-
-  pdfUrl = computed(
-    () => this.showReceipt() ? this.receiptUrl() : this.invoiceUrl()
-  );
+  hasPdf = computed(() => !!this.pdfUrl());
 
   constructor(
     private paymentService: PaymentService,
@@ -100,7 +86,8 @@ export class InvoiceViewDialogBoxComponent {
     private dialogRef: MatDialogRef<InvoiceViewDialogBoxComponent>,
     @Inject(MAT_DIALOG_DATA) data: { invoice: InvoiceReadModel },
     private confirmService: SystemOperationConfirmService,
-    private messageService: SystemMessageService
+    private messageService: SystemMessageService,
+    private fileService: FileService
   ) {
     this.invoice.set(data.invoice);
     this.buildForm();
@@ -143,9 +130,7 @@ export class InvoiceViewDialogBoxComponent {
 
       const invoiceId = this.invoice()!.invoiceID;
 
-      const payload: PaymentCreateModel = {
-        invoiceId
-      };
+      const payload: PaymentCreateModel = { invoiceId };
 
       this.saving.set(true);
 
@@ -201,9 +186,7 @@ export class InvoiceViewDialogBoxComponent {
           this.saving.set(false);
           this.mode.set('VIEW');
         },
-        error: () => {
-          this.saving.set(false);
-        }
+        error: () => this.saving.set(false)
       });
     });
   }

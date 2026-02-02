@@ -10,16 +10,15 @@
   </div>
 
   <!-- ================= PDF VIEWER ================= -->
-  <iframe *ngIf="pdfUrl() as url" class="invoice-frame" [class.receipt]="showReceipt()" [src]="url | safeUrl"
-    (load)="onLoad()">
+  <iframe *ngIf="hasPdf() && pdfUrl() as url" class="invoice-frame" [src]="url | safeUrl" (load)="onLoad()">
   </iframe>
 
   <!-- ================= PAYMENT ================= -->
-  <ng-container *ngIf="mode() === 'PAY' && showInvoice()">
+  <ng-container *ngIf="mode() === 'PAY'">
 
     <div class="payment-container">
 
-      <!-- CASH (CASHIER ONLY) -->
+      <!-- CASH -->
       <mat-card *ngIf="isCashier()" class="payment-option" [class.active]="paymentMethod() === 'CASH'"
         (click)="paymentMethod.set('CASH')">
 
@@ -74,7 +73,6 @@
         </div>
 
       </form>
-
     </div>
   </ng-container>
 
@@ -84,8 +82,7 @@
 <mat-dialog-actions align="end">
 
   <!-- PAY -->
-  <button mat-button color="primary" *ngIf="mode() !== 'PAY' && canShowPay() && showInvoice()" [disabled]="saving()"
-    (click)="onPay()">
+  <button mat-button color="primary" *ngIf="mode() === 'VIEW' && canShowPay()" [disabled]="saving()" (click)="onPay()">
     Pay
   </button>
 

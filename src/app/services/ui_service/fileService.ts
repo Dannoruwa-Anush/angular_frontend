@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../../config/environment";
 import { ElectronicItemReadModel } from "../../models/api_models/read_models/electronicItem_read_Model";
 import { InvoiceReadModel } from "../../models/api_models/read_models/invoiceReadModel";
+import { InvoiceStatusEnum } from "../../config/enums/invoiceStatusEnum";
 
 @Injectable({ providedIn: 'root' })
 export class FileService {
@@ -15,13 +16,33 @@ export class FileService {
         return 'assets/images/no-image.png';
     }
 
-    getInvoiceFileUrl(item: InvoiceReadModel): string {
-        if (!item?.invoiceFileUrl) return '';
-        return `${this.baseUrl}/${item.invoiceFileUrl}`;
-    }
 
-    getReceiptFileUrl(invoice: InvoiceReadModel): string {
-        if (!invoice?.receiptFileUrl) return '';
-        return `${this.baseUrl}/${invoice.receiptFileUrl}`;
+    // ---------- INVOICE / RECEIPT ----------
+    getInvoiceFileUrl(invoice: InvoiceReadModel): string {
+        if (!invoice) return '';
+
+        const cashflow = invoice.cashflowResponseDtos?.at(-1); // latest cashflow
+
+        switch (invoice.invoiceStatus) {
+
+            case InvoiceStatusEnum.Unpaid:
+            case InvoiceStatusEnum.Voided:
+                return invoice.invoiceFileUrl
+                    ? `${this.baseUrl}/${invoice.invoiceFileUrl}`
+                    : '';
+
+            case InvoiceStatusEnum.Paid:
+                return cashflow?.paymentReceiptFileUrl
+                    ? `${this.baseUrl}/${cashflow.paymentReceiptFileUrl}`
+                    : '';
+
+            case InvoiceStatusEnum.Refunded:
+                return cashflow?.refundReceiptFileUrl
+                    ? `${this.baseUrl}/${cashflow.refundReceiptFileUrl}`
+                    : '';
+
+            default:
+                return '';
+        }
     }
 }

@@ -239,7 +239,7 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
               orderId: this.selectedOrder()!.orderID,
               totalAmount: invoice.invoiceAmount,
               invoiceFileUrl: invoice.invoiceFileUrl,
-              receiptFileUrl: invoice.receiptFileUrl
+              //receiptFileUrl: invoice.receiptFileUrl
             }
           });
 
