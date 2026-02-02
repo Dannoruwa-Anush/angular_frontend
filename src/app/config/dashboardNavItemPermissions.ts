@@ -167,7 +167,6 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
-            UserRoleEnum.Customer
         ],
         allowedEmployeePositions: [
             EmployeePositionEnum.Manager

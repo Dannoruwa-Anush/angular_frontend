@@ -22,22 +22,17 @@ export class BaseDashboardComponent {
 
   navItems!: Signal<DashboardNavItemPermissionDataModel[]>;
 
-  constructor(
-    private auth: AuthSessionService
-  ) {
+  constructor(private auth: AuthSessionService) {
+
     this.navItems = computed(() => {
       const role = this.auth.role();
       if (!role) return [];
 
       return DASHBOARD_NAV_ITEM_PERMISSIONS.filter(item => {
-        // Role check
+
+        // Role must be allowed
         if (!item.allowedRoles.includes(role)) {
           return false;
-        }
-
-        // No employee-position restriction
-        if (!item.allowedEmployeePositions?.length) {
-          return true;
         }
 
         // Admin bypass
@@ -45,10 +40,18 @@ export class BaseDashboardComponent {
           return true;
         }
 
-        // Employee position check
-        return this.auth.hasEmployeePosition(
-          item.allowedEmployeePositions
-        );
+        // Employee -> check employee position only if defined
+        if (
+          role === UserRoleEnum.Employee &&
+          item.allowedEmployeePositions?.length
+        ) {
+          return this.auth.hasEmployeePosition(
+            item.allowedEmployeePositions
+          );
+        }
+
+        // Customer or other roles (no position restriction)
+        return true;
       });
     });
   }

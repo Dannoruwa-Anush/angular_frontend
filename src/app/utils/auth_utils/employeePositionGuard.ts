@@ -12,26 +12,32 @@ export class EmployeePositionGuard implements CanActivate {
     private router: Router
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot): boolean {
+    canActivate(route: ActivatedRouteSnapshot): boolean {
     const positions = route.data['positions'] as EmployeePositionEnum[] | undefined;
+    const role = this.auth.role();
 
-    // No position restriction → allow
+    // No position restriction -> allow
     if (!positions || positions.length === 0) {
       return true;
     }
 
     // Admin bypass
-    if (this.auth.role() === UserRoleEnum.Admin) {
+    if (role === UserRoleEnum.Admin) {
       return true;
     }
 
-    // Must be employee
-    if (this.auth.role() !== UserRoleEnum.Employee) {
+    // Customer bypass
+    if (role === UserRoleEnum.Customer) {
+      return true;
+    }
+
+    // Must be employee beyond this point
+    if (role !== UserRoleEnum.Employee) {
       this.router.navigate(['/unauthorized']);
       return false;
     }
 
-    // Check position
+    // Employee position check
     if (!this.auth.hasEmployeePosition(positions)) {
       this.router.navigate(['/unauthorized']);
       return false;
