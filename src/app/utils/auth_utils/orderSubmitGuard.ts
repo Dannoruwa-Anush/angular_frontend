@@ -34,11 +34,21 @@ export class OrderSubmitGuard implements CanActivate {
         const role = this.auth.role();
         const position = this.auth.employeePosition();
 
-        // ---------- MANAGER (ALWAYS ALLOWED) ----------
+        // ---------- MANAGER (REQUIRES ACTIVE SHOP SESSION) ----------
         if (
             role === UserRoleEnum.Employee &&
             position === EmployeePositionEnum.Manager
         ) {
+            if (!this.auth.hasActiveShopSession()) {
+                this.messageService.info(
+                    'Unable to submit order: business session not opened.'
+                );
+
+                return of(
+                    this.router.createUrlTree(['/dashboard'])
+                );
+            }
+
             return of(true);
         }
 
