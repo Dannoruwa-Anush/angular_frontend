@@ -10,6 +10,8 @@ export interface CustomerOrderCreateModel {
     //FK: Fields 
     customerOrderElectronicItems: CustomerOrderElectronicItemsCreateModel[];
 
+    physicalShopSessionId?: number;
+
     // Used ONLY when OrderSource == PhysicalShop
     physicalShopBillToCustomerID?: number;
 

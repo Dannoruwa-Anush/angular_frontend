@@ -20,6 +20,7 @@ import { filter, finalize, switchMap } from 'rxjs';
 import { OrderSubmitWizardActionService } from '../../../../../services/ui_service/orderSubmitWizardActionService';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InvoiceDraftCreatedDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/invoice-draft-created-dialog-box-component/invoice-draft-created-dialog-box-component';
+import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
 
 @Component({
   selector: 'app-customer-shipping-detail-verification-component',
@@ -59,6 +60,10 @@ export class CustomerShippingDetailVerificationComponent {
 
   readonly canSubmit = computed(
     () => !!this.customerProfile() && !this.loading()
+  );
+
+  readonly physicalShopSessionId = computed(
+    () => this.auth.shopSessionId()
   );
 
   // ======================================================
@@ -149,6 +154,23 @@ export class CustomerShippingDetailVerificationComponent {
 
     let finalPayload = payload;
 
+    // ---------- PHYSICAL SHOP SOURCE ----------
+    if (payload.orderSource === OrderSourceEnum.PhysicalShop) {
+      const shopSessionId = this.auth.shopSessionId();
+
+      if (!shopSessionId) {
+        this.messageService.error(
+          'No active physical shop session found'
+        );
+        return;
+      }
+
+      finalPayload = {
+        ...finalPayload,
+        physicalShopSessionId: shopSessionId
+      };
+    }
+    
     // Manager / cashier placing order for customer
     if (!this.isCustomer()) {
       finalPayload = {
