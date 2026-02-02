@@ -21,25 +21,27 @@ export class FileService {
     getInvoiceFileUrl(invoice: InvoiceReadModel): string {
         if (!invoice) return '';
 
-        const cashflow = invoice.cashflowResponseDtos?.at(-1); // latest cashflow
+        const cashflow = invoice.cashflowResponseDtos?.at(-1);
+
+        const normalize = (path?: string | null): string => {
+            if (!path) return '';
+            if (path.startsWith('http://') || path.startsWith('https://')) {
+                return path; // already absolute
+            }
+            return `${this.baseUrl}/${path}`;
+        };
 
         switch (invoice.invoiceStatus) {
 
             case InvoiceStatusEnum.Unpaid:
             case InvoiceStatusEnum.Voided:
-                return invoice.invoiceFileUrl
-                    ? `${this.baseUrl}/${invoice.invoiceFileUrl}`
-                    : '';
+                return normalize(invoice.invoiceFileUrl);
 
             case InvoiceStatusEnum.Paid:
-                return cashflow?.paymentReceiptFileUrl
-                    ? `${this.baseUrl}/${cashflow.paymentReceiptFileUrl}`
-                    : '';
+                return normalize(cashflow?.paymentReceiptFileUrl);
 
             case InvoiceStatusEnum.Refunded:
-                return cashflow?.refundReceiptFileUrl
-                    ? `${this.baseUrl}/${cashflow.refundReceiptFileUrl}`
-                    : '';
+                return normalize(cashflow?.refundReceiptFileUrl);
 
             default:
                 return '';
