@@ -238,6 +238,9 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
     switch (status) {
       case OrderStatusEnum.Pending:
+        return [OrderStatusEnum.Processing];
+
+      case OrderStatusEnum.Processing:
         return [OrderStatusEnum.Shipped];
 
       case OrderStatusEnum.Shipped:
