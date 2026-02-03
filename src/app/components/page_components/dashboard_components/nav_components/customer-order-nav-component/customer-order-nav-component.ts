@@ -175,12 +175,13 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   // PERMISSIONS
   // ======================================================
+  // customer: pending -> Cancel_Pending
+  // employee: rest (Delivered -> Cancel_Pending as well)
 
   canEdit(order: CustomerOrderReadModel): boolean {
     if (this.role === UserRoleEnum.Customer) {
       return (
-        order.orderStatus === OrderStatusEnum.Pending ||
-        order.orderStatus === OrderStatusEnum.Processing
+        order.orderStatus === OrderStatusEnum.Pending 
       );
     }
     return true;
