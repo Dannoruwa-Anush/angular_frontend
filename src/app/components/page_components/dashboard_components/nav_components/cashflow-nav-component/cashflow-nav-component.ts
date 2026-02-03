@@ -127,17 +127,13 @@ export class CashflowNavComponent extends DashboardNavListOnlyStateBase<Cashflow
   // VIEW
   // ======================================================
   view(item: CashflowReadModel) {
-    const fileUrl = this.fileService.getCashflowReceiptFileUrl(item);
-
-    const dialogRef = this.dialog.open(CashflowReceiptDialogBoxComponent, {
+    this.dialog.open(CashflowReceiptDialogBoxComponent, {
       width: '90%',
       maxWidth: '1200px',
       height: '90vh',
-      data: { invoice: { ...item, invoiceFileUrl: fileUrl } },
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-
+      data: {
+        cashflow: item
+      }
     });
   }
 }

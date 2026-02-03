@@ -13,12 +13,11 @@
     <iframe *ngIf="hasPdf() && pdfUrl() as url" class="receipt-frame" [src]="url | safeUrl" (load)="onLoad()">
     </iframe>
 
-    <!-- ================= ACTIONS ================= -->
-    <mat-dialog-actions align="end">
+</mat-dialog-content>
 
-        <!-- CLOSE -->
-        <button mat-button [disabled]="saving()" (click)="onClose()">
-            Close
-        </button>
-
-    </mat-dialog-actions>
+<!-- ================= ACTIONS ================= -->
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()" [disabled]="saving()">
+        Close
+    </button>
+</mat-dialog-actions>

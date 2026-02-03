@@ -24,9 +24,15 @@ export class CashflowReceiptDialogBoxComponent {
   saving = signal(false);
 
   // ================= PDF =================
-  pdfUrl = computed(() => {
-    const inv = this.cashflow();
-    return inv ? this.fileService.getCashflowReceiptFileUrl(inv) : null;
+    pdfUrl = computed(() => {
+    const cf = this.cashflow();
+    const url = cf ? this.fileService.getCashflowReceiptFileUrl(cf) : '';
+
+    if (!url) {
+      this.loading.set(false);
+    }
+
+    return url;
   });
 
   hasPdf = computed(() => !!this.pdfUrl());
