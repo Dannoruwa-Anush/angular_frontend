@@ -1,9 +1,12 @@
 <div class="dashboard-container">
 
+    <!-- TOOLBAR FILTERS (EMPLOYEE / ADMIN ONLY) -->
     <mat-toolbar *ngIf="role !== UserRoleEnum.Customer" color="primary" class="products-toolbar">
-        <!-- [Start: Order Status menu] -->
+
+        <!-- ================= Order Status Filter ================= -->
         <button mat-button [matMenuTriggerFor]="orderStatusMenu" class="filter-button"
             [class.active-filter]="selectedOrderStatusId() !== undefined">
+
             {{ selectedOrderStatusName() ?? 'Order Status' }}
             <mat-icon>arrow_drop_down</mat-icon>
         </button>
@@ -14,17 +17,19 @@
                 All Order Statuses
             </button>
 
-            <button mat-menu-item *ngFor="let orderStatus of orderStatuses()" (click)="onOrderStausSelect(orderStatus.orderStatusID)"
-                [class.selected-menu-item]="selectedOrderStatusId() === orderStatus.orderStatusID">
+            <button mat-menu-item *ngFor="let orderStatus of orderStatuses()"
+                (click)="onOrderStausSelect(orderStatus.orderStatusID)" [class.selected-menu-item]="
+          selectedOrderStatusId() === orderStatus.orderStatusID
+        ">
                 {{ orderStatus.orderStatusName }}
             </button>
         </mat-menu>
-        <!-- [End: Order status menu] -->
+        <!-- ======================================================= -->
 
-
-        <!-- [Start: Payment Status menu] -->
+        <!-- ================= Payment Status Filter ================= -->
         <button mat-button [matMenuTriggerFor]="paymentStatusMenu" class="filter-button"
             [class.active-filter]="selectedPaymentStatusId() !== undefined">
+
             {{ selectedPaymentStatusName() ?? 'Payment Status' }}
             <mat-icon>arrow_drop_down</mat-icon>
         </button>
@@ -35,18 +40,20 @@
                 All Payment Statuses
             </button>
 
-            <button mat-menu-item *ngFor="let paymentStatus of paymentStatuses()" (click)="onPaymentStatusSelect(paymentStatus.paymentStatusID)"
-                [class.selected-menu-item]="selectedPaymentStatusId() === paymentStatus.paymentStatusID">
+            <button mat-menu-item *ngFor="let paymentStatus of paymentStatuses()"
+                (click)="onPaymentStatusSelect(paymentStatus.paymentStatusID)" [class.selected-menu-item]="
+          selectedPaymentStatusId() === paymentStatus.paymentStatusID
+        ">
                 {{ paymentStatus.paymentStatusName }}
             </button>
         </mat-menu>
-        <!-- [End: payment Status menu] -->
+        <!-- ========================================================= -->
     </mat-toolbar>
 
-    <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
+    <!-- ================= TABLE + SEARCH + PAGINATION ================= -->
     <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Order"
-        [searchValue]="searchText()" [disableSearch]="role === UserRoleEnum.Customer" [totalCount]="totalCount()" [pageSize]="pageSize()"
-        (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+        [searchValue]="searchText()" [disableSearch]="role === UserRoleEnum.Customer" [totalCount]="totalCount()"
+        [pageSize]="pageSize()" (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
 
         <ng-template tableActions let-row>
             <button mat-icon-button color="primary" (click)="view(row)">
@@ -57,8 +64,159 @@
                 <mat-icon>edit</mat-icon>
             </button>
         </ng-template>
+
     </app-dashboard-table-component>
 
-    <!-- ORDER SUMMARY -->
-    <app-order-summary-component *ngIf="isViewMode() && selectedOrder()" [order]="selectedOrder()!"></app-order-summary-component>
+    <!-- ================= ORDER SUMMARY ================= -->
+    <app-order-summary-component *ngIf="isViewMode() && selectedOrder()" [order]="selectedOrder()!">
+    </app-order-summary-component>
+
+</div>
+<div class="dashboard-container">
+
+    <!-- TOOLBAR FILTERS (EMPLOYEE / ADMIN ONLY) -->
+    <mat-toolbar *ngIf="role !== UserRoleEnum.Customer" color="primary" class="products-toolbar">
+
+        <!-- ================= Order Status Filter ================= -->
+        <button mat-button [matMenuTriggerFor]="orderStatusMenu" class="filter-button"
+            [class.active-filter]="selectedOrderStatusId() !== undefined">
+
+            {{ selectedOrderStatusName() ?? 'Order Status' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #orderStatusMenu="matMenu">
+            <button mat-menu-item (click)="onOrderStausSelect(undefined)"
+                [class.selected-menu-item]="selectedOrderStatusId() === undefined">
+                All Order Statuses
+            </button>
+
+            <button mat-menu-item *ngFor="let orderStatus of orderStatuses()"
+                (click)="onOrderStausSelect(orderStatus.orderStatusID)" [class.selected-menu-item]="
+          selectedOrderStatusId() === orderStatus.orderStatusID
+        ">
+                {{ orderStatus.orderStatusName }}
+            </button>
+        </mat-menu>
+        <!-- ======================================================= -->
+
+        <!-- ================= Payment Status Filter ================= -->
+        <button mat-button [matMenuTriggerFor]="paymentStatusMenu" class="filter-button"
+            [class.active-filter]="selectedPaymentStatusId() !== undefined">
+
+            {{ selectedPaymentStatusName() ?? 'Payment Status' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #paymentStatusMenu="matMenu">
+            <button mat-menu-item (click)="onPaymentStatusSelect(undefined)"
+                [class.selected-menu-item]="selectedPaymentStatusId() === undefined">
+                All Payment Statuses
+            </button>
+
+            <button mat-menu-item *ngFor="let paymentStatus of paymentStatuses()"
+                (click)="onPaymentStatusSelect(paymentStatus.paymentStatusID)" [class.selected-menu-item]="
+          selectedPaymentStatusId() === paymentStatus.paymentStatusID
+        ">
+                {{ paymentStatus.paymentStatusName }}
+            </button>
+        </mat-menu>
+        <!-- ========================================================= -->
+    </mat-toolbar>
+
+    <!-- ================= TABLE + SEARCH + PAGINATION ================= -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Order"
+        [searchValue]="searchText()" [disableSearch]="role === UserRoleEnum.Customer" [totalCount]="totalCount()"
+        [pageSize]="pageSize()" (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" *ngIf="canEdit(row)" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </ng-template>
+
+    </app-dashboard-table-component>
+
+    <!-- ================= ORDER SUMMARY ================= -->
+    <app-order-summary-component *ngIf="isViewMode() && selectedOrder()" [order]="selectedOrder()!">
+    </app-order-summary-component>
+
+</div>
+<div class="dashboard-container">
+
+    <!-- TOOLBAR FILTERS (EMPLOYEE / ADMIN ONLY) -->
+    <mat-toolbar *ngIf="role !== UserRoleEnum.Customer" color="primary" class="products-toolbar">
+
+        <!-- ================= Order Status Filter ================= -->
+        <button mat-button [matMenuTriggerFor]="orderStatusMenu" class="filter-button"
+            [class.active-filter]="selectedOrderStatusId() !== undefined">
+
+            {{ selectedOrderStatusName() ?? 'Order Status' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #orderStatusMenu="matMenu">
+            <button mat-menu-item (click)="onOrderStausSelect(undefined)"
+                [class.selected-menu-item]="selectedOrderStatusId() === undefined">
+                All Order Statuses
+            </button>
+
+            <button mat-menu-item *ngFor="let orderStatus of orderStatuses()"
+                (click)="onOrderStausSelect(orderStatus.orderStatusID)" [class.selected-menu-item]="
+          selectedOrderStatusId() === orderStatus.orderStatusID
+        ">
+                {{ orderStatus.orderStatusName }}
+            </button>
+        </mat-menu>
+        <!-- ======================================================= -->
+
+        <!-- ================= Payment Status Filter ================= -->
+        <button mat-button [matMenuTriggerFor]="paymentStatusMenu" class="filter-button"
+            [class.active-filter]="selectedPaymentStatusId() !== undefined">
+
+            {{ selectedPaymentStatusName() ?? 'Payment Status' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+
+        <mat-menu #paymentStatusMenu="matMenu">
+            <button mat-menu-item (click)="onPaymentStatusSelect(undefined)"
+                [class.selected-menu-item]="selectedPaymentStatusId() === undefined">
+                All Payment Statuses
+            </button>
+
+            <button mat-menu-item *ngFor="let paymentStatus of paymentStatuses()"
+                (click)="onPaymentStatusSelect(paymentStatus.paymentStatusID)" [class.selected-menu-item]="
+          selectedPaymentStatusId() === paymentStatus.paymentStatusID
+        ">
+                {{ paymentStatus.paymentStatusName }}
+            </button>
+        </mat-menu>
+        <!-- ========================================================= -->
+    </mat-toolbar>
+
+    <!-- ================= TABLE + SEARCH + PAGINATION ================= -->
+    <app-dashboard-table-component [data]="items()" [columns]="columns" searchLabel="Search Order"
+        [searchValue]="searchText()" [disableSearch]="role === UserRoleEnum.Customer" [totalCount]="totalCount()"
+        [pageSize]="pageSize()" (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+
+            <button mat-icon-button color="accent" *ngIf="canEdit(row)" (click)="edit(row)">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </ng-template>
+
+    </app-dashboard-table-component>
+
+    <!-- ================= ORDER SUMMARY ================= -->
+    <app-order-summary-component *ngIf="isViewMode() && selectedOrder()" [order]="selectedOrder()!">
+    </app-order-summary-component>
+
 </div>

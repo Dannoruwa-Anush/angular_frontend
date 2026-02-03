@@ -8,7 +8,7 @@ export enum OrderStatusEnum {
     DeliveredAfterCancellationRejected = 7, 
 }
 
-//conver Enums to Human-readable labels for UI
+//convert Enums to Human-readable labels for UI
 export function getOrderStatusLabel(status: OrderStatusEnum): string {
   switch (status) {
     case OrderStatusEnum.Pending:

@@ -10,7 +10,7 @@ import { CustomerOrderService } from '../../../../../services/api_services/custo
 import { SystemMessageService } from '../../../../../services/ui_service/systemMessageService';
 import { CrudOperationConfirmationUiHelper } from '../../../../../utils/crudOperationConfirmationUiHelper';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
-import { OrderStatusEnum } from '../../../../../config/enums/orderStatusEnum';
+import { OrderStatusEnum, getOrderStatusLabel } from '../../../../../config/enums/orderStatusEnum';
 import { OrderPaymentStatusEnum } from '../../../../../config/enums/orderPaymentStatusEnum';
 import { OrderSummaryComponent } from '../../../../reusable_components/order-summary-component/order-summary-component';
 import { OrderStatusUiModel } from '../../../../../models/ui_models/orderStatusUiModel';
@@ -36,14 +36,13 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
 
   
-  // ======================================================
+    // ======================================================
   // STATE
   // ======================================================
 
   UserRoleEnum = UserRoleEnum;
   role!: UserRoleEnum;
 
-  //Signal used to force reloads
   private reloadTrigger = signal(0);
 
   orderStatuses = signal<OrderStatusUiModel[]>([]);
@@ -54,11 +53,13 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
   selectedOrder = signal<CustomerOrderReadModel | null>(null);
 
-  selectedOrderStatusName = computed(() =>
-    this.selectedOrderStatusId()
-      ? OrderStatusEnum[this.selectedOrderStatusId()!]
-      : undefined
-  );
+  // expose helper to template
+  getOrderStatusLabel = getOrderStatusLabel;
+
+  selectedOrderStatusName = computed(() => {
+    const id = this.selectedOrderStatusId();
+    return id ? getOrderStatusLabel(id as OrderStatusEnum) : undefined;
+  });
 
   selectedPaymentStatusName = computed(() =>
     this.selectedPaymentStatusId()
@@ -67,7 +68,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   );
 
   // ======================================================
-  // REQUEST PARAMS (override base)
+  // REQUEST PARAMS
   // ======================================================
 
   override requestParams = computed(() => ({
@@ -96,7 +97,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     {
       key: 'orderStatus',
       header: 'Order Status',
-      cell: o => OrderStatusEnum[o.orderStatus]
+      cell: o => getOrderStatusLabel(o.orderStatus)
     },
     {
       key: 'paymentCompletedDate',
@@ -128,12 +129,10 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     this.loadOrderStatus();
     this.loadPaymentStatus();
 
-    //Single reactive data pipeline
     effect(() => {
-      this.requestParams();   // paging / search / filters
-      this.reloadTrigger();   // manual reloads
-
-      this.loadItems();       // required by base
+      this.requestParams();
+      this.reloadTrigger();
+      this.loadItems();
     });
   }
 
@@ -157,7 +156,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         .filter(v => typeof v === 'number')
         .map(v => ({
           orderStatusID: v as number,
-          orderStatusName: OrderStatusEnum[v]
+          orderStatusName: getOrderStatusLabel(v as OrderStatusEnum)
         }))
     );
   }
@@ -184,11 +183,11 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         order.orderStatus === OrderStatusEnum.Processing
       );
     }
-    return true; // Employee / Admin
+    return true;
   }
 
   // ======================================================
-  // EDIT / UPDATE LOGIC
+  // EDIT / UPDATE
   // ======================================================
 
   override edit(order: CustomerOrderReadModel): void {
@@ -239,7 +238,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     this.confirmationHelper
       .confirmProcessWithInput(
         'Update Order Status',
-        `Confirm update to "${OrderStatusEnum[nextStatus]}"`,
+        `Confirm update to "${getOrderStatusLabel(nextStatus)}"`,
         'Note',
         'Confirm',
         'Back'
@@ -276,7 +275,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   }
 
   // ======================================================
-  // BASE CLASS IMPLEMENTATIONS
+  // BASE IMPLEMENTATION
   // ======================================================
 
   protected override getId(item: CustomerOrderReadModel): number | null {
@@ -295,7 +294,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         params.searchKey
       )
       .subscribe(res => {
-        this.items.set([...res.items]); // force new reference
+        this.items.set([...res.items]);
         this.totalCount.set(res.totalCount);
       });
   }
