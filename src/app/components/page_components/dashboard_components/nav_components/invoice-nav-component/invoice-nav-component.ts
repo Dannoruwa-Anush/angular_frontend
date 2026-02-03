@@ -239,11 +239,33 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   override view(item: InvoiceReadModel) {
     const fileUrl = this.fileService.getInvoiceFileUrl(item);
 
-    this.dialog.open(InvoiceViewDialogBoxComponent, {
+    const dialogRef = this.dialog.open(InvoiceViewDialogBoxComponent, {
       width: '90%',
       maxWidth: '1200px',
       height: '90vh',
       data: { invoice: { ...item, invoiceFileUrl: fileUrl } },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      const updatedInvoice = result?.updatedInvoice as InvoiceReadModel | undefined;
+      if (!updatedInvoice) return;
+
+      this.updateInvoiceRow(updatedInvoice);
+    });
+  }
+
+
+  private updateInvoiceRow(updated: InvoiceReadModel): void {
+    const selectedStatus = this.selectedInvoiceStatusId();
+
+    this.items.update(list => {
+      if (selectedStatus && updated.invoiceStatus !== selectedStatus) {
+        return list.filter(i => i.invoiceID !== updated.invoiceID);
+      }
+
+      return list.map(i =>
+        i.invoiceID === updated.invoiceID ? updated : i
+      );
     });
   }
 

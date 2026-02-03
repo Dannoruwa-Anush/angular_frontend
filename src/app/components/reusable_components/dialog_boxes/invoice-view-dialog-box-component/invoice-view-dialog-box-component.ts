@@ -155,7 +155,11 @@ export class InvoiceViewDialogBoxComponent {
         this.mode.set('VIEW');
         this.loading.set(false);
         this.saving.set(false);
+
         this.messageService.success('Payment completed successfully');
+
+        // Return updated invoice
+        this.dialogRef.close({ updatedInvoice });
       },
       error: () => {
         this.loading.set(false);
@@ -163,6 +167,9 @@ export class InvoiceViewDialogBoxComponent {
         this.messageService.warning(
           'Payment completed, but invoice refresh failed'
         );
+
+        // Still close dialog safely
+        this.dialogRef.close();
       }
     });
   }
