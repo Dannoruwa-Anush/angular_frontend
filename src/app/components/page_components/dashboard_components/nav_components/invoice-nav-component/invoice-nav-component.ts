@@ -3,7 +3,6 @@ import { Component, computed, effect, signal } from '@angular/core';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { DashboardTableComponent } from '../../../../reusable_components/dashboard_nav_component/dashboard_building_blocks/dashboard-table-component/dashboard-table-component';
 import { InvoiceStatusEnum } from '../../../../../config/enums/invoiceStatusEnum';
-import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
 import { InvoiceReadModel } from '../../../../../models/api_models/read_models/invoiceReadModel';
 import { InvoiceTypeUiModel } from '../../../../../models/ui_models/invoiceTypeStatusUiModel';
 import { InvoiceTypeEnum } from '../../../../../config/enums/invoiceTypeEnum';
@@ -20,6 +19,7 @@ import { UserRoleEnum } from '../../../../../config/enums/userRoleEnum';
 import { EmployeePositionEnum } from '../../../../../config/enums/employeePositionEnum';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
+import { DashboardNavListOnlyStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavListOnlyStateBase';
 
 @Component({
   selector: 'app-invoice-nav-component',
@@ -31,7 +31,7 @@ import { OrderSourceEnum } from '../../../../../config/enums/orderSourceEnum';
   templateUrl: './invoice-nav-component.html',
   styleUrl: './invoice-nav-component.scss',
 })
-export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel> {
+export class InvoiceNavComponent extends DashboardNavListOnlyStateBase<InvoiceReadModel> {
 
 
 
@@ -185,7 +185,7 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
   // ======================================================
   // BASE IMPLEMENTATIONS
   // ======================================================
-  protected override getId(item: InvoiceReadModel): number | null {
+  protected getId(item: InvoiceReadModel): number | null {
     return item.invoiceID ?? null;
   }
 
@@ -230,13 +230,10 @@ export class InvoiceNavComponent extends DashboardNavStateBase<InvoiceReadModel>
       });
   }
 
-  protected override loadToForm(): void { }
-  protected override resetForm(): void { }
-
   // ======================================================
   // VIEW
   // ======================================================
-  override view(item: InvoiceReadModel) {
+  view(item: InvoiceReadModel) {
     const fileUrl = this.fileService.getInvoiceFileUrl(item);
 
     const dialogRef = this.dialog.open(InvoiceViewDialogBoxComponent, {
