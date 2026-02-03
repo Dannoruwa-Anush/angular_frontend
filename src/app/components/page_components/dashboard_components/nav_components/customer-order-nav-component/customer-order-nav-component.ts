@@ -177,7 +177,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
   canEdit(order: CustomerOrderReadModel): boolean {
     if (this.role === UserRoleEnum.Customer) {
-      return order.orderStatus === OrderStatusEnum.Pending;
+      return order.orderStatus === OrderStatusEnum.Pending || order.orderStatus === OrderStatusEnum.Processing;
     }
     return true; // Employee
   }
@@ -195,8 +195,11 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     const id = order.orderID;
     if (!id) return;
 
-    if (order.orderStatus !== OrderStatusEnum.Pending) {
-      this.messageService.error('Only pending orders can be cancelled.');
+    if (
+      order.orderStatus !== OrderStatusEnum.Pending &&
+      order.orderStatus !== OrderStatusEnum.Processing
+    ) {
+      this.messageService.error('Only pending or processing orders can be cancelled.');
       return;
     }
 
