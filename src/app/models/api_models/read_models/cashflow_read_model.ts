@@ -9,9 +9,4 @@ export interface CashflowReadModel {
     cashflowPaymentNature: CashflowPaymentNatureEnum;
     paymentReceiptFileUrl?: string;
     refundReceiptFileUrl?: string;
-
-    refundDate?: string;
-
-    // Fk : fields
-    customerOrderResponseDto?: CustomerOrderReadModel;
 }

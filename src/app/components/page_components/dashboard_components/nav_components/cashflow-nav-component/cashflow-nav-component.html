@@ -23,8 +23,13 @@
 
 <div class="dashboard-container">
     <!-- Reusable List (SEARCH + TABLE + PAGINATION) -->
-    <app-dashboard-table-component [data]="items()" [columns]="columns" [showActions]="false"
+    <app-dashboard-table-component [data]="items()" [columns]="columns" [showActions]="true"
         searchLabel="Search cashflow" [searchValue]="searchText()" [totalCount]="totalCount()" [pageSize]="pageSize()"
         (searchChange)="onSearch($event)" (pageChange)="onPageChange($event)">
+        <ng-template tableActions let-row>
+            <button mat-icon-button color="primary" (click)="view(row)">
+                <mat-icon>visibility</mat-icon>
+            </button>
+        </ng-template>
     </app-dashboard-table-component>
 </div>

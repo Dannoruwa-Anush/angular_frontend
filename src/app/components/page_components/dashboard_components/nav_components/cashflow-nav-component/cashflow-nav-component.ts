@@ -8,6 +8,9 @@ import { CashflowStatusUiModel } from '../../../../../models/ui_models/cashflowS
 import { CashflowStatusEnum } from '../../../../../config/enums/cashflowStatusEnum';
 import { DashboardTableColumnModel } from '../../../../../models/ui_models/dashboardTableColumnModel';
 import { CashflowService } from '../../../../../services/api_services/cashflowService';
+import { FileService } from '../../../../../services/ui_service/fileService';
+import { CashflowReceiptDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/cashflow-receipt-dialog-box-component/cashflow-receipt-dialog-box-component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-cashflow-nav-component',
@@ -60,9 +63,9 @@ export class CashflowNavComponent extends DashboardNavListOnlyStateBase<Cashflow
   // ======================================================
   columns: DashboardTableColumnModel<CashflowReadModel>[] = [
     {
-      key: 'orderID',
-      header: 'Order No',
-      cell: p => p.customerOrderResponseDto!.orderID
+      key: 'cashflowID',
+      header: 'Cashflow No',
+      cell: p => p.cashflowID
     },
     {
       key: 'amountPaid',
@@ -78,11 +81,6 @@ export class CashflowNavComponent extends DashboardNavListOnlyStateBase<Cashflow
       key: 'cashflowDate',
       header: 'Date',
       cell: p => new Date(p.cashflowDate).toLocaleString()
-    },
-    {
-      key: 'refundDate',
-      header: 'Refund Date',
-      cell: p => new Date(p.refundDate!).toLocaleString()
     }
   ];
 
@@ -90,7 +88,10 @@ export class CashflowNavComponent extends DashboardNavListOnlyStateBase<Cashflow
   // CONSTRUCTOR
   // ======================================================
   constructor(
-    private cashflowService: CashflowService) {
+    private cashflowService: CashflowService,
+    private fileService: FileService,
+    private dialog: MatDialog,
+  ) {
     super();
     this.loading = this.cashflowService.loading;
 
@@ -120,5 +121,23 @@ export class CashflowNavComponent extends DashboardNavListOnlyStateBase<Cashflow
         this.items.set(res.items);
         this.totalCount.set(res.totalCount);
       });
+  }
+
+  // ======================================================
+  // VIEW
+  // ======================================================
+  view(item: CashflowReadModel) {
+    const fileUrl = this.fileService.getCashflowReceiptFileUrl(item);
+
+    const dialogRef = this.dialog.open(CashflowReceiptDialogBoxComponent, {
+      width: '90%',
+      maxWidth: '1200px',
+      height: '90vh',
+      data: { invoice: { ...item, invoiceFileUrl: fileUrl } },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+
+    });
   }
 }

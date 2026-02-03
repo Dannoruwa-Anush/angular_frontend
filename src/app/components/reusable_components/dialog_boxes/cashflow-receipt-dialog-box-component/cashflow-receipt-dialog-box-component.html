@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>
+    Receipt #{{ cashflow()?.cashflowID }}
+</h2>
+
+<mat-dialog-content class="dialog-content">
+
+    <!-- ================= LOADING ================= -->
+    <div *ngIf="loading()" class="spinner-overlay">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
+
+    <!-- ================= PDF VIEWER ================= -->
+    <iframe *ngIf="hasPdf() && pdfUrl() as url" class="receipt-frame" [src]="url | safeUrl" (load)="onLoad()">
+    </iframe>
+
+    <!-- ================= ACTIONS ================= -->
+    <mat-dialog-actions align="end">
+
+        <!-- CLOSE -->
+        <button mat-button [disabled]="saving()" (click)="onClose()">
+            Close
+        </button>
+
+    </mat-dialog-actions>
