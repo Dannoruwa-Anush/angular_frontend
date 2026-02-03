@@ -1,7 +1,7 @@
 import { Component, Signal } from '@angular/core';
 
 import { MaterialModule } from '../../../custom_modules/material/material-module';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ShoppingCartService } from '../../../services/ui_service/shoppingCartService';
 import { AuthSessionService } from '../../../services/auth_services/authSessionService';
 import { CommonModule } from '@angular/common';
@@ -23,18 +23,30 @@ export class HeaderComponent {
 
   //expose enum
   UserRoleEnum = UserRoleEnum;
-  
+
   image_company_logo = 'assets/images/logo/logo.png';
 
   cartItemCount!: Signal<number>;
 
   constructor(
+    private router: Router,
     private shoppingCartService: ShoppingCartService,
     public authSessionService: AuthSessionService,
     private confirmService: SystemOperationConfirmService,
     private messageService: SystemMessageService
   ) {
     this.cartItemCount = this.shoppingCartService.cartItemCount;
+  }
+
+  // Account Page : Admin & Employee, Profile Page : Customer
+  goToAccountPage(): void {
+    const role = this.authSessionService.role();
+
+    if (role === UserRoleEnum.Admin || role === UserRoleEnum.Employee) {
+      this.router.navigate(['/dashboard']);
+    } else if (role === UserRoleEnum.Customer) {
+      this.router.navigate(['/dashboard/profile']);
+    }
   }
 
   // LOGOUT 

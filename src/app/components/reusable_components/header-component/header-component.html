@@ -27,8 +27,7 @@
     <!-- BUSINESS SESSION INDICATOR -->
     <div *ngIf="authSessionService.hasRole([UserRoleEnum.Admin, UserRoleEnum.Employee])" class="session-indicator"
       [class.active]="authSessionService.hasActiveShopSession()"
-      [class.inactive]="!authSessionService.hasActiveShopSession()" matTooltipPosition="below" 
-      [matTooltip]="authSessionService.hasActiveShopSession()
+      [class.inactive]="!authSessionService.hasActiveShopSession()" matTooltipPosition="below" [matTooltip]="authSessionService.hasActiveShopSession()
       ? ('Opened at: ' + (authSessionService.shopSessionOpenedAt() | date:'medium'))
       : 'No active business session'">
 
@@ -63,9 +62,16 @@
           {{ authSessionService.email() }}
         </div>
 
-        <button mat-menu-item routerLink="/dashboard/profile">
-          <mat-icon>person</mat-icon>
-          Profile
+        <button mat-menu-item (click)="goToAccountPage()">
+          <mat-icon>
+            {{ authSessionService.hasRole([UserRoleEnum.Admin, UserRoleEnum.Employee])
+            ? 'dashboard'
+            : 'person' }}
+          </mat-icon>
+
+          {{ authSessionService.hasRole([UserRoleEnum.Admin, UserRoleEnum.Employee])
+          ? 'Dashboard'
+          : 'Profile' }}
         </button>
 
         <button mat-menu-item (click)="logout()">
