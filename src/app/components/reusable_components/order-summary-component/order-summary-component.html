@@ -10,7 +10,7 @@
 
         <div class="status">
             <mat-chip color="primary" selected>
-                Order Status: {{ OrderStatusEnum[order.orderStatus] }}
+                Order Status: {{ getOrderStatusLabel(order.orderStatus) }}
             </mat-chip>
 
             <mat-chip [color]="order.orderPaymentStatus === 1 ? 'accent' : 'warn'" selected>
@@ -18,6 +18,70 @@
             </mat-chip>
         </div>
     </div>
+    <mat-divider></mat-divider>
+
+    <!-- ORDER STATUS STEPPER -->
+    <mat-stepper class="order-stepper" [selectedIndex]="getStepIndex()" linear="false">
+        <!-- Pending -->
+        <mat-step>
+            <ng-template matStepLabel>
+                <mat-icon>hourglass_empty</mat-icon>
+                Pending
+            </ng-template>
+            <p>{{ formatDate(order.orderDate) }}</p>
+        </mat-step>
+
+        <!-- Processing -->
+        <mat-step>
+            <ng-template matStepLabel>
+                <mat-icon>settings</mat-icon>
+                Processing
+            </ng-template>
+            <p>Order is being prepared</p>
+        </mat-step>
+
+        <!-- Shipped -->
+        <mat-step>
+            <ng-template matStepLabel>
+                <mat-icon>local_shipping</mat-icon>
+                Shipped
+            </ng-template>
+            <p>{{ formatDate(order.shippedDate) }}</p>
+        </mat-step>
+
+        <!-- Delivered -->
+        <mat-step>
+            <ng-template matStepLabel>
+                <mat-icon>check_circle</mat-icon>
+                Delivered
+            </ng-template>
+            <p>{{ formatDate(order.deliveredDate) }}</p>
+
+            <p *ngIf="order.orderStatus === OrderStatusEnum.DeliveredAfterCancellationRejected" class="info">
+                Delivered after cancellation was rejected
+            </p>
+        </mat-step>
+
+        <!-- Cancel Pending -->
+        <mat-step>
+            <ng-template matStepLabel>
+                <mat-icon color="warn">pause_circle</mat-icon>
+                Cancel Pending
+            </ng-template>
+            <p>Cancellation requested</p>
+        </mat-step>
+
+        <!-- Cancelled -->
+        <mat-step>
+            <ng-template matStepLabel>
+                <mat-icon color="warn">cancel</mat-icon>
+                Cancelled
+            </ng-template>
+            <p class="cancelled">
+                {{ formatDate(order.cancelledDate) }}
+            </p>
+        </mat-step>
+    </mat-stepper>
     <mat-divider></mat-divider>
 
     <!-- Customer Details -->
