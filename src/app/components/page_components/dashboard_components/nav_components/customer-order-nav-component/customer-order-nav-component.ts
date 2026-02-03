@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../../../custom_modules/material/material-module';
 import { CustomerOrderReadModel } from '../../../../../models/api_models/read_models/customerOrder_read_Model';
 import { DashboardNavStateBase } from '../../../../reusable_components/dashboard_nav_component/dashboardNavStateBase';
@@ -35,94 +35,59 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
 
 
+  
   // ======================================================
-  // COMPONENT SPECIFIC THINGS
+  // STATE
   // ======================================================
+
   UserRoleEnum = UserRoleEnum;
   role!: UserRoleEnum;
 
+  //Signal used to force reloads
+  private reloadTrigger = signal(0);
+
   orderStatuses = signal<OrderStatusUiModel[]>([]);
-  selectedOrderStatusId = signal<number | undefined>(undefined);
-
-  selectedOrderStatusName = computed(() => {
-    const id = this.selectedOrderStatusId();
-    return id ? OrderStatusEnum[id] : undefined;
-  });
-
-  private loadOrderStatus(): void {
-    const orderStatus = Object.values(OrderStatusEnum)
-      .filter(v => typeof v === 'number')
-      .map(v => ({
-        orderStatusID: v as number,
-        orderStatusName: OrderStatusEnum[v]
-      }));
-
-    this.orderStatuses.set(orderStatus);
-  }
-
-  onOrderStausSelect(id?: number) {
-    this.pageNumber.set(1);
-    this.selectedOrderStatusId.set(id);
-  }
-
   paymentStatuses = signal<PaymentStatusUiModel[]>([]);
+
+  selectedOrderStatusId = signal<number | undefined>(undefined);
   selectedPaymentStatusId = signal<number | undefined>(undefined);
 
-  selectedPaymentStatusName = computed(() => {
-    const id = this.selectedPaymentStatusId();
-    return id ? OrderPaymentStatusEnum[id] : undefined;
-  });
+  selectedOrder = signal<CustomerOrderReadModel | null>(null);
 
-  private loadPaymentStatus(): void {
-    const paymentStatus = Object.values(OrderPaymentStatusEnum)
-      .filter(v => typeof v === 'number')
-      .map(v => ({
-        paymentStatusID: v as number,
-        paymentStatusName: OrderPaymentStatusEnum[v]
-      }));
+  selectedOrderStatusName = computed(() =>
+    this.selectedOrderStatusId()
+      ? OrderStatusEnum[this.selectedOrderStatusId()!]
+      : undefined
+  );
 
-    this.paymentStatuses.set(paymentStatus);
-  }
+  selectedPaymentStatusName = computed(() =>
+    this.selectedPaymentStatusId()
+      ? OrderPaymentStatusEnum[this.selectedPaymentStatusId()!]
+      : undefined
+  );
 
-  onPaymentStatusSelect(id?: number) {
-    this.pageNumber.set(1);
-    this.selectedPaymentStatusId.set(id);
-  }
-
-  protected override getSearchKey(): string | undefined {
-    if (this.role === UserRoleEnum.Customer) {
-      return this.auth.email() ?? undefined;
-    }
-
-    return this.searchText() || undefined;
-  }
+  // ======================================================
+  // REQUEST PARAMS (override base)
+  // ======================================================
 
   override requestParams = computed(() => ({
     pageNumber: this.pageNumber(),
     pageSize: this.pageSize(),
     paymentStatusId: this.selectedPaymentStatusId(),
     orderStatusId: this.selectedOrderStatusId(),
-    searchKey: this.searchText() || undefined,
+    searchKey:
+      this.role === UserRoleEnum.Customer
+        ? this.auth.email() ?? undefined
+        : this.searchText() || undefined,
   }));
-
-
-  selectedOrder = signal<CustomerOrderReadModel | null>(null);
-
 
   // ======================================================
   // TABLE CONFIG
   // ======================================================
+
   columns: DashboardTableColumnModel<CustomerOrderReadModel>[] = [
-    {
-      key: 'orderID',
-      header: 'Order No',
-      cell: o => o.orderID
-    },
-    {
-      key: 'totalAmount',
-      header: 'Total Amount (Rs.)',
-      cell: o => o.totalAmount
-    },
+    { key: 'orderID', header: 'Order No', cell: o => o.orderID },
+    { key: 'totalAmount', header: 'Total Amount (Rs.)', cell: o => o.totalAmount },
     {
       key: 'orderDate',
       header: 'Order Date',
@@ -148,6 +113,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   // CONSTRUCTOR
   // ======================================================
+
   constructor(
     private customerOrderService: CustomerOrderService,
     private auth: AuthSessionService,
@@ -157,172 +123,162 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     super();
 
     this.role = this.auth.role()!;
-
     this.loading = this.customerOrderService.loading;
 
-    // Load static data
     this.loadOrderStatus();
     this.loadPaymentStatus();
 
-    // Auto reload when paging / search changes
+    //Single reactive data pipeline
     effect(() => {
-      this.requestParams();
-      this.loadItems();
+      this.requestParams();   // paging / search / filters
+      this.reloadTrigger();   // manual reloads
+
+      this.loadItems();       // required by base
     });
   }
 
   // ======================================================
-  // PROCESS ORDER
+  // FILTER HANDLERS
+  // ======================================================
+
+  onOrderStausSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedOrderStatusId.set(id);
+  }
+
+  onPaymentStatusSelect(id?: number) {
+    this.pageNumber.set(1);
+    this.selectedPaymentStatusId.set(id);
+  }
+
+  private loadOrderStatus() {
+    this.orderStatuses.set(
+      Object.values(OrderStatusEnum)
+        .filter(v => typeof v === 'number')
+        .map(v => ({
+          orderStatusID: v as number,
+          orderStatusName: OrderStatusEnum[v]
+        }))
+    );
+  }
+
+  private loadPaymentStatus() {
+    this.paymentStatuses.set(
+      Object.values(OrderPaymentStatusEnum)
+        .filter(v => typeof v === 'number')
+        .map(v => ({
+          paymentStatusID: v as number,
+          paymentStatusName: OrderPaymentStatusEnum[v]
+        }))
+    );
+  }
+
+  // ======================================================
+  // PERMISSIONS
   // ======================================================
 
   canEdit(order: CustomerOrderReadModel): boolean {
     if (this.role === UserRoleEnum.Customer) {
-      return order.orderStatus === OrderStatusEnum.Pending || order.orderStatus === OrderStatusEnum.Processing;
+      return (
+        order.orderStatus === OrderStatusEnum.Pending ||
+        order.orderStatus === OrderStatusEnum.Processing
+      );
     }
-    return true; // Employee
+    return true; // Employee / Admin
   }
+
+  // ======================================================
+  // EDIT / UPDATE LOGIC
+  // ======================================================
 
   override edit(order: CustomerOrderReadModel): void {
-    if (this.role === UserRoleEnum.Customer) {
-      this.openCustomerCancellation(order);
-      return;
-    }
-
-    this.openEmployeeStatusUpdate(order);
+    this.role === UserRoleEnum.Customer
+      ? this.openCustomerCancellation(order)
+      : this.openEmployeeStatusUpdate(order);
   }
 
-  private openCustomerCancellation(order: CustomerOrderReadModel): void {
+  private openCustomerCancellation(order: CustomerOrderReadModel) {
     const id = order.orderID;
     if (!id) return;
 
-    if (
-      order.orderStatus !== OrderStatusEnum.Pending &&
-      order.orderStatus !== OrderStatusEnum.Processing
-    ) {
-      this.messageService.error('Only pending or processing orders can be cancelled.');
-      return;
-    }
+    this.confirmationHelper
+      .confirmProcessWithInput(
+        'Cancel Order',
+        'Please provide a cancellation reason',
+        'Cancellation reason',
+        'Cancel Order',
+        'Back'
+      )
+      .subscribe(result => {
+        if (!result?.confirmed || !result.value?.trim()) return;
 
-    this.confirmationHelper.confirmProcessWithInput(
-      'Cancel Order',
-      'Please provide a cancellation reason',
-      'Cancellation reason',
-      'Cancel Order',
-      'Back'
-    ).subscribe(result => {
-      if (!result || result === false) return;
+        const payload: CustomerOrderUpdateModel = {
+          cancellationReason: result.value.trim(),
+          newOrderStatus: OrderStatusEnum.Cancel_Pending
+        };
 
-      if (!result.confirmed || !result.value?.trim()) {
-        this.messageService.error('Cancellation reason is required.');
-        return;
-      }
-
-      const payload: CustomerOrderUpdateModel = {
-        cancellationReason: result.value.trim(),
-        newOrderStatus: OrderStatusEnum.Cancel_Pending
-      };
-
-      this.customerOrderService.update(id, payload).subscribe({
-        next: () => {
-          this.messageService.success('Order cancellation requested successfully');
-          this.resetForm();
-          this.loadItems();
-        },
-        error: err => {
-          this.messageService.error(err?.error?.message || 'Update failed');
-        }
+        this.customerOrderService.update(id, payload).subscribe({
+          next: () => {
+            this.messageService.success('Cancellation requested');
+            this.resetForm();
+            this.reloadTrigger.update(v => v + 1);
+          },
+          error: err =>
+            this.messageService.error(err?.error?.message || 'Update failed')
+        });
       });
-    });
+  }
+
+  private openEmployeeStatusUpdate(order: CustomerOrderReadModel) {
+    const id = order.orderID;
+    if (!id) return;
+
+    const nextStatus = this.getNextEmployeeStatuses(order.orderStatus)[0];
+    if (!nextStatus) return;
+
+    this.confirmationHelper
+      .confirmProcessWithInput(
+        'Update Order Status',
+        `Confirm update to "${OrderStatusEnum[nextStatus]}"`,
+        'Note',
+        'Confirm',
+        'Back'
+      )
+      .subscribe(result => {
+        if (!result?.confirmed) return;
+
+        const payload: CustomerOrderUpdateModel = {
+          newOrderStatus: nextStatus
+        };
+
+        this.customerOrderService.update(id, payload).subscribe({
+          next: () => {
+            this.messageService.success('Order updated');
+            this.resetForm();
+            this.reloadTrigger.update(v => v + 1);
+          },
+          error: err =>
+            this.messageService.error(err?.error?.message || 'Update failed')
+        });
+      });
   }
 
   private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
     switch (status) {
-      case OrderStatusEnum.Pending:
-        return [OrderStatusEnum.Processing];
-
-      case OrderStatusEnum.Processing:
-        return [OrderStatusEnum.Shipped];
-
-      case OrderStatusEnum.Shipped:
-        return [OrderStatusEnum.Delivered];
-
+      case OrderStatusEnum.Pending: return [OrderStatusEnum.Processing];
+      case OrderStatusEnum.Processing: return [OrderStatusEnum.Shipped];
+      case OrderStatusEnum.Shipped: return [OrderStatusEnum.Delivered];
       case OrderStatusEnum.Cancel_Pending:
         return [OrderStatusEnum.DeliveredAfterCancellationRejected];
-
       default:
         return [];
     }
   }
 
-  private openEmployeeStatusUpdate(order: CustomerOrderReadModel): void {
-    const id = order.orderID;
-    if (!id) return;
-
-    const nextStatuses = this.getNextEmployeeStatuses(order.orderStatus);
-
-    if (!nextStatuses.length) {
-      this.messageService.error('No valid status transition available.');
-      return;
-    }
-
-    // Enforce single logical transition
-    const nextStatus = nextStatuses[0];
-
-    const requiresReason =
-      nextStatus === OrderStatusEnum.DeliveredAfterCancellationRejected;
-
-    const title = 'Update Order Status';
-    const message = `Are you sure you want to update the order status to "${OrderStatusEnum[nextStatus]}"?`;
-
-    this.confirmationHelper.confirmProcessWithInput(
-      title,
-      message,
-      requiresReason
-        ? 'Enter cancellation rejection reason'
-        : 'Enter confirmation note',
-      'Confirm',
-      'Back'
-    ).subscribe(result => {
-      if (!result || result === false) return;
-
-      if (!result.confirmed) return;
-
-      const reason = result.value?.trim();
-
-      // Even though input is required by helper, keep business validation explicit
-      if (requiresReason && !reason) {
-        this.messageService.error('Cancellation rejection reason is required.');
-        return;
-      }
-
-      const payload: CustomerOrderUpdateModel = {
-        newOrderStatus: nextStatus,
-        cancellationApproved:
-          order.orderStatus === OrderStatusEnum.Cancel_Pending
-            ? nextStatus !== OrderStatusEnum.DeliveredAfterCancellationRejected
-            : undefined,
-        cancellationRejectionReason:
-          requiresReason ? reason : undefined
-      };
-
-      this.customerOrderService.update(id, payload).subscribe({
-        next: () => {
-          this.messageService.success(
-            `Order status updated to "${OrderStatusEnum[nextStatus]}".`
-          );
-          this.resetForm();
-          this.loadItems();
-        },
-        error: err => {
-          this.messageService.error(err?.error?.message || 'Update failed.');
-        }
-      });
-    });
-  }
-
   // ======================================================
   // BASE CLASS IMPLEMENTATIONS
   // ======================================================
+
   protected override getId(item: CustomerOrderReadModel): number | null {
     return item.orderID ?? null;
   }
@@ -339,19 +295,18 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         params.searchKey
       )
       .subscribe(res => {
-        this.items.set(res.items);
+        this.items.set([...res.items]); // force new reference
         this.totalCount.set(res.totalCount);
       });
   }
 
-  protected loadToForm(item: CustomerOrderReadModel, mode: DashboardModeEnum): void {
+  protected loadToForm(item: CustomerOrderReadModel, mode: DashboardModeEnum) {
     this.selectedItemId.set(item.orderID ?? null);
-
     this.selectedOrder.set(item);
     this.formMode.set(mode);
   }
 
-  protected resetForm(): void {
+  protected resetForm() {
     this.selectedItemId.set(null);
     this.selectedOrder.set(null);
     this.formMode.set(DashboardModeEnum.CREATE);
