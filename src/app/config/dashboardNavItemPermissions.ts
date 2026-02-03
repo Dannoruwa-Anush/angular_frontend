@@ -121,49 +121,11 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             EmployeePositionEnum.Manager
         ]
     },
-    //Payment (installment)
-
     //Bnpl_plan
     {
         label: 'Bnpl Plans',
         route: 'bnpl_plan',
         component: BnplPlanNavComponent,
-        allowedRoles: [
-            UserRoleEnum.Admin,
-            UserRoleEnum.Employee,
-        ],
-        allowedEmployeePositions: [
-            EmployeePositionEnum.Manager
-        ]
-    },
-    //Bnpl_snapshots
-    {
-        label: 'Installment Snapshots',
-        route: 'bnpl_installmet_snapshot',
-        component: InstallmentSnapshotNavComponent,
-        allowedRoles: [
-            UserRoleEnum.Admin,
-            UserRoleEnum.Employee,
-        ],
-        allowedEmployeePositions: [
-            EmployeePositionEnum.Manager
-        ]
-    },
-    //Cashflow
-    {
-        label: 'Cash Flows',
-        route: 'cashflow',
-        component: CashflowNavComponent,
-        allowedRoles: [
-            UserRoleEnum.Admin,
-            UserRoleEnum.Employee,
-        ]
-    },
-    //Bnpl installmet payment simulator
-    {
-        label: 'Bnpl Payment Simulator',
-        route: 'pay_simulator',
-        component: BnplInstallmetPaymentSimulatorNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
@@ -181,6 +143,42 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
             UserRoleEnum.Admin,
             UserRoleEnum.Employee,
             UserRoleEnum.Customer
+        ]
+    },
+    //Cashflow
+    {
+        label: 'Cash Flows',
+        route: 'cashflow',
+        component: CashflowNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ]
+    },
+    //Bnpl_snapshots
+    {
+        label: 'Installment Snapshots',
+        route: 'bnpl_installmet_snapshot',
+        component: InstallmentSnapshotNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
+        ]
+    },
+    //Bnpl installmet payment simulator
+    {
+        label: 'Bnpl Payment Simulator',
+        route: 'pay_simulator',
+        component: BnplInstallmetPaymentSimulatorNavComponent,
+        allowedRoles: [
+            UserRoleEnum.Admin,
+            UserRoleEnum.Employee,
+        ],
+        allowedEmployeePositions: [
+            EmployeePositionEnum.Manager
         ]
     },
 ];
