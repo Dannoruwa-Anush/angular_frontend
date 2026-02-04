@@ -107,6 +107,25 @@ export class InvoiceViewDialogBoxComponent {
   onPay(): void {
     if (!this.canShowPay()) return;
 
+    const role = this.auth.role();
+    const position = this.auth.employeePosition();
+
+    if (
+      role === UserRoleEnum.Employee &&
+      position === EmployeePositionEnum.Manager
+    ) {
+      if (!this.auth.hasActiveShopSession()) {
+        this.messageService.info(
+          'Unable to submit order: business session not opened.'
+        );
+
+        // Close dialog before navigation (important UX-wise)
+        this.dialogRef.close();
+
+        return;
+      }
+    }
+
     if (!this.isCashier()) {
       this.paymentMethod.set('CARD');
     }
