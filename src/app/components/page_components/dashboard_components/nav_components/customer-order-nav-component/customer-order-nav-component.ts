@@ -199,7 +199,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
   private openCustomerCancellation(order: CustomerOrderReadModel) {
     const id = order.orderID;
-    if (!id) return;
+    if (id == null) return;
 
     this.confirmationHelper
       .confirmProcessWithInput(
@@ -210,10 +210,12 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         'Back'
       )
       .subscribe(result => {
-        if (!result?.confirmed || !result.value?.trim()) return;
+        // Check both possible properties
+        const reason = result?.value?.trim() || result?.inputValue?.trim();
+        if (!result?.confirmed || !reason) return;
 
         const payload: CustomerOrderUpdateModel = {
-          cancellationReason: result.value.trim(),
+          cancellationReason: reason,
           newOrderStatus: OrderStatusEnum.Cancel_Pending
         };
 
