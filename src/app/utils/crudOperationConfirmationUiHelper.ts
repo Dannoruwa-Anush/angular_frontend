@@ -74,4 +74,30 @@ export class CrudOperationConfirmationUiHelper {
       }
     });
   }
+
+  confirmProcessWithRadioAndConditionalInput<T>(
+    title: string,
+    message: string,
+    options: ConfirmRadioOptionUiModel<T>[],
+    inputPlaceholder: string,
+    inputRequiredWhenValue: T,
+    confirmText = 'Confirm',
+    cancelText = 'Cancel'
+  ) {
+    return this.confirmService.confirm({
+      title,
+      message,
+      confirmText,
+      cancelText,
+      radioConfig: {
+        options,
+        required: true
+      },
+      inputConfig: {
+        placeholder: inputPlaceholder,
+        required: true,
+        showWhenRadioValue: inputRequiredWhenValue
+      }
+    });
+  }
 }

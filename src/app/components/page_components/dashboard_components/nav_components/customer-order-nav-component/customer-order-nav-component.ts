@@ -233,23 +233,24 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     const id = order.orderID;
     if (!id) return;
 
-    // Special case: Cancel Pending -> radio decision
+    // ==================================================
+    // CANCEL PENDING FLOW (radio + conditional input)
+    // ==================================================
     if (order.orderStatus === OrderStatusEnum.Cancel_Pending) {
 
       this.confirmationHelper
-        .confirmProcessWithRadio<OrderStatusEnum>(
+        .confirmProcessWithRadioAndConditionalInput<OrderStatusEnum>(
           'Cancellation Decision',
           'Select how to proceed with this cancellation request',
           [
-            {
-              label: 'Approve Cancellation',
-              value: OrderStatusEnum.Cancelled
-            },
+            { label: 'Approve Cancellation', value: OrderStatusEnum.Cancelled },
             {
               label: 'Reject Cancellation',
-              value: OrderStatusEnum.DeliveredAfterCancellationRejected
+              value: OrderStatusEnum.CancellationRejected
             }
           ],
+          'Rejection reason',
+          OrderStatusEnum.CancellationRejected,
           'Confirm',
           'Back'
         )
@@ -257,7 +258,11 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
           if (!result?.confirmed) return;
 
           const payload: CustomerOrderUpdateModel = {
-            newOrderStatus: result.value
+            newOrderStatus: result.value,
+            cancellationRejectionReason:
+              result.value === OrderStatusEnum.CancellationRejected
+                ? result.inputValue?.trim()
+                : undefined
           };
 
           this.customerOrderService.update(id, payload).subscribe({
@@ -274,7 +279,9 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       return;
     }
 
-    // Default single-step flow
+    // ==================================================
+    // DEFAULT EMPLOYEE FLOW
+    // ==================================================
     const nextStatus = this.getNextEmployeeStatuses(order.orderStatus)[0];
     if (!nextStatus) return;
 
@@ -311,7 +318,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       case OrderStatusEnum.Processing: return [OrderStatusEnum.Shipped];
       case OrderStatusEnum.Shipped: return [OrderStatusEnum.Delivered];
       case OrderStatusEnum.Cancel_Pending:
-        return [OrderStatusEnum.Cancelled, OrderStatusEnum.DeliveredAfterCancellationRejected];
+        return [OrderStatusEnum.Cancelled, OrderStatusEnum.CancellationRejected];
       default:
         return [];
     }

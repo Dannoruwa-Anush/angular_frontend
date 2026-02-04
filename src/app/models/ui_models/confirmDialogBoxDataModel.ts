@@ -9,6 +9,7 @@ export interface ConfirmDialogBoxDataModel {
     placeholder?: string;
     required?: boolean;
     type?: 'text' | 'password';
+    showWhenRadioValue?: any;
   };
 
   // radio btn support

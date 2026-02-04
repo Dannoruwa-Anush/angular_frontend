@@ -72,9 +72,27 @@ export class ConfirmDialogBoxComponent {
     return this.data.radioConfig?.required ?? false;
   }
 
+  get shouldShowInput(): boolean {
+    if (!this.data.inputConfig) return false;
+
+    const trigger = this.data.inputConfig.showWhenRadioValue;
+    if (trigger === undefined) return true;
+
+    return this.radioValue === trigger;
+  }
+
+  get isInputRequired(): boolean {
+    if (!this.data.inputConfig?.required) return false;
+
+    const trigger = this.data.inputConfig.showWhenRadioValue;
+    if (trigger === undefined) return true;
+
+    return this.radioValue === trigger;
+  }
+
   get isConfirmDisabled(): boolean {
-    if (this.inputRequired && !this.inputValue) return true;
     if (this.radioRequired && this.radioValue == null) return true;
+    if (this.isInputRequired && !this.inputValue?.trim()) return true;
     return false;
   }
 
@@ -84,7 +102,8 @@ export class ConfirmDialogBoxComponent {
   confirm(): void {
     this.dialogRef.close({
       confirmed: true,
-      value: this.radioValue ?? this.inputValue
+      value: this.radioValue,
+      inputValue: this.inputValue?.trim()
     });
   }
 

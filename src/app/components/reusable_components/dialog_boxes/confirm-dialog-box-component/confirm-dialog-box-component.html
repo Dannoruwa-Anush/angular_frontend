@@ -3,8 +3,8 @@
 <mat-dialog-content>
   <p>{{ data.message }}</p>
 
-  <mat-form-field *ngIf="hasInput" appearance="outline" class="w-100 centered-field">
-    <input matInput [(ngModel)]="inputValue" [placeholder]="inputPlaceholder" [required]="inputRequired"
+  <mat-form-field *ngIf="shouldShowInput" appearance="outline" class="w-100 centered-field">
+    <input matInput [(ngModel)]="inputValue" [placeholder]="inputPlaceholder" [required]="isInputRequired"
       [type]="inputType" />
   </mat-form-field>
 

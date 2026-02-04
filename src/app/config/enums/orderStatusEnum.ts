@@ -5,7 +5,7 @@ export enum OrderStatusEnum {
     Delivered = 4,
     Cancel_Pending = 5, 
     Cancelled = 6,      
-    DeliveredAfterCancellationRejected = 7, 
+    CancellationRejected = 7, 
 }
 
 //convert Enums to Human-readable labels for UI
@@ -29,7 +29,7 @@ export function getOrderStatusLabel(status: OrderStatusEnum): string {
     case OrderStatusEnum.Cancelled:
       return 'Cancelled';
 
-    case OrderStatusEnum.DeliveredAfterCancellationRejected:
+    case OrderStatusEnum.CancellationRejected:
       return 'Delivered (Cancel Rejected)';
 
     default:

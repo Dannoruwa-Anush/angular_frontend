@@ -50,7 +50,7 @@ export class OrderSummaryComponent {
         return 2;
 
       case OrderStatusEnum.Delivered:
-      case OrderStatusEnum.DeliveredAfterCancellationRejected:
+      case OrderStatusEnum.CancellationRejected:
         return 3;
 
       case OrderStatusEnum.Cancel_Pending:

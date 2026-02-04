@@ -59,7 +59,7 @@
       </ng-template>
       <div class="step-date">{{ formatDate(order.deliveredDate) }}</div>
 
-      <p *ngIf="order.orderStatus === OrderStatusEnum.DeliveredAfterCancellationRejected" class="info">
+      <p *ngIf="order.orderStatus === OrderStatusEnum.CancellationRejected" class="info">
         Delivered after cancellation was rejected
       </p>
     </mat-step>
