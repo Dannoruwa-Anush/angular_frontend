@@ -14,6 +14,7 @@ import { SystemOperationConfirmService } from '../../../../../services/ui_servic
 import { Router } from '@angular/router';
 import { EMPTY, filter, finalize, switchMap } from 'rxjs';
 import { InvoiceDraftCreatedDialogBoxComponent } from '../../../../reusable_components/dialog_boxes/invoice-draft-created-dialog-box-component/invoice-draft-created-dialog-box-component';
+import { BnplSnapshotPayingInvoiceGenerationCreateModel } from '../../../../../models/api_models/create_update_models/create_models/bnplSnapshotPayingInvoiceGeneration_create_Model';
 
 @Component({
   selector: 'app-bnpl-installmet-payment-simulator-nav-component',
@@ -210,40 +211,49 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
       .pipe(
         filter(Boolean), // proceed only if user confirms
         switchMap(() => {
+
           if (!this.selectedOrder() || !this.simulation()) {
             this.messageService.error('Please run the simulation first');
             return EMPTY;
           }
 
-          const payload: BnplSnapShotPayingSimulationCreateModel = {
+          // -------- Resolve payment channel via helper --------
+          const invoicePaymentChannel =
+            this.auth.resolveBnplInstallmentInvoicePaymentChannel();
+
+          if (!invoicePaymentChannel) {
+            return EMPTY; // blocked by auth / shop session rule
+          }
+
+          const payload: BnplSnapshotPayingInvoiceGenerationCreateModel = {
             orderId: this.selectedOrder()!.orderID,
-            paymentAmount: this.form.value.paymentAmount
+            paymentAmount: this.form.value.paymentAmount,
+            invoicePaymentChannel
           };
 
-          this.loading.set(true); // optional local loading signal
+          this.loading.set(true);
           return this.invoiceService.generateSettlementInvoice(payload);
         }),
         finalize(() => this.loading.set(false))
       )
       .subscribe({
         next: invoice => {
-          // Success message
           this.messageService.success('Invoice drafted successfully');
 
-          // Open dialog with invoice info
-          const dialogRef = this.dialog.open(InvoiceDraftCreatedDialogBoxComponent, {
-            width: '460px',
-            disableClose: true,
-            data: {
-              invoiceId: invoice.invoiceID,
-              orderId: this.selectedOrder()!.orderID,
-              totalAmount: invoice.invoiceAmount,
-              invoiceFileUrl: invoice.invoiceFileUrl,
-              //receiptFileUrl: invoice.receiptFileUrl
+          const dialogRef = this.dialog.open(
+            InvoiceDraftCreatedDialogBoxComponent,
+            {
+              width: '460px',
+              disableClose: true,
+              data: {
+                invoiceId: invoice.invoiceID,
+                orderId: this.selectedOrder()!.orderID,
+                totalAmount: invoice.invoiceAmount,
+                invoiceFileUrl: invoice.invoiceFileUrl
+              }
             }
-          });
+          );
 
-          // Handle dialog result
           dialogRef.afterClosed().subscribe(res => {
             if (res?.action === 'review') {
               this.router.navigate(['/dashboard/invoice'], {

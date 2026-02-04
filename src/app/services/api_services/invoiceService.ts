@@ -7,6 +7,7 @@ import { InvoiceReadModel } from "../../models/api_models/read_models/invoiceRea
 import { catchError, map, Observable } from "rxjs";
 import { ApiResponseModel } from "../../models/api_models/core_api_models/apiResponseModel";
 import { BnplSnapShotPayingSimulationCreateModel } from "../../models/api_models/create_update_models/create_models/bnplSnapShotPayingSimulation_create_Model";
+import { BnplSnapshotPayingInvoiceGenerationCreateModel } from "../../models/api_models/create_update_models/create_models/bnplSnapshotPayingInvoiceGeneration_create_Model";
 
 @Injectable({
     providedIn: 'root',
@@ -56,7 +57,7 @@ export class InvoiceService extends CrudService<InvoiceReadModel, InvoiceReadMod
             );
     }
 
-    generateSettlementInvoice(data: BnplSnapShotPayingSimulationCreateModel): Observable<InvoiceReadModel> {
+    generateSettlementInvoice(data: BnplSnapshotPayingInvoiceGenerationCreateModel): Observable<InvoiceReadModel> {
 
         this._loading.set(true);
         this.messageService.clear();

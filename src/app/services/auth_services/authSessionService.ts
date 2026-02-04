@@ -13,6 +13,7 @@ import { ShoppingCartService } from "../ui_service/shoppingCartService";
 import { SystemMessageService } from "../ui_service/systemMessageService";
 import { EmployeePositionEnum } from "../../config/enums/employeePositionEnum";
 import { PhysicalShopSessionService } from "../api_services/physicalShopSessionService";
+import { InvoicePaymentChannelEnum } from "../../config/enums/invoicePaymentChannelEnum";
 
 const AUTH_KEY = 'auth_session';
 
@@ -235,5 +236,60 @@ export class AuthSessionService {
                 },
                 error: () => this.clearShopSession()
             });
+    }
+
+    // ---------- CUSTOMER ORDER / SESSION HELPERS ----------
+    canProceedOrderSubmissionWithPhysicalShopAction(): boolean {
+        const role = this.role();
+        const position = this.employeePosition();
+
+        if (
+            role === UserRoleEnum.Employee &&
+            position === EmployeePositionEnum.Manager
+        ) {
+            if (!this.hasActiveShopSession()) {
+                this.messageService.info(
+                    'Unable to submit order: business session not opened.'
+                );
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // ---------- BNPL INSTALLMENT INVOICE HELPERS ----------
+    canUseVisitingShopBnplInstallmentPayment(): boolean {
+        const role = this.role();
+        const position = this.employeePosition();
+
+        // Only validate shop session for Employee -> Manager
+        if (
+            role === UserRoleEnum.Employee &&
+            position === EmployeePositionEnum.Manager
+        ) {
+            return this.hasActiveShopSession();
+        }
+
+        // Other roles don't require shop session validation
+        return true;
+    }
+
+    resolveBnplInstallmentInvoicePaymentChannel(): InvoicePaymentChannelEnum | null {
+        // If customerID is NOT present -> Visiting shop
+        if (!this.customerID()) {
+
+            if (!this.canUseVisitingShopBnplInstallmentPayment()) {
+                this.messageService.info(
+                    'Unable to submit order: business session not opened.'
+                );
+                return null;
+            }
+
+            return InvoicePaymentChannelEnum.ByVisitingShop;
+        }
+
+        // Otherwise -> Online payment
+        return InvoicePaymentChannelEnum.ByOnline;
     }
 }
