@@ -10,4 +10,13 @@ export interface ConfirmDialogBoxDataModel {
     required?: boolean;
     type?: 'text' | 'password';
   };
+
+  // radio btn support
+  radioConfig?: {
+    options: {
+      label: string;
+      value: any;
+    }[];
+    required?: boolean;
+  };
 }

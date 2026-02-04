@@ -35,8 +35,8 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
 
 
-  
-    // ======================================================
+
+  // ======================================================
   // STATE
   // ======================================================
 
@@ -181,7 +181,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   canEdit(order: CustomerOrderReadModel): boolean {
     if (this.role === UserRoleEnum.Customer) {
       return (
-        order.orderStatus === OrderStatusEnum.Pending 
+        order.orderStatus === OrderStatusEnum.Pending
       );
     }
     return true;
@@ -233,6 +233,48 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     const id = order.orderID;
     if (!id) return;
 
+    // Special case: Cancel Pending -> radio decision
+    if (order.orderStatus === OrderStatusEnum.Cancel_Pending) {
+
+      this.confirmationHelper
+        .confirmProcessWithRadio<OrderStatusEnum>(
+          'Cancellation Decision',
+          'Select how to proceed with this cancellation request',
+          [
+            {
+              label: 'Approve Cancellation',
+              value: OrderStatusEnum.Cancelled
+            },
+            {
+              label: 'Reject Cancellation',
+              value: OrderStatusEnum.DeliveredAfterCancellationRejected
+            }
+          ],
+          'Confirm',
+          'Back'
+        )
+        .subscribe(result => {
+          if (!result?.confirmed) return;
+
+          const payload: CustomerOrderUpdateModel = {
+            newOrderStatus: result.value
+          };
+
+          this.customerOrderService.update(id, payload).subscribe({
+            next: () => {
+              this.messageService.success('Order updated');
+              this.resetForm();
+              this.reloadTrigger.update(v => v + 1);
+            },
+            error: err =>
+              this.messageService.error(err?.error?.message || 'Update failed')
+          });
+        });
+
+      return;
+    }
+
+    // Default single-step flow
     const nextStatus = this.getNextEmployeeStatuses(order.orderStatus)[0];
     if (!nextStatus) return;
 
@@ -265,11 +307,11 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
   private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
     switch (status) {
-      case OrderStatusEnum.Pending: return [OrderStatusEnum.Processing];
+      //Pending: Processing (will be handled by the system after the payment)
       case OrderStatusEnum.Processing: return [OrderStatusEnum.Shipped];
       case OrderStatusEnum.Shipped: return [OrderStatusEnum.Delivered];
       case OrderStatusEnum.Cancel_Pending:
-        return [OrderStatusEnum.DeliveredAfterCancellationRejected];
+        return [OrderStatusEnum.Cancelled, OrderStatusEnum.DeliveredAfterCancellationRejected];
       default:
         return [];
     }

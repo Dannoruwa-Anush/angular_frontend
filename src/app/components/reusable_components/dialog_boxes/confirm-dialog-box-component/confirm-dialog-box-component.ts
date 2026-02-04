@@ -19,6 +19,7 @@ import { ConfirmDialogBoxDataModel } from '../../../../models/ui_models/confirmD
 export class ConfirmDialogBoxComponent {
 
   inputValue = '';
+  radioValue: any;
 
   // ======================================================
   // CONSTRUCTOR
@@ -59,19 +60,32 @@ export class ConfirmDialogBoxComponent {
     return this.data.inputConfig?.type ?? 'text';
   }
 
+  get hasRadio(): boolean {
+    return !!this.data.radioConfig;
+  }
+
+  get radioOptions() {
+    return this.data.radioConfig?.options ?? [];
+  }
+
+  get radioRequired(): boolean {
+    return this.data.radioConfig?.required ?? false;
+  }
+
   get isConfirmDisabled(): boolean {
-    return this.inputRequired && !this.inputValue;
+    if (this.inputRequired && !this.inputValue) return true;
+    if (this.radioRequired && this.radioValue == null) return true;
+    return false;
   }
 
   // ======================================================
   // OPERATIONS
   // ======================================================
   confirm(): void {
-    this.dialogRef.close(
-      this.hasInput
-        ? { confirmed: true, value: this.inputValue }
-        : true
-    );
+    this.dialogRef.close({
+      confirmed: true,
+      value: this.radioValue ?? this.inputValue
+    });
   }
 
   cancel(): void {

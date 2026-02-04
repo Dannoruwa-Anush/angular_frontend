@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 
 import { SystemOperationConfirmService } from "../services/ui_service/systemOperationConfirmService";
+import { ConfirmRadioOptionUiModel } from "../models/ui_models/confirmRadioOptionUiModel";
 
 @Injectable({ providedIn: 'root' })
 export class CrudOperationConfirmationUiHelper {
@@ -50,6 +51,25 @@ export class CrudOperationConfirmationUiHelper {
       cancelText,
       inputConfig: {
         placeholder: inputPlaceholder,
+        required: true
+      }
+    });
+  }
+
+  confirmProcessWithRadio<T>(
+    title: string,
+    message: string,
+    options: ConfirmRadioOptionUiModel<T>[],
+    confirmText = 'Confirm',
+    cancelText = 'Cancel'
+  ) {
+    return this.confirmService.confirm({
+      title,
+      message,
+      confirmText,
+      cancelText,
+      radioConfig: {
+        options,
         required: true
       }
     });

@@ -7,6 +7,12 @@
     <input matInput [(ngModel)]="inputValue" [placeholder]="inputPlaceholder" [required]="inputRequired"
       [type]="inputType" />
   </mat-form-field>
+
+  <mat-radio-group *ngIf="hasRadio" [(ngModel)]="radioValue" class="radio-group">
+    <mat-radio-button *ngFor="let option of radioOptions" [value]="option.value" class="radio-item">
+      {{ option.label }}
+    </mat-radio-button>
+  </mat-radio-group>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
