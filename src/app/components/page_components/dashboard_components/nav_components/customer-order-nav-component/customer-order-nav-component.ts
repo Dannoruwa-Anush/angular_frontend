@@ -206,7 +206,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         'Cancel Order',
         'Please provide a cancellation reason',
         'Cancellation reason',
-        'Cancel Order',
+        'Request Order Cancellation',
         'Back'
       )
       .subscribe(result => {
