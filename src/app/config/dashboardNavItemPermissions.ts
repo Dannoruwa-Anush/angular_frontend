@@ -32,6 +32,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Physical Shop Session',
         route: 'physicalShopSession',
+        icon: 'store',
         component: PhysicalShopSessionNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -41,6 +42,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Employees',
         route: 'employee',
+        icon: 'groups',
         component: EmployeeNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -50,6 +52,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Customers',
         route: 'customer',
+        icon: 'people',
         component: CustomerNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -59,6 +62,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Brands',
         route: 'brand',
+        icon: 'branding_watermark',
         component: BrandNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -72,6 +76,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Categories',
         route: 'category',
+        icon: 'category',
         component: CategoryNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -85,6 +90,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Electronic Products',
         route: 'e_product',
+        icon: 'devices',
         component: ProductNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -98,6 +104,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Bnpl Plan Types',
         route: 'bnpl_plan_type',
+        icon: 'rule',
         component: BnplPlanTypeNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -111,6 +118,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Orders',
         route: 'customer_order',
+        icon: 'shopping_cart',
         component: CustomerOrderNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -125,6 +133,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Bnpl Plans',
         route: 'bnpl_plan',
+        icon: 'schedule',
         component: BnplPlanNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -138,6 +147,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Invoices',
         route: 'invoice',
+        icon: 'receipt_long',
         component: InvoiceNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -149,6 +159,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Cash Flows',
         route: 'cashflow',
+        icon: 'payments',
         component: CashflowNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -159,6 +170,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Installment Snapshots',
         route: 'bnpl_installmet_snapshot',
+        icon: 'timeline',
         component: InstallmentSnapshotNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
@@ -172,6 +184,7 @@ export const DASHBOARD_NAV_ITEM_PERMISSIONS: DashboardNavItemPermissionDataModel
     {
         label: 'Bnpl Payment Simulator',
         route: 'pay_simulator',
+        icon: 'calculate',
         component: BnplInstallmetPaymentSimulatorNavComponent,
         allowedRoles: [
             UserRoleEnum.Admin,
