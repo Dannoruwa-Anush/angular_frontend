@@ -64,30 +64,37 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     const r = this.simulation();
     if (!s) return [];
 
+    // Helper to calculate total paid (snapshot + simulation)
+    /* 
+      paid      : only by this simulation
+      remaining : total remaining (before + after simulation)
+    */
+    const totalPaid = (snapshotPaid: number, simulationPaid?: number) => (snapshotPaid ?? 0) + (simulationPaid ?? 0);
+
     return [
       {
         description: 'Arrears',
         amount: s.total_InstallmentBaseArrears,
-        paid: r?.paidToArrears ?? 0,
-        result: s.total_InstallmentBaseArrears - (r?.paidToArrears ?? 0)
+        paid: totalPaid(s.paid_AgainstTotalArrears, r?.paidToArrears),
+        result: s.total_InstallmentBaseArrears - totalPaid(s.paid_AgainstTotalArrears, r?.paidToArrears)
       },
       {
         description: 'Late Interest',
         amount: s.total_LateInterest,
-        paid: r?.paidToInterest ?? 0,
-        result: s.total_LateInterest - (r?.paidToInterest ?? 0)
+        paid: totalPaid(s.paid_AgainstTotalLateInterest, r?.paidToInterest),
+        result: s.total_LateInterest - totalPaid(s.paid_AgainstTotalLateInterest, r?.paidToInterest)
       },
       {
         description: 'Current Base Amount',
         amount: s.notYetDueCurrentInstallmentBaseAmount,
-        paid: r?.paidToBase ?? 0,
-        result: s.notYetDueCurrentInstallmentBaseAmount - (r?.paidToBase ?? 0)
+        paid: totalPaid(s.paid_AgainstNotYetDueCurrentInstallmentBaseAmount, r?.paidToBase),
+        result: s.notYetDueCurrentInstallmentBaseAmount - totalPaid(s.paid_AgainstNotYetDueCurrentInstallmentBaseAmount, r?.paidToBase)
       },
       {
         description: 'Overpayment',
         amount: 0,
-        paid: r?.overPaymentCarried ?? 0,
-        result: r?.overPaymentCarried ?? 0
+        paid: totalPaid(s.total_OverpaymentCarriedToNext, r?.overPaymentCarried),
+        result: totalPaid(s.total_OverpaymentCarriedToNext, r?.overPaymentCarried)
       }
     ];
   });
