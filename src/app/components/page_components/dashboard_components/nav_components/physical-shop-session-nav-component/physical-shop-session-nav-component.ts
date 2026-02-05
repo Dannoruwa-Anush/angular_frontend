@@ -64,7 +64,7 @@ export class PhysicalShopSessionNavComponent {
 
     this.confirmService.confirm({
       title: 'Close Business Session',
-      message: 'Are you sure you want to close today’s business session?',
+      message: 'Are you sure you want to close today business session?',
       confirmText: 'Close Session',
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
@@ -108,7 +108,7 @@ export class PhysicalShopSessionNavComponent {
 
     this.confirmService.confirm({
       title: 'Close Business Session',
-      message: 'Are you sure you want to close today’s business session?',
+      message: 'Are you sure you want to close today business session?',
       confirmText: 'Close Session',
       cancelText: 'Cancel'
     }).subscribe(confirmed => {
