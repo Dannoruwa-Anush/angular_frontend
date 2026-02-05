@@ -176,14 +176,22 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // PERMISSIONS
   // ======================================================
   // customer: pending -> Cancel_Pending
-  // employee: rest (Delivered -> Cancel_Pending as well)
+  // employee: all (including processing -> Cancel_Pending, Delivered -> Cancel_Pending)
 
   canEdit(order: CustomerOrderReadModel): boolean {
-    if (this.role === UserRoleEnum.Customer) {
-      return (
-        order.orderStatus === OrderStatusEnum.Pending
-      );
+    // Never allow editing cancelled or rejected orders
+    if (
+      order.orderStatus === OrderStatusEnum.Cancelled ||
+      order.orderStatus === OrderStatusEnum.CancellationRejected
+    ) {
+      return false;
     }
+
+    // Customer rules
+    if (this.role === UserRoleEnum.Customer) {
+      return order.orderStatus === OrderStatusEnum.Pending;
+    }
+
     return true;
   }
 
@@ -199,7 +207,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
   private openCustomerCancellation(order: CustomerOrderReadModel) {
     const id = order.orderID;
-    if (id == null) return;
+    if (!id) return;
 
     this.confirmationHelper
       .confirmProcessWithInput(
@@ -210,24 +218,15 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         'Back'
       )
       .subscribe(result => {
-        // Check both possible properties
         const reason = result?.value?.trim() || result?.inputValue?.trim();
         if (!result?.confirmed || !reason) return;
 
         const payload: CustomerOrderUpdateModel = {
-          cancellationReason: reason,
-          newOrderStatus: OrderStatusEnum.Cancel_Pending
+          newOrderStatus: OrderStatusEnum.Cancel_Pending,
+          cancellationReason: reason
         };
 
-        this.customerOrderService.update(id, payload).subscribe({
-          next: () => {
-            this.messageService.success('Cancellation requested');
-            this.resetForm();
-            this.reloadTrigger.update(v => v + 1);
-          },
-          error: err =>
-            this.messageService.error(err?.error?.message || 'Update failed')
-        });
+        this.updateOrder(id, payload, 'Cancellation requested');
       });
   }
 
@@ -235,21 +234,20 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
     const id = order.orderID;
     if (!id) return;
 
+    const nextStatuses = this.getNextEmployeeStatuses(order.orderStatus);
+    if (!nextStatuses.length) return;
+
     // ==================================================
-    // CANCEL PENDING FLOW (radio + conditional input)
+    // CANCEL PENDING -> DECISION (radio + conditional input)
     // ==================================================
     if (order.orderStatus === OrderStatusEnum.Cancel_Pending) {
-
       this.confirmationHelper
         .confirmProcessWithRadioAndConditionalInput<OrderStatusEnum>(
           'Cancellation Decision',
-          'Select how to proceed with this cancellation request',
+          'Select how to proceed',
           [
             { label: 'Approve Cancellation', value: OrderStatusEnum.Cancelled },
-            {
-              label: 'Reject Cancellation',
-              value: OrderStatusEnum.CancellationRejected
-            }
+            { label: 'Reject Cancellation', value: OrderStatusEnum.CancellationRejected }
           ],
           'Rejection reason',
           OrderStatusEnum.CancellationRejected,
@@ -267,31 +265,58 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
                 : undefined
           };
 
-          this.customerOrderService.update(id, payload).subscribe({
-            next: () => {
-              this.messageService.success('Order updated');
-              this.resetForm();
-              this.reloadTrigger.update(v => v + 1);
-            },
-            error: err =>
-              this.messageService.error(err?.error?.message || 'Update failed')
-          });
+          this.updateOrder(id, payload, 'Order updated');
         });
 
       return;
     }
 
     // ==================================================
-    // DEFAULT EMPLOYEE FLOW
+    // SINGLE OPTION (auto-confirm)
     // ==================================================
-    const nextStatus = this.getNextEmployeeStatuses(order.orderStatus)[0];
-    if (!nextStatus) return;
+    if (nextStatuses.length === 1) {
+      const nextStatus = nextStatuses[0];
 
+      this.confirmationHelper
+        .confirmProcessWithInput(
+          'Update Order',
+          `Confirm update to "${getOrderStatusLabel(nextStatus)}"`,
+          'Note',
+          'Confirm',
+          'Back'
+        )
+        .subscribe(result => {
+          if (!result?.confirmed) return;
+
+          const payload: CustomerOrderUpdateModel = {
+            newOrderStatus: nextStatus
+          };
+
+          this.updateOrder(
+            id,
+            payload,
+            nextStatus === OrderStatusEnum.Delivered
+              ? 'Order delivered'
+              : 'Order updated'
+          );
+        });
+
+      return;
+    }
+
+    // ==================================================
+    // MULTIPLE OPTIONS -> RADIO (Processing case)
+    // ==================================================
     this.confirmationHelper
-      .confirmProcessWithInput(
-        'Update Order Status',
-        `Confirm update to "${getOrderStatusLabel(nextStatus)}"`,
-        'Note',
+      .confirmProcessWithRadioAndConditionalInput<OrderStatusEnum>(
+        'Update Order',
+        'Select how you want to proceed',
+        nextStatuses.map(s => ({
+          label: getOrderStatusLabel(s),
+          value: s
+        })),
+        'Cancellation reason',
+        OrderStatusEnum.Cancel_Pending,
         'Confirm',
         'Back'
       )
@@ -299,31 +324,53 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
         if (!result?.confirmed) return;
 
         const payload: CustomerOrderUpdateModel = {
-          newOrderStatus: nextStatus
+          newOrderStatus: result.value,
+          cancellationReason:
+            result.value === OrderStatusEnum.Cancel_Pending
+              ? result.inputValue?.trim()
+              : undefined
         };
 
-        this.customerOrderService.update(id, payload).subscribe({
-          next: () => {
-            this.messageService.success('Order updated');
-            this.resetForm();
-            this.reloadTrigger.update(v => v + 1);
-          },
-          error: err =>
-            this.messageService.error(err?.error?.message || 'Update failed')
-        });
+        this.updateOrder(id, payload, 'Order updated');
       });
   }
 
   private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
     switch (status) {
       //Pending: Processing (will be handled by the system after the payment)
-      case OrderStatusEnum.Processing: return [OrderStatusEnum.Shipped];
-      case OrderStatusEnum.Shipped: return [OrderStatusEnum.Delivered];
+      case OrderStatusEnum.Pending:
+        return [OrderStatusEnum.Cancel_Pending];
+
+      case OrderStatusEnum.Processing:
+        return [
+          OrderStatusEnum.Shipped,
+          OrderStatusEnum.Cancel_Pending
+        ];
+
+      case OrderStatusEnum.Shipped:
+        return [OrderStatusEnum.Delivered];
+
       case OrderStatusEnum.Cancel_Pending:
-        return [OrderStatusEnum.Cancelled, OrderStatusEnum.CancellationRejected];
+        return [
+          OrderStatusEnum.Cancelled,
+          OrderStatusEnum.CancellationRejected
+        ];
+
       default:
         return [];
     }
+  }
+
+  private updateOrder(id: number, payload: CustomerOrderUpdateModel, successMessage: string) {
+    this.customerOrderService.update(id, payload).subscribe({
+      next: () => {
+        this.messageService.success(successMessage);
+        this.resetForm();
+        this.reloadTrigger.update(v => v + 1);
+      },
+      error: err =>
+        this.messageService.error(err?.error?.message || 'Update failed')
+    });
   }
 
   // ======================================================
