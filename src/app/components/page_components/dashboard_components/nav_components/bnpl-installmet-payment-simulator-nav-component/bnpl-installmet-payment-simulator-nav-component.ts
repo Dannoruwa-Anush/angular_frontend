@@ -56,7 +56,7 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
   // ===============================
   // TABLE
   // ===============================
-  orderColumns = ['orderId', 'date', 'total', 'status', 'action'];
+  orderColumns = ['orderId', 'total', 'action'];
   snapshotColumns = ['description', 'amount', 'paid', 'result'];
 
   snapshotTableData = computed(() => {
