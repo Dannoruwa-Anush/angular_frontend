@@ -65,13 +65,10 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
     if (!s) return [];
 
     // Helper to calculate total paid (snapshot + simulation)
-    /* 
-      paid      : only by this simulation
-      remaining : total remaining (before + after simulation)
-    */
     const totalPaid = (snapshotPaid: number, simulationPaid?: number) => (snapshotPaid ?? 0) + (simulationPaid ?? 0);
 
-    return [
+    // Main installment rows
+    const installmentRows = [
       {
         description: 'Arrears',
         amount: s.total_InstallmentBaseArrears,
@@ -89,14 +86,18 @@ export class BnplInstallmetPaymentSimulatorNavComponent {
         amount: s.notYetDueCurrentInstallmentBaseAmount,
         paid: totalPaid(s.paid_AgainstNotYetDueCurrentInstallmentBaseAmount, r?.paidToBase),
         result: s.notYetDueCurrentInstallmentBaseAmount - totalPaid(s.paid_AgainstNotYetDueCurrentInstallmentBaseAmount, r?.paidToBase)
-      },
-      {
-        description: 'Overpayment',
-        amount: 0,
-        paid: totalPaid(s.total_OverpaymentCarriedToNext, r?.overPaymentCarried),
-        result: totalPaid(s.total_OverpaymentCarriedToNext, r?.overPaymentCarried)
       }
     ];
+
+    // Overpayment row (informational only)
+    const overPaymentRow = {
+      description: 'Overpayment Carried Forward',
+      amount: null, // optional, not a real installment
+      paid: totalPaid(s.total_OverpaymentCarriedToNext, r?.overPaymentCarried),
+      result: null // not meaningful here
+    };
+
+    return [...installmentRows, overPaymentRow];
   });
 
   // ===============================
