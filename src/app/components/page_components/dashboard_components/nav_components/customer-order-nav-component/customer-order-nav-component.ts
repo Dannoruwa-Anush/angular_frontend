@@ -210,6 +210,15 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       return false;
     }
 
+    if (this.role === UserRoleEnum.Employee) {
+      // Employees cannot edit delivered orders
+      if (order.orderStatus === OrderStatusEnum.Delivered) {
+        return false;
+      }
+
+      return true;
+    }
+
     // Employees can edit all other allowed statuses
     return true;
   }
@@ -329,36 +338,6 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
       return;
     }
-
-    // ==================================================
-    // MULTIPLE OPTIONS -> RADIO (Processing case)
-    // ==================================================
-    this.confirmationHelper
-      .confirmProcessWithRadioAndConditionalInput<OrderStatusEnum>(
-        'Update Order',
-        'Select how you want to proceed',
-        nextStatuses.map(s => ({
-          label: getOrderStatusLabel(s),
-          value: s
-        })),
-        'Cancellation reason',
-        OrderStatusEnum.Cancel_Pending,
-        'Confirm',
-        'Back'
-      )
-      .subscribe(result => {
-        if (!result?.confirmed) return;
-
-        const payload: CustomerOrderUpdateModel = {
-          newOrderStatus: result.value,
-          cancellationReason:
-            result.value === OrderStatusEnum.Cancel_Pending
-              ? result.inputValue?.trim()
-              : undefined
-        };
-
-        this.updateOrder(id, payload, 'Order updated');
-      });
   }
 
   private getNextEmployeeStatuses(status: OrderStatusEnum): OrderStatusEnum[] {
