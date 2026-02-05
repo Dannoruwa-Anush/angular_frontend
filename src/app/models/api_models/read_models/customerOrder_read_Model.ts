@@ -14,6 +14,7 @@ export interface CustomerOrderReadModel {
     orderStatus: OrderStatusEnum;
     paymentCompletedDate?: string;
     orderPaymentStatus: OrderPaymentStatusEnum;
+    isFreeTrialOver: boolean;
 
     //FK: Fields
     customerResponseDto?: CustomerReadModel;

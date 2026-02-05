@@ -175,9 +175,17 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   // ======================================================
   // PERMISSIONS
   // ======================================================
-  // customer: pending -> Cancel_Pending
-  // employee: all (including processing -> Cancel_Pending, Delivered -> Cancel_Pending)
+  /*
+  Note:
+  Customer
+    Pending -> Cancel_Pending
+    Delivered -> Cancel_Pending (with in Free trial period)
 
+  Employee
+    Pending -> Cancel_Pending
+    Cancel_Pending -> Cancelled / CancellationRejected
+    Processing -> Shipped -> Delivered
+  */
   canEdit(order: CustomerOrderReadModel): boolean {
     // Never allow editing cancelled or rejected orders
     if (
@@ -187,11 +195,22 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
       return false;
     }
 
-    // Customer rules
     if (this.role === UserRoleEnum.Customer) {
-      return order.orderStatus === OrderStatusEnum.Pending;
+      // Customer can cancel pending orders
+      if (order.orderStatus === OrderStatusEnum.Pending) return true;
+
+      // Customer can cancel delivered orders only if free trial is not over
+      if (
+        order.orderStatus === OrderStatusEnum.Delivered &&
+        !order.isFreeTrialOver
+      ) {
+        return true;
+      }
+
+      return false;
     }
 
+    // Employees can edit all other allowed statuses
     return true;
   }
 
@@ -208,6 +227,13 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
   private openCustomerCancellation(order: CustomerOrderReadModel) {
     const id = order.orderID;
     if (!id) return;
+
+    if (order.orderStatus === OrderStatusEnum.Delivered && order.isFreeTrialOver) {
+      this.messageService.error(
+        'Cancellation period for this order has expired (free trial is over).'
+      );
+      return;
+    }
 
     this.confirmationHelper
       .confirmProcessWithInput(
@@ -343,9 +369,7 @@ export class CustomerOrderNavComponent extends DashboardNavStateBase<CustomerOrd
 
       case OrderStatusEnum.Processing:
         return [
-          OrderStatusEnum.Shipped,
-          OrderStatusEnum.Cancel_Pending
-        ];
+          OrderStatusEnum.Shipped];
 
       case OrderStatusEnum.Shipped:
         return [OrderStatusEnum.Delivered];
